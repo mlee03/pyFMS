@@ -1,13 +1,6 @@
 module pyFMS_diag_manager_mod
 
-    use diag_axis_mod
-    use diag_manager_mod
-    use mpp_domains_mod
-    use mpp_mod
-    use fms_mod
-    use fms_string_utils_mod
-    use platform_mod
-    use py_mpp_mod
+    use libFMS
     use iso_c_binding
 
     implicit none
@@ -24,48 +17,48 @@ module pyFMS_diag_manager_mod
     type(domainUG), public :: DomainUG
 
     interface pyFMS_diag_axis_init
-      module procedure pyFMS_diag_axis_init_r4
-      module procedure pyFMS_diag_axis_init_r8
+      module procedure pyFMS_diag_axis_init_c_float
+      module procedure pyFMS_diag_axis_init_c_double
     end interface pyFMS_diag_axis_init
 
     interface pyFMS_send_data_0d
-      module procedure pyFMS_send_data_0d_r4
-      module procedure pyFMS_send_data_0d_r8
+      module procedure pyFMS_send_data_0d_c_float
+      module procedure pyFMS_send_data_0d_c_double
     end interface pyFMS_send_data_0d
 
     interface pyFMS_send_data_1d
-      module procedure pyFMS_send_data_1d_r4
-      module procedure pyFMS_send_data_1d_r8
+      module procedure pyFMS_send_data_1d_c_float
+      module procedure pyFMS_send_data_1d_c_double
     end interface pyFMS_send_data_1d
 
     interface pyFMS_send_data_2d
-      module procedure pyFMS_send_data_2d_r4
-      module procedure pyFMS_send_data_2d_r8
+      module procedure pyFMS_send_data_2d_c_float
+      module procedure pyFMS_send_data_2d_c_double
     end interface pyFMS_send_data_2d
 
     interface pyFMS_send_data_3d
-      module procedure pyFMS_send_data_3d_r4
-      module procedure pyFMS_send_data_3d_r8
+      module procedure pyFMS_send_data_3d_c_float
+      module procedure pyFMS_send_data_3d_c_double
     end interface pyFMS_send_data_3d
 
     interface pyFMS_send_data_4d
-      module procedure pyFMS_send_data_4d_r4
-      module procedure pyFMS_send_data_4d_r8
+      module procedure pyFMS_send_data_4d_c_float
+      module procedure pyFMS_send_data_4d_c_double
     end interface pyFMS_send_data_4d
 
     interface pyFMS_diag_grid_init
-      module procedure pyFMS_diag_grid_init_r4
-      module procedure pyFMS_diag_grid_init_r8
+      module procedure pyFMS_diag_grid_init_c_float
+      module procedure pyFMS_diag_grid_init_c_double
     end interface pyFMS_diag_grid_init
 
     interface pyFMS_diag_field_add_attribute_scalar
-      module procedure pyFMS_diag_field_add_attribute_scalar_r4
-      module procedure pyFMS_diag_field_add_attribute_scalar_r8
+      module procedure pyFMS_diag_field_add_attribute_scalar_c_float
+      module procedure pyFMS_diag_field_add_attribute_scalar_c_double
     end interface pyFMS_diag_field_add_attribute_scalar
 
     interface pyFMS_diag_field_add_attribute_array
-      module procedure pyFMS_diag_field_add_attribute_array_r4
-      module procedure pyFMS_diag_field_add_attribute_array_r8
+      module procedure pyFMS_diag_field_add_attribute_array_c_float
+      module procedure pyFMS_diag_field_add_attribute_array_c_double
     end interface pyFMS_diag_field_add_attribute_array
 
 
