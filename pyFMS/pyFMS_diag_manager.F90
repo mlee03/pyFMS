@@ -76,9 +76,9 @@ module pyFMS_diag_manager_mod
 
         type(c_ptr), intent(in) :: module_name_ptr
         type(c_ptr), intent(in) :: field_name_ptr
-        type(c_int64_t), intent(in), optional :: n
-        type(c_int64_t), intent(in), optional :: axes(n)
-        type(c_int64_t) :: pyFMS_register_diag_field
+        type(c_int), intent(in), optional :: n
+        type(c_int), intent(in), optional :: axes(n)
+        type(c_int) :: pyFMS_register_diag_field
 
         character(len=20) :: module_name
         character(len=20) :: field_name
@@ -94,12 +94,13 @@ module pyFMS_diag_manager_mod
 
       end function pyFMS_register_diag_field
 
-      integer function pyFMS_register_static_field(module_name_ptr, field_name_ptr, n, axes)
+      function pyFMS_register_static_field(module_name_ptr, field_name_ptr, n, axes)
 
         type(c_ptr), intent(in) :: module_name_ptr
         type(c_ptr), intent(in) :: field_name_ptr
         type(c_int64_t), intent(in) :: n
         type(c_int64_t), intent(in) :: axes(n)
+        type(c_int) :: pyFMS_register_static_field
 
         character(len=20) :: module_name
         character(len=20) :: field_name
@@ -111,7 +112,6 @@ module pyFMS_diag_manager_mod
 
       end function pyFMS_register_static_field
 
-#include "pyFMS_diag_manager_r4.fh"
-#include "pyFMS_diag_manager_r8.fh"
+#include "include/pyFMS_diag_manager.fh"
 
 end module pyFMS_diag_manager_mod

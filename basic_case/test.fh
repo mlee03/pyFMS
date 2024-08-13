@@ -1,0 +1,17 @@
+! -*-f90-*-
+
+#undef SPACE_
+#define SPACE_ c_float
+
+#undef ARRAY_SORT_
+#define ARRAY_SORT_ array_sort_r4
+
+#include "test.inc"
+
+#undef SPACE_
+#define SPACE_ c_double
+
+#undef ARRAY_SORT_
+#define ARRAY_SORT_ array_sort_r8
+
+#include "test.inc"

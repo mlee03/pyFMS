@@ -27,11 +27,11 @@ function PYFMS_DIAG_AXIS_INIT_(name_ptr, dim, array_data, &
   units_ptr, cart_name_ptr)
 
   type(c_ptr), intent(in) :: name_ptr
-  real(FMS_KIND_), intent(in) :: dim
-  real(FMS_KIND_), intent(in), optional :: array_data(dim)
+  real(PYFMS_FMS_KIND_), intent(in) :: dim
+  real(PYFMS_FMS_KIND_), intent(in), optional :: array_data(dim)
   type(c_ptr), intent(in) :: units_ptr
   type(c_ptr), intent(in) :: cart_name_ptr
-  type(c_int64_t) :: PYFMS_DIAG_AXIS_INIT_
+  integer(c_int) :: PYFMS_DIAG_AXIS_INIT_
 
   character(len=20) :: name
   character(len=20) :: units
@@ -49,8 +49,8 @@ end function PYFMS_DIAG_AXIS_INIT_
 
 function PYFMS_SEND_DATA_0D_(diag_field_id, field)
 
-  type(c_int64_t), intent(in) :: diag_field_id
-  real(FMS_KIND_), intent(in) :: field
+  integer(c_int), intent(in) :: diag_field_id
+  real(PYFMS_KIND_), intent(in) :: field
   type(c_bool) :: PYFMS_SEND_DATA_0D_
 
   PYFMS_SEND_DATA_0D_ = send_data(diag_field_id, field)
@@ -61,9 +61,9 @@ end function PYFMS_SEND_DATA_0D_
 
 function PYFMS_SEND_DATA_1D_(diag_field_id, n, field)
 
-  type(c_int64_t), intent(in) :: diag_field_id
-  type(c_int64_t), intent(in) :: n
-  real(FMS_KIND_), intent(in) :: field(n)
+  integer(c_int), intent(in) :: diag_field_id
+  integer(c_int), intent(in) :: n
+  real(PYFMS_KIND_), intent(in) :: field(n)
   type(c_bool) :: PYFMS_SEND_DATA_1D_
 
   PYFMS_SEND_DATA_1D_ = send_data(diag_field_id, field)
@@ -74,10 +74,10 @@ end function PYFMS_SEND_DATA_1D_
 
 function PYFMS_SEND_DATA_2D_(diag_field_id, n, m, field)
 
-  type(c_int64_t), intent(in) :: diag_field_id
-  type(c_int64_t), intent(in) :: n
-  type(c_int64_t), intent(in) :: m
-  real(FMS_KIND_), intent(in) :: field(n,m)
+  integer(c_int), intent(in) :: diag_field_id
+  integer(c_int), intent(in) :: n
+  integer(c_int), intent(in) :: m
+  real(PYFMS_KIND_), intent(in) :: field(n,m)
   type(c_bool) :: PYFMS_SEND_DATA_2D_
 
   PYFMS_SEND_DATA_2D_ = send_data(diag_field_id, field)
@@ -88,11 +88,11 @@ end function PYFMS_SEND_DATA_2D_
 
 function PYFMS_SEND_DATA_3D_(diag_field_id, n, m, l, field)
 
-  type(c_int64_t), intent(in) :: diag_field_id
-  type(c_int64_t), intent(in) :: n
-  type(c_int64_t), intent(in) :: m
-  type(c_int64_t), intent(in) :: l
-  real(FMS_KIND_), intent(in) :: field(n,m,l)
+  integer(c_int), intent(in) :: diag_field_id
+  integer(c_int), intent(in) :: n
+  integer(c_int), intent(in) :: m
+  integer(c_int), intent(in) :: l
+  real(PYFMS_KIND_), intent(in) :: field(n,m,l)
   type(c_bool) :: PYFMS_SEND_DATA_3D_
 
   PYFMS_SEND_DATA_3D_ = send_data(diag_field_id, field)
@@ -103,12 +103,12 @@ end function PYFMS_SEND_DATA_3D_
 
 function PYFMS_SEND_DATA_4D_(diag_field_id, n, m, l, k, field)
 
-  type(c_int64_t), intent(in) :: diag_field_id
-  type(c_int64_t), intent(in) :: n
-  type(c_int64_t), intent(in) :: m
-  type(c_int64_t), intent(in) :: l
-  type(c_int64_t), intent(in) :: k
-  real(FMS_KIND_), intent(in) :: field(n,m,l,k)
+  integer(c_int), intent(in) :: diag_field_id
+  integer(c_int), intent(in) :: n
+  integer(c_int), intent(in) :: m
+  integer(c_int), intent(in) :: l
+  integer(c_int), intent(in) :: k
+  real(PYFMS_KIND_), intent(in) :: field(n,m,l,k)
   type(c_bool) :: PYFMS_SEND_DATA_4D_
 
   PYFMS_SEND_DATA_4D_ = send_data(diag_field_id, field)
@@ -117,14 +117,17 @@ end function PYFMS_SEND_DATA_4D_
 
 !############################################################################
 
-subroutine PYFMS_DIAG_GRID_INIT_(domain, glo_lat, glo_lon, aglo_lat, aglo_lon, dim_glo, dim_aglo)
-        
-  Domain
-  type(c_int64_t), intent(in) :: dim_glo, dim_aglo
-  real(FMS_KIND_), intent(in) :: glo_lat(dim_glo,dim_glo)
-  real(FMS_KIND_), intent(in) :: glo_lon(dim_glo,dim_aglo)
-  real(FMS_KIND_), intent(in) :: aglo_lat(dim_aglo,dim_aglo)
-  real(FMS_KIND_), intent(in) :: aglo_lon(dim_aglo,dim_aglo)
+subroutine PYFMS_DIAG_GRID_INIT_(glo_lat, glo_lon, aglo_lat, aglo_lon, &
+  & dim_glo1, dim_glo2, dim_aglo1, dim_aglo2)
+
+  integer(c_int), intent(in) :: dim_glo1, dim_glo2, dim_aglo1, dim_aglo2
+  real(PYFMS_KIND_), intent(in) :: glo_lat(dim_glo1,dim_glo2)
+  real(PYFMS_KIND_), intent(in) :: glo_lon(dim_glo1,dim_aglo2)
+  real(PYFMS_KIND_), intent(in) :: aglo_lat(dim_aglo1,dim_aglo2)
+  real(PYFMS_KIND_), intent(in) :: aglo_lon(dim_aglo1,dim_aglo2)
+
+  type(domain2d) :: Domain
+  
 
   call diag_grid_init(Domain, glo_lat, glo_lon, aglo_lat, aglo_lon)
 
@@ -134,9 +137,9 @@ end subroutine PYFMS_DIAG_GRID_INIT_
 
 subroutine PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_SCALAR_(diag_field_id, att_name_ptr, att_value)
 
-  type(c_int64_t), intent(in) :: diag_field_id
+  integer(c_int), intent(in) :: diag_field_id
   type(c_ptr) :: att_name_ptr
-  real(FMS_KIND_), intent(in) :: att_value
+  real(PYFMS_KIND_), intent(in) :: att_value
 
   character(len=20) :: att_name
   att_name = fms_c2f_string(att_name_ptr)
@@ -149,10 +152,10 @@ end subroutine PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_SCALAR_
 
 subroutine PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_ARRAY_(diag_field_id, att_name_ptr, n, att_value)
 
-  type(c_int64_t), intent(in) :: diag_field_id
-  type(c_ptr) :: att_name_ptr
-  type(c_int64_t) :: n
-  real(FMS_KIND_), intent(in) :: att_value(n)
+  integer(c_int), intent(in) :: diag_field_id
+  integer(c_ptr) :: att_name_ptr
+  integer(c_int) :: n
+  real(PYFMS_KIND_), intent(in) :: att_value(n)
 
   character(len=20) :: att_name
   att_name = fms_c2f_string(att_name_ptr)
