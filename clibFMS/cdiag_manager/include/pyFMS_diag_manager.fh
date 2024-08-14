@@ -30,6 +30,9 @@
 #undef PYFMS_DIAG_AXIS_INIT_
 #define PYFMS_DIAG_AXIS_INIT_ pyFMS_diag_axis_init_c_float
 
+#undef PYFMS_DIAG_GRID_INIT_
+#define PYFMS_DIAG_GRID_INIT_ pyFMS_diag_grid_init_c_float
+
 #undef PYFMS_SEND_DATA_0D_
 #define PYFMS_SEND_DATA_0D_ pyFMS_send_data_0d_c_float
 
@@ -45,15 +48,6 @@
 #undef PYFMS_SEND_DATA_4D_
 #define PYFMS_SEND_DATA_4D_ pyFMS_send_data_4d_c_float
 
-#undef PYFMS_DIAG_GRID_INIT_
-#define PYFMS_DIAG_GRID_INIT_ pyFMS_diag_grid_init_c_float
-
-#undef PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_SCALAR_
-#define PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_SCALAR_ pyFMS_diag_field_add_attribute_scalar_c_float
-
-#undef PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_ARRAY_
-#define PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_ARRAY_ pyFMS_diag_field_add_attribute_array_c_float
-
 #include "pyFMS_diag_manager.inc"
 
 #undef PYFMS_KIND_
@@ -61,6 +55,9 @@
 
 #undef PYFMS_DIAG_AXIS_INIT_
 #define PYFMS_DIAG_AXIS_INIT_ pyFMS_diag_axis_init_c_double
+
+#undef PYFMS_DIAG_GRID_INIT_
+#define PYFMS_DIAG_GRID_INIT_ pyFMS_diag_grid_init_c_double
 
 #undef PYFMS_SEND_DATA_0D_
 #define PYFMS_SEND_DATA_0D_ pyFMS_send_data_0d_c_double
@@ -76,15 +73,6 @@
 
 #undef PYFMS_SEND_DATA_4D_
 #define PYFMS_SEND_DATA_4D_ pyFMS_send_data_4d_c_double
-
-#undef PYFMS_DIAG_GRID_INIT_
-#define PYFMS_DIAG_GRID_INIT_ pyFMS_diag_grid_init_c_double
-
-#undef PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_SCALAR_
-#define PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_SCALAR_ pyFMS_diag_field_add_attribute_scalar_c_double
-
-#undef PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_ARRAY_
-#define PYFMS_DIAG_FIELD_ADD_ATTRIBUTE_ARRAY_ pyFMS_diag_field_add_attribute_array_c_double
 
 #include "pyFMS_diag_manager.inc"
 !> @}
