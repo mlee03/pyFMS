@@ -1,6 +1,6 @@
 module cFMS_mod
 
-  use FMS
+  use FMS, only : fms_init, fms_mpp_domains_init, fms_mpp_domains_define_domains, FmsMppDomain2D, fms_string_utils_c2f_string
   use iso_c_binding
 
   implicit none
@@ -23,14 +23,14 @@ contains
   end function cFMS_get_domain
 
 
-  subroutine cFMS_fms_init(localcomm, alt_input_nml_path_ptr)
+  subroutine cFMS_fms_init(localcomm, alt_input_nml_path_ptr) bind(C)
 
     implicit none
-    integer, intent(in), optional :: localcomm
+    integer, intent(in), optional     :: localcomm
     type(c_ptr), intent(in), optional :: alt_input_nml_path_ptr
-
+    
     character(100) :: alt_input_nml_path = input_nml_path
-
+    
     if(present(alt_input_nml_path_ptr)) &
          alt_input_nml_path = fms_string_utils_c2f_string(alt_input_nml_path_ptr)
     
@@ -43,7 +43,7 @@ contains
        n_pelist, n_xextent, n_yextent, n1_maskmap, n2_maskmap, n_memory_size, &
        pelist, xflags, yflags, xhalo, yhalo, xextent, yextent, maskmap, name_ptr, symmetry, &
        memory_size, whalo, ehalo, shalo, nhalo, is_mosaic, tile_count, tile_id,             &
-       complete, x_cyclic_offset, y_cyclic_offset)
+       complete, x_cyclic_offset, y_cyclic_offset) bind(C)
 
     implicit none
 
