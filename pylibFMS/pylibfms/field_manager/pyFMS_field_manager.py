@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from typing import List, Dict
 import traceback
 
+from pylibfms.pyFMS_error import pyfms_error
+
 class FieldError(Exception):
     pass
 
@@ -24,8 +26,7 @@ class FieldTable:
                 var = "varlist"
                 raise FieldError
         except FieldError:
-            print(f"ERROR FieldTable::__post_init__: Must specify {var} in field table")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "__post_init__", f"Must specify {var} in field table")
 
     @classmethod
     def from_dict(cls, config: Dict) -> "FieldTable":
@@ -35,8 +36,7 @@ class FieldTable:
         try:
             self.varlist.append(var)
         except AttributeError:
-            print("ERROR FieldTable::add_to_varlist: No varlist in field table, please define varlist")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "add_to_varlist", "No varlist in field table, please define varlist")
 
     def get_var(self, varname: str) -> Dict:
         out = None
@@ -48,19 +48,16 @@ class FieldTable:
             if out == None:
                 raise FieldError
         except FieldError:
-            print("ERROR FieldTable::get_var: No variable match")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "get_var", "No variable match")
             
     def get_value(self, varname: str, key: str):
         try:
             var = self.get_var(varname)
             return var[key]
         except KeyError:
-            print(f"ERROR FieldTable::get_value: No key '{key}' in {varname}")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "get_value", f"No key '{key}' in {varname}")
         except TypeError:
-            print(f"ERROR FieldTable::get_value: No matching variable '{varname}")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "get_value", f"No matching variable '{varname}")
     
     def get_subparam_value(self, varname: str, listname: str, paramname: str):
         try:
@@ -68,14 +65,11 @@ class FieldTable:
             subparamlist = var[listname]
             return subparamlist[0][paramname]
         except KeyError:
-            print(f"ERROR FieldTable::get_subparam_value: No matching key in {varname} or {listname}")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "get_subparam_value", f"No matching key in {varname} or {listname}")
         except TypeError:
-            print(f"ERROR FieldTable::get_subparam_value: No variable in variable list that matches '{varname}'")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "get_subparam_value", f"No variable in variable list that matches '{varname}'")
         except UnboundLocalError:
-            print(f"ERROR FieldTable::get_subparam_value: No attribute '{listname}' key in {varname} dict")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "get_subparam_value", f"No attribute '{listname}' key in {varname} dict")
     
     
     def get_variable_list(self) -> List:
@@ -93,16 +87,14 @@ class FieldTable:
                     subparamlist.append(key)
             return subparamlist
         except TypeError:
-            print(f"ERROR FieldType::get_subparam_list: No variable match")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "get_subparam_list", "No variable match")
             
     def set_value(self, varname: str, key: str, value):
         try:
             changed_var = self.get_var(varname=varname)
             changed_var[key] = value
         except TypeError:
-            print(f"ERROR FieldTable::set_value: No matching variable '{varname}' to set value of key '{key}'")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_value", f"No matching variable '{varname}' to set value of key '{key}'")
 
     def set_subparam_value(self, varname: str, listname: str, subparamname: str, value):
         try:
@@ -110,11 +102,9 @@ class FieldTable:
             paramlist = var[listname]
             paramlist[0][subparamname] = value
         except KeyError:
-            print(f"ERROR FieldTable::set_subparam_value: No matching subparameter list '{listname}' or subparameter '{subparamname}'")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_subparam_value", f"No matching subparameter list '{listname}' or subparameter '{subparamname}'")
         except TypeError:
-            print(f"ERROR FieldTable::set_subparam_value: No matching variable '{varname}' or subparameter list '{listname}'")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_subparam_value", f"No matching variable '{varname}' or subparameter list '{listname}'")
 
     def set_var_name(self, old_name: str, new_name: str):
         try:
@@ -123,11 +113,9 @@ class FieldTable:
             changed_var = self.get_var(old_name)
             changed_var["variable"] = new_name
         except TypeError:
-            print(f"ERROR FieldTable::set_var_name: No variable '{old_name}' in variable list")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_var_name", f"No variable '{old_name}' in variable list")
         except FieldError:
-            print(f"ERROR FieldTable::set_var_name: Desired new variable name is already in variable list")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_var_name", "Desired new variable name is already in variable list")
 
     def set_var_attr_name(self, varname: str, oldname: str, newname: str):
         try:
@@ -136,17 +124,13 @@ class FieldTable:
                 raise FieldError
             var[newname] = var.pop(oldname)
         except TypeError:
-            print(f"ERROR FieldTable::set_var_attr_name: No variable '{varname}' or variable attribute '{oldname}'")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_var_attr_name", f"No variable '{varname}' or variable attribute '{oldname}'")
         except FieldError:
-            print(f"ERROR FieldTable::set_var_attr_name: variable attribute '{newname} already exists for '{varname}'")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_var_attr_name", f"variable attribute '{newname} already exists for '{varname}'")
         except AttributeError:
-            print(f"ERROR FieldTable::set_var_attr_name: No variable '{varname}' in variable list")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_var_attr_name", f"No variable '{varname}' in variable list")
         except KeyError:
-            print(f"ERROR FieldTable::set_var_attr_name: No attribute '{oldname}' in '{varname}'")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_var_attr_name", f"No attribute '{oldname}' in '{varname}'")
 
     def set_subparam_name(self, varname: str, listname: str, oldname: str, newname: str):
         try:
@@ -156,12 +140,9 @@ class FieldTable:
                 raise FieldError
             paramlist[0][newname] = paramlist[0].pop(oldname)
         except TypeError:
-            print(f"ERROR FieldTable::set_subparam_name: No variable '{varname}' in variable list")
+            pyfms_error("FieldTable", "set_subparam_name", f"No variable '{varname}' in variable list")
             print(f"Available variables: {self.get_variable_list()}")
-            traceback.print_exc()
         except KeyError:
-            print(f"ERROR FieldTable::set_subparam_name: No attribute '{listname}' in '{varname} or '{oldname}' in '{listname}'")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_subparam_name", f"No attribute '{listname}' in '{varname} or '{oldname}' in '{listname}'")
         except FieldError:
-            print(f"ERROR FieldTable::set_subparam_name: subparameter '{newname}' already in subparameter list")
-            traceback.print_exc()
+            pyfms_error("FieldTable", "set_subparam_name", f"subparameter '{newname}' already in subparameter list")
