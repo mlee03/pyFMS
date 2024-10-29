@@ -1,9 +1,8 @@
 import dacite
 from dataclasses import dataclass
 from typing import List, Dict
-import traceback
 
-from pylibfms.pyFMS_error import pyfms_error
+from pyfms.pyFMS_error import pyfms_error
 
 class FieldError(Exception):
     pass
@@ -68,15 +67,16 @@ class FieldTable:
             pyfms_error("FieldTable", "get_subparam_value", f"No matching key in {varname} or {listname}")
         except TypeError:
             pyfms_error("FieldTable", "get_subparam_value", f"No variable in variable list that matches '{varname}'")
-        except UnboundLocalError:
-            pyfms_error("FieldTable", "get_subparam_value", f"No attribute '{listname}' key in {varname} dict")
-    
     
     def get_variable_list(self) -> List:
         variables = []
         for item in self.varlist:
             variables.append(item["variable"])
         return variables
+    
+    def get_num_variables(self) -> int:
+        num_var = len(self.varlist)
+        return num_var
     
     def get_subparam_list(self, varname: str) -> List[Dict]:
         subparamlist = []

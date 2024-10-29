@@ -1,6 +1,6 @@
 import copy
 import pytest
-from pylibfms import FieldTable, FieldError
+from pyfms import FieldTable, FieldError
 
 test_config = {
     'field_table': [{
@@ -36,9 +36,15 @@ test_config = {
     }
 
 
+
 def test_fieldtable_init(test_config=test_config):
     test_table = FieldTable.from_dict(test_config)
     assert isinstance(test_table, FieldTable)
+
+def test_get_fieldtype(test_config=test_config):
+    test_table = FieldTable.from_dict(test_config)
+    fieldtype = test_table.field_type
+    assert fieldtype == 'tracer'
 
 @pytest.mark.xfail(raises=FieldError)
 def test_remove_varlist(test_config=test_config):
@@ -98,12 +104,25 @@ def test_get_subparam_value(test_config=test_config):
     value = test_table.get_subparam_value(varname="soa", listname="chem_param", paramname="frac_pm1")
     assert value == 0.89
 
-# TODO: Add fail for get_subparam_value
+@pytest.mark.xfail(raises=KeyError)
+def test_get_subparam_value_bad_key(test_config=test_config):
+    test_table = FieldTable.from_dict(test_config)
+    test_table.get_subparam_value(varname="soa", listname="chem_param", paramname="frac_pms")
+
+@pytest.mark.xfail(raises=TypeError)
+def test_get_subparam_value_bad_var_name(test_config=test_config):
+    test_table = FieldTable.from_dict(test_config)
+    test_table.get_subparam_value(varname="sob", listname="chem_param", paramname="frac_pm1")
 
 def test_get_variable_list(test_config=test_config):
     test_table = FieldTable.from_dict(test_config)
     test_list = test_table.get_variable_list()
     assert test_list == ["sphum", "soa"]
+
+def test_get_num_variables(test_config=test_config):
+    test_table = FieldTable.from_dict(test_config)
+    num_vars = test_table.get_num_variables()
+    assert num_vars == 2
 
 def test_get_subparam_list(test_config=test_config):
     test_table = FieldTable.from_dict(test_config)
