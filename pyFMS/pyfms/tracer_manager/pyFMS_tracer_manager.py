@@ -1,100 +1,57 @@
-import sys
-import dataclasses
-import ctypes as ct
-from mpi4py import MPI
-import numpy as np
+import dacite
+from dataclasses import dataclass
+from typing import List, Dict
 
-from pyFMS import lowercase, write_version_number
+from pyfms.pyFMS_error import pyfms_error
+from pyfms.field_manager.pyFMS_field_manager import FieldTable, FieldError
 
-import pyFMS_file_version
+@dataclass
+class TracerTable(FieldTable):
+    field_type: str
+    modlist: List[Dict]
 
-from pylibFMS.field_manager.pyFMS_field_manager import(
-    pyFMS_Field_Manager,
-    get_field_info,
-    get_field_methods,
-    MODEL_ATMOS,
-    MODEL_LAND,
-    MODEL_OCEAN,
-    MODEL_ICE,
-    MODEL_COUPLER,
-    NUM_MODELS,
-    method_type,
-    default_method,
-    parse,
-    fm_copy_list,
-    fm_change_list,
-    fm_modify_name,
-    fm_query_method,
-    fm_new_value,
-    fm_exists,
-    MODEL_NAMES,
-)
+    def __post_init__(self):
+        try:
+            if "model_type" in self.modlist[0]:
+                self.model_type = self.modlist[0]["model_type"]
+            else:
+                var = "model_type"
+                raise FieldError
+            if "varlist" in self.modlist[0]:
+                self.varlist = self.modlist[0]["varlist"]
+            else:
+                var = "varlist"
+                raise FieldError
+        except FieldError:
+            pyfms_error("FieldTable", "__post_init__", f"Must specify {var} in field table")
 
-@dataclasses.dataclass
-class tracer_type:
-    tracer_name: str
-    tracer_units: str
-    tracer_longname: str
-    num_methods: int
-    model: int
-    instances: int
-    is_prognostic: bool
-    instances_set: bool
-    needs_init: bool
-    needs_mass_adjust: bool = True
-    needs_positive_adjust: bool = True
-
-@dataclasses.dataclass
-class tracer_name_type:
-    model_name: str
-    tracer_name: str
-    tracer_units: str
-    tracer_longname: str
-
-@dataclasses.dataclass
-class inst_type:
-    name: str
-    instances: int
-
-
-class pyFMS_Tracer_Manager:
-    NUM_TRACER_FIELDS = 0
-    MAX_TRACER_FIELDS = 250
-    MAX_TRACER_METHOD = 20
-    NO_TRACER = 1 - sys.maxsize
-    NOTRACER = -sys.maxsize
-    TRACERS = []
-    INSTANTIATIONS = []
-    TOTAL_TRACERS = np.empty(shape=(NUM_MODELS), dtype=int)
-    PROG_TRACERS = np.empty(shape=(NUM_MODELS), dtype=int)
-    DIAG_TRACERS = np.empty(shape=(NUM_MODELS), dtype=int)
-    MODEL_REGISTERED = np.full(shape=(NUM_MODELS), fill_value=False)
+    @classmethod
+    def from_dict(cls, config: Dict) -> "TracerTable":
+        return dacite.from_dict(data_class=cls, data=config["field_table"][0])
     
-    MODULE_IS_INITIALIZED = False
-    VERBOSE_LOCAL = False
-    TRACER_ARRAY = np.empty(shape=(NUM_MODELS,MAX_TRACER_FIELDS), dtype=int)
+    def check_if_prognostic(self, tracername: str)-> bool:
+        tracer = self.get_var(varname=tracername)
+        try:
+            if "tracer_type" in tracer:
+                tracer_type = tracer["tracer_type"]
+                if tracer_type == "prognostic":
+                    return True
+                elif tracer_type == "diagnostic":
+                    return False
+                else:
+                    raise FieldError
+            else:
+                return True
+        except FieldError:
+            pyfms_error("TracerTable", "check_if_prognostic", "tracer_type is unknown")
 
-    def __init__(self):
-        self.MODULE_IS_INITIALIZED = True
-        self.field_manager = pyFMS_Field_Manager()
-        self.TRACER_ARRAY = self.NOTRACER
+        except KeyError:
+            pyfms_error("TracerTable", "check_if_prognostic", f"{tracername} not found in TracerTable")
 
-    def get_tracer_meta_data(self, model: int):
-        
-        assert (model == MODEL_ATMOS or model == MODEL_LAND or 
-                model == MODEL_OCEAN or model == MODEL_ICE or 
-                model == MODEL_COUPLER), "tracer_manager_init : invalid model type"
-        
-        if self.MODEL_REGISTERED[model]:
-            num_tracers = self.TOTAL_TRACERS[model]
-            num_prog = self.PROG_TRACERS[model]
-            num_diag = self.DIAG_TRACERS[model]
-            return num_tracers, num_prog, num_diag
-        
-        num_tracers = 0
-        num_prog = 0
-        num_diag = 0
+    def adjust_mass(self):
+        model = self.model_type
+        # TODO: Get list of models which need mass adjustment
 
-        nfields = self.field_manager.nfields
-        
-
+    def adjust_positive_def(self):
+        model = self.model_type
+        # TODO: Get list of models which need to be adjusted to remain positive definite

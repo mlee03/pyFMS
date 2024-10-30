@@ -48,6 +48,18 @@ class FieldTable:
                 raise FieldError
         except FieldError:
             pyfms_error("FieldTable", "get_var", "No variable match")
+
+    def get_subparam(self, varname: str, subparam_name: str) -> List[Dict]:
+        subparam = None
+        try:
+            var = self.get_var(varname)
+            if var is not None:
+                subparam = var[subparam_name]
+                return subparam
+            if subparam == None:
+                raise FieldError
+        except FieldError:
+            pyfms_error("FieldTable", "get_subparam", "No subparam match")
             
     def get_value(self, varname: str, key: str):
         try:
@@ -88,6 +100,17 @@ class FieldTable:
             return subparamlist
         except TypeError:
             pyfms_error("FieldTable", "get_subparam_list", "No variable match")
+
+    def get_num_subparam(self, varname: str) -> int:
+        subparamlist = []
+        try:
+            var = self.get_var(varname)
+            for key in var:
+                if type(var[key]) == list:
+                    subparamlist.append(key)
+            return len(subparamlist)
+        except TypeError:
+            pyfms_error("FieldTable", "get_num_subparam", "No variable match")
             
     def set_value(self, varname: str, key: str, value):
         try:

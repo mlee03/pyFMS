@@ -89,6 +89,11 @@ def test_get_var_fail(test_config=test_config):
     test_table = FieldTable.from_dict(test_config)
     test_table.get_var('sob')
 
+def test_get_subparam(test_config=test_config):
+    test_table = FieldTable.from_dict(test_config)
+    subparameter = test_table.get_subparam(varname="soa", subparam_name="chem_param")
+    assert subparameter == test_table.modlist[0]["varlist"][1]["chem_param"]
+
 def test_get_value(test_config=test_config):
     test_table = FieldTable.from_dict(test_config)
     value = test_table.get_value(varname="soa", key="units")
@@ -128,6 +133,11 @@ def test_get_subparam_list(test_config=test_config):
     test_table = FieldTable.from_dict(test_config)
     test_list = test_table.get_subparam_list(varname="soa")
     assert test_list == ["chem_param", "profile_type"]
+
+def test_get_num_subparam(test_config=test_config):
+    test_table = FieldTable.from_dict(test_config)
+    num = test_table.get_num_subparam(varname="soa")
+    assert num == 2
 
 def test_set_value(test_config=test_config):
     new_config = copy.deepcopy(test_config)
