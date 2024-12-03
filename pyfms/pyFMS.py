@@ -4,46 +4,50 @@ import ctypes as c
 import numpy as np
 import dataclasses
 import os
-from pyFMS_utils import *
+from pyfms.pyFMS_data_handling import *
 
 #TODO:  get localcomm from pace
 #TODO:  define domain via GFDL_atmos_cubed_sphere/tools/fv_mp_mod
 
 
-def fms_init( pylibFMS: c.CDLL=None, localcomm: int=None, alt_input_nml_path: str="input/input.nml") :
-
-    _fms_init = pylibFMS.cfms_fms_init
-
-    localcomm_p, localcomm_t = setscalar_Cint32(localcomm)
-
-    alt_input_nml_path_p, alt_input_nml_path_t = set_Cchar(alt_input_nml_path)
-    
-    _fms_init.argtypes = [ localcomm_t, alt_input_nml_path_t ]
-    _fms_init.restype  = None
-    
-    _fms_init( localcomm_p, alt_input_nml_path_p )
-
-
 @dataclasses.dataclass
 class FMS() :
 
-    pylibFMS_path : str = None
-    pylibFMS : c.CDLL = None
+    clibFMS_path : str = None
+    clibFMS : c.CDLL = None
     alt_input_nml_path : str = "input/input.nml"
     localcomm : int = None    
     
     def __post_init__(self) :
 
-        if self.pylibFMS_path == None :
-            raise ValueError("Please define the library file path, e.g., as  libFMS(pylibFMS_path=./pylibFMS.so)")
+        if self.clibFMS_path == None :
+            raise ValueError("Please define the library file path, e.g., as  libFMS(clibFMS_path=./clibFMS.so)")
 
-        if not os.path.isfile(self.pylibFMS_path) :
-            raise ValueError(f"Library {self.pylibFMS_path} does not exist")
+        if not os.path.isfile(self.clibFMS_path) :
+            raise ValueError(f"Library {self.clibFMS_path} does not exist")
 
-        if self.pylibFMS == None : self.pylibFMS = c.cdll.LoadLibrary(self.pylibFMS_path)
+        if self.clibFMS == None : self.clibFMS = c.cdll.LoadLibrary(self.clibFMS_path)
         
-        fms_init(self.pylibFMS, self.localcomm, self.alt_input_nml_path)
+        self.fms_init(self.clibFMS, self.localcomm, self.alt_input_nml_path)
+
+    def pyfms_init(self, clibFMS: c.CDLL=None, localcomm: int=None, alt_input_nml_path: str="input/input.nml") :
+        _fms_init = clibFMS.cFMS_init
+        localcomm_p, localcomm_t = setscalar_Cint32(localcomm)
+        alt_input_nml_path_p, alt_input_nml_path_t = set_Cchar(alt_input_nml_path)
+        _fms_init.argtypes = [ localcomm_t, alt_input_nml_path_t ]
+        _fms_init.restype  = None
+        _fms_init( localcomm_p, alt_input_nml_path_p )
+
+    def pyfms_end(self):
+        _fms_end = self.clibFMS.cFMS_end
+        _fms_end()
         
+    def pyfms_set_npes(self, npes_in: int=None):
+        _fms_set_npes = self.clibFMS.cFMS_set_npes
+        npes_in_p, npes_in_t = setscalar_Cint32(npes_in)
+        _fms_set_npes.argtypes = [npes_in_t]
+        _fms_set_npes.restype = None
+        _fms_set_npes(npes_in_p)
         
     def define_domains2d(self, global_indices, layout, pelist=[None],
                          xflags=None, yflags=None, xhalo=None, yhalo=None, xextent=[None], yextent=[None],
@@ -51,7 +55,7 @@ class FMS() :
                          whalo=None, ehalo=None, shalo=None, nhalo=None, is_mosaic=None, tile_count=None,
                          tile_id=None, complete=None, x_cyclic_offset=None, y_cyclic_offset=None) :
 
-        _mpp_define_domains2d = self.pylibFMS.cfms_define_domains2d
+        _mpp_define_domains2d = self.clibFMS.cfms_define_domains2d
 
         global_indices_p, global_indices_t = setarray_Cint32(global_indices)
         layout_p, layout_t = setarray_Cint32(layout)
