@@ -2,7 +2,6 @@
 
 import ctypes as c
 import numpy as np
-import dataclasses
 
 
 def set_ndpointer(arg, c_type) :
