@@ -169,3 +169,33 @@ class FieldTable:
             pyfms_error("FieldTable", "set_subparam_name", f"No attribute '{listname}' in '{varname} or '{oldname}' in '{listname}'")
         except FieldError:
             pyfms_error("FieldTable", "set_subparam_name", f"subparameter '{newname}' already in subparameter list")
+
+    # Tracer method
+    def check_if_prognostic(self, tracername: str)-> bool:
+        tracer = self.get_var(varname=tracername)
+        try:
+            if "tracer_type" in tracer:
+                tracer_type = tracer["tracer_type"]
+                if tracer_type == "prognostic":
+                    return True
+                elif tracer_type == "diagnostic":
+                    return False
+                else:
+                    raise FieldError
+            else:
+                return True
+        except FieldError:
+            pyfms_error("TracerTable", "check_if_prognostic", "tracer_type is unknown")
+
+        except KeyError:
+            pyfms_error("TracerTable", "check_if_prognostic", f"{tracername} not found in TracerTable")
+
+    # Tracer method
+    def adjust_mass(self):
+        model = self.model_type
+        # TODO: Get list of models which need mass adjustment
+
+    # Tracer method
+    def adjust_positive_def(self):
+        model = self.model_type
+        # TODO: Get list of models which need to be adjusted to remain positive definite
