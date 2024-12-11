@@ -14,6 +14,9 @@ extras_requires = {
 
 requirements: List[str] = [
     "dacite",
+    "h5netcdf",
+    "numpy",
+    "pyyaml",
 ]
 
 setup(
@@ -29,11 +32,11 @@ setup(
     install_requires=requirements,
     extras_require=extras_requires,
     name="pyfms",
-    license="BSD license",
+    license="",
     packages=find_namespace_packages(include=["pyfms", "pyfms.*"]),
     include_package_data=True,
     url="https://github.com/fmalatino/PyFMS.git",
-    version="2024.09.00",
+    version="2024.12.0",
     zip_safe=False,
     entry_points={},
 )
