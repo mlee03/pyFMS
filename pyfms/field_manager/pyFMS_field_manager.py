@@ -1,8 +1,10 @@
-import dacite
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import Dict, List
+
+import dacite
 
 from pyfms.pyFMS_error import pyfms_error
+
 
 class FieldError(Exception):
     pass
@@ -30,7 +32,7 @@ class FieldTable:
     @classmethod
     def from_dict(cls, config: Dict) -> "FieldTable":
         return dacite.from_dict(data_class=cls, data=config["field_table"][0])
-    
+
     def add_to_varlist(self, var: Dict):
         try:
             self.varlist.append(var)
@@ -60,7 +62,7 @@ class FieldTable:
                 raise FieldError
         except FieldError:
             pyfms_error("FieldTable", "get_subparam", "No subparam match")
-            
+
     def get_value(self, varname: str, key: str):
         try:
             var = self.get_var(varname)
@@ -69,7 +71,7 @@ class FieldTable:
             pyfms_error("FieldTable", "get_value", f"No key '{key}' in {varname}")
         except TypeError:
             pyfms_error("FieldTable", "get_value", f"No matching variable '{varname}")
-    
+
     def get_subparam_value(self, varname: str, listname: str, paramname: str):
         try:
             var = self.get_var(varname)
@@ -79,17 +81,17 @@ class FieldTable:
             pyfms_error("FieldTable", "get_subparam_value", f"No matching key in {varname} or {listname}")
         except TypeError:
             pyfms_error("FieldTable", "get_subparam_value", f"No variable in variable list that matches '{varname}'")
-    
+
     def get_variable_list(self) -> List:
         variables = []
         for item in self.varlist:
             variables.append(item["variable"])
         return variables
-    
+
     def get_num_variables(self) -> int:
         num_var = len(self.varlist)
         return num_var
-    
+
     def get_subparam_list(self, varname: str) -> List[Dict]:
         subparamlist = []
         try:
@@ -111,7 +113,7 @@ class FieldTable:
             return len(subparamlist)
         except TypeError:
             pyfms_error("FieldTable", "get_num_subparam", "No variable match")
-            
+
     def set_value(self, varname: str, key: str, value):
         try:
             changed_var = self.get_var(varname=varname)

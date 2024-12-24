@@ -4,6 +4,7 @@ from typing import List
 
 from setuptools import find_namespace_packages, setup
 
+
 test_requirements = ["pytest", "pytest-subtests", "coverage"]
 develop_requirements = test_requirements + ["pre-commit"]
 
