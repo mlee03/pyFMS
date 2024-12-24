@@ -1,15 +1,5 @@
 name: "pyfms unit tests"
 on:
-  workflow_call:
-    inputs:
-      component_trigger:
-        type: boolean
-        default: false
-        required: false
-      component_name:
-        type: string
-        default: ''
-        required: false
   pull_request:
 
 # cancel running jobs if theres a newer push
@@ -23,31 +13,15 @@ jobs:
     container:
       image: ghcr.io/noaa-gfdl/miniforge:mpich
     steps:
-        - name: external trigger Checkout pyfms
-          if:  ${{ inputs.component_trigger }}
+        - name: Checkout out hash that triggered CI
           uses: actions/checkout@v4
           with:
             submodules: 'recursive'
-            repository: fmalatino/PyFMS
-            path: PyFMS
-
-        # - name: external trigger Remove existing component in pyfms
-        #   if:  ${{ inputs.component_trigger }}
-        #   run: rm -rf ${GITHUB_WORKSPACE}/PyFMS/${{inputs.component_name}}
-
-        # - name: Checkout out hash that triggered CI
-        #   uses: actions/checkout@v4
-        #   with:
-        #     submodules: 'recursive'
-        #     path: PyFMS/${{inputs.component_name}}
 
         - name: install packages
           run: |
-            cd ${GITHUB_WORKSPACE}/PyFMS
-            pip3 install --upgrade pip setuptools wheel
-            pip3 install .[develop]
+            pip install .[test]
 
         - name: run tests
           run: |
-            cd ${GITHUB_WORKSPACE}/PyFMS
             pytest -x tests/
