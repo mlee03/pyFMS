@@ -1,34 +1,37 @@
 import os
-import yaml
+
 import pytest
-from pyfms import FieldTable, FieldError
+import yaml
+
+from pyfms import FieldError, FieldTable
+
 
 test_config = {
     'field_table': [{
-        'field_type': 'tracer', 
+        'field_type': 'tracer',
         'modlist': [{
-            'model_type': 'atmos_mod', 
+            'model_type': 'atmos_mod',
             'varlist': [{
-                'variable': 'sphum', 
-                'longname': 'specific humidity', 
-                'units': 'kg/kg', 
+                'variable': 'sphum',
+                'longname': 'specific humidity',
+                'units': 'kg/kg',
                 'profile_type': [{
-                    'value': 'fixed', 
+                    'value': 'fixed',
                     'surface_value': 3e-06
-                    }]}, 
+                    }]},
                 {
-                'variable': 'soa', 
-                'longname': 'SOA tracer', 
-                'units': 'mmr', 
-                'convection': 'all', 
+                'variable': 'soa',
+                'longname': 'SOA tracer',
+                'units': 'mmr',
+                'convection': 'all',
                 'chem_param': [{
-                    'value': 'aerosol', 
-                    'frac_pm1': 0.89, 
-                    'frac_pm25': 0.96, 
+                    'value': 'aerosol',
+                    'frac_pm1': 0.89,
+                    'frac_pm25': 0.96,
                     'frac_pm10': 1.0
-                    }], 
+                    }],
                 'profile_type': [{
-                    'value': 'fixed', 
+                    'value': 'fixed',
                     'surface_value': 1e-32
                     }]
                 }]
@@ -70,10 +73,10 @@ def test_add_to_varlist(temp_file):
         config = yaml.safe_load(f)
         test_table = FieldTable.from_dict(config)
     new_var = {
-        "variable":"test", 
-        "longname":"longtest", 
-        "units": "m", 
-        "profile_type":"fixed", 
+        "variable":"test",
+        "longname":"longtest",
+        "units": "m",
+        "profile_type":"fixed",
         "subparams":[{"surface_value":1}]
         }
     test_table.add_to_varlist(new_var)
@@ -86,10 +89,10 @@ def test_add_to_varlist_fail(temp_file):
     del changed_config["field_table"][0]["modlist"][0]["varlist"]
     test_table = FieldTable.from_dict(changed_config)
     new_var = {
-        "variable":"test", 
-        "longname":"longtest", 
-        "units": "m", 
-        "profile_type":"fixed", 
+        "variable":"test",
+        "longname":"longtest",
+        "units": "m",
+        "profile_type":"fixed",
         "subparams":[{"surface_value":1}]
         }
     test_table.add_to_varlist(new_var)

@@ -1,13 +1,14 @@
-#!/usr/bin/env python3                                                                                                           
+#!/usr/bin/env python3
 
 import ctypes as c
+
 import numpy as np
 
 
 def set_ndpointer(arg, c_type) :
     return np.ctypeslib.ndpointer( dtype=c_type, shape=np.shape(arg), flags='FORTRAN')
 
-def setarray_Cint32(arg) :    
+def setarray_Cint32(arg) :
     if arg[0] == None :
         return None, c.POINTER(c.c_int)
     else :
@@ -26,7 +27,7 @@ def setarray_Cdouble(arg) :
         return None, c.POINTER(c.c_double)
     else :
         return arg, set_ndpointer(arg, c.c_double)
-    
+
 def set_Cchar(arg) :
     if arg == None :
         return arg, c.POINTER(c.c_char_p)
@@ -54,7 +55,7 @@ def setscalar_Cfloat(arg) :
     else :
         return c.byref(c.c_float(arg)), c.POINTER(c.c_float)
 
-    
+
 def setscalar_Cdouble(arg) :
     if arg == None :
         return arg, c.POINTER(c.c_double)
@@ -67,8 +68,8 @@ def setscalar_Cbool(arg) :
         return arg, c.POINTER(c.c_double)
     else :
         return c.byref(c.c_bool(arg)), c.POINTER(c.c_bool)
-    
-    
+
+
 def set_sizevars(arg, ndim) :
     if arg[0] == None :
         argsize = [ c.byref(c.c_int(1)) for i in range(ndim) ]
