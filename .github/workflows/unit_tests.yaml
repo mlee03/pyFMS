@@ -23,13 +23,13 @@ jobs:
     container:
       image: ghcr.io/noaa-gfdl/miniforge:mpich
     steps:
-        # - name: external trigger Checkout pyfms
-        #   if:  ${{ inputs.component_trigger }}
-        #   uses: actions/checkout@v4
-        #   with:
-        #     submodules: 'recursive'
-        #     repository: fmalatino/PyFMS
-        #     path: PyFMS
+        - name: external trigger Checkout pyfms
+          if:  ${{ inputs.component_trigger }}
+          uses: actions/checkout@v4
+          with:
+            submodules: 'recursive'
+            repository: fmalatino/PyFMS
+            path: PyFMS
 
         # - name: external trigger Remove existing component in pyfms
         #   if:  ${{ inputs.component_trigger }}
