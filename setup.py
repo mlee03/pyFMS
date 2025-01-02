@@ -39,10 +39,17 @@ setup(
     name="pyfms",
     license="",
     packages=find_namespace_packages(include=["pyfms", "pyfms.*"]),
+<<<<<<< HEAD
     cmdclass={'install': CustomInstall},
+=======
+>>>>>>> python_package
     include_package_data=True,
     url="https://github.com/fmalatino/PyFMS.git",
     version="2024.12.0",
     zip_safe=False,
     entry_points={},
+<<<<<<< HEAD
 )
+=======
+)
+>>>>>>> python_package
