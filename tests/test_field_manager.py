@@ -57,16 +57,12 @@ def temp_file(tmpdir_factory):
 
 
 def test_fieldtable_init(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
+    test_table = FieldTable.from_file(temp_file)
     assert isinstance(test_table, FieldTable)
 
 
 def test_get_fieldtype(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
+    test_table = FieldTable.from_file(temp_file)
     fieldtype = test_table.field_type
     assert fieldtype == "tracer"
 
@@ -80,9 +76,7 @@ def test_remove_varlist(temp_file):
 
 
 def test_add_to_varlist(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
+    test_table = FieldTable.from_file(temp_file)
     new_var = {
         "variable": "test",
         "longname": "longtest",
@@ -90,11 +84,14 @@ def test_add_to_varlist(temp_file):
         "profile_type": "fixed",
         "subparams": [{"surface_value": 1}],
     }
-    test_table.add_to_varlist(new_var)
-    assert new_var in test_table.varlist
+    test_table.add_to_varlist(module="atmos_mod", var=new_var)
+    varlist = [mod for mod in test_table.modlist if mod["model_type"] == "atmos_mod"][
+        0
+    ]["varlist"]
+    assert new_var in varlist
 
 
-@pytest.mark.xfail(raises=(AttributeError, FieldError))
+@pytest.mark.xfail(raises=(AttributeError, FieldError, KeyError))
 def test_add_to_varlist_fail(temp_file):
     with open(temp_file, "r") as f:
         changed_config = yaml.safe_load(f)
@@ -107,14 +104,12 @@ def test_add_to_varlist_fail(temp_file):
         "profile_type": "fixed",
         "subparams": [{"surface_value": 1}],
     }
-    test_table.add_to_varlist(new_var)
+    test_table.add_to_varlist(module="atmos_mod", var=new_var)
 
 
 def test_get_var(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    var = test_table.get_var("soa")
+    test_table = FieldTable.from_file(temp_file)
+    var = test_table.get_var(module="atmos_mod", varname="soa")
     assert var == test_table.modlist[0]["varlist"][1]
 
 
@@ -123,22 +118,20 @@ def test_get_var_fail(temp_file):
     with open(temp_file, "r") as f:
         config = yaml.safe_load(f)
         test_table = FieldTable.from_dict(config)
-    test_table.get_var("sob")
+    test_table.get_var(module="atmos_mod", varname="sob")
 
 
 def test_get_subparam(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    subparameter = test_table.get_subparam(varname="soa", subparam_name="chem_param")
+    test_table = FieldTable.from_file(temp_file)
+    subparameter = test_table.get_subparam(
+        module="atmos_mod", varname="soa", subparam_name="chem_param"
+    )
     assert subparameter == test_table.modlist[0]["varlist"][1]["chem_param"]
 
 
 def test_get_value(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    value = test_table.get_value(varname="soa", key="units")
+    test_table = FieldTable.from_file(temp_file)
+    value = test_table.get_value(module="atmos_mod", varname="soa", key="units")
     assert value == "mmr"
 
 
@@ -147,15 +140,16 @@ def test_get_value_key_fail(temp_file):
     with open(temp_file, "r") as f:
         config = yaml.safe_load(f)
         test_table = FieldTable.from_dict(config)
-    test_table.get_value(varname="soa", key="unit")
+    test_table.get_value(module="atmos_mod", varname="soa", key="unit")
 
 
 def test_get_subparam_value(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
+    test_table = FieldTable.from_file(temp_file)
     value = test_table.get_subparam_value(
-        varname="soa", listname="chem_param", paramname="frac_pm1"
+        module="atmos_mod",
+        varname="soa",
+        listname="chem_param",
+        paramname="frac_pm1",
     )
     assert value == 0.89
 
@@ -166,7 +160,10 @@ def test_get_subparam_value_bad_key(temp_file):
         config = yaml.safe_load(f)
         test_table = FieldTable.from_dict(config)
     test_table.get_subparam_value(
-        varname="soa", listname="chem_param", paramname="frac_pms"
+        module="atmos_mod",
+        varname="soa",
+        listname="chem_param",
+        paramname="frac_pms",
     )
 
 
@@ -176,74 +173,76 @@ def test_get_subparam_value_bad_var_name(temp_file):
         config = yaml.safe_load(f)
         test_table = FieldTable.from_dict(config)
     test_table.get_subparam_value(
-        varname="sob", listname="chem_param", paramname="frac_pm1"
+        module="atmos_mod", varname="sob", listname="chem_param", paramname="frac_pm1"
     )
 
 
 def test_get_variable_list(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    test_list = test_table.get_variable_list()
+    test_table = FieldTable.from_file(temp_file)
+    test_list = test_table.get_variable_list(module="atmos_mod")
     assert test_list == ["sphum", "soa"]
 
 
 def test_get_num_variables(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    num_vars = test_table.get_num_variables()
+    test_table = FieldTable.from_file(temp_file)
+    num_vars = test_table.get_num_variables(module="atmos_mod")
     assert num_vars == 2
 
 
 def test_get_subparam_list(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    test_list = test_table.get_subparam_list(varname="soa")
+    test_table = FieldTable.from_file(temp_file)
+    test_list = test_table.get_subparam_list(module="atmos_mod", varname="soa")
     assert test_list == ["chem_param", "profile_type"]
 
 
 def test_get_num_subparam(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    num = test_table.get_num_subparam(varname="soa")
+    test_table = FieldTable.from_file(temp_file)
+    num = test_table.get_num_subparam(module="atmos_mod", varname="soa")
     assert num == 2
 
 
 def test_set_value(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    test_table.set_value(varname="soa", key="units", value="m")
-    assert test_table.varlist[1]["units"] == "m"
+    test_table = FieldTable.from_file(temp_file)
+    test_table.set_value(module="atmos_mod", varname="soa", key="units", value="m")
+    varlist = [mod for mod in test_table.modlist if mod["model_type"] == "atmos_mod"][
+        0
+    ]["varlist"]
+    assert varlist[1]["units"] == "m"
 
 
 def test_set_subparam_value(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
+    test_table = FieldTable.from_file(temp_file)
     test_table.set_subparam_value(
-        varname="soa", listname="chem_param", subparamname="frac_pm1", value=1
+        module="atmos_mod",
+        varname="soa",
+        listname="chem_param",
+        subparamname="frac_pm1",
+        value=1,
     )
-    assert test_table.varlist[1]["chem_param"][0]["frac_pm1"] == 1
+    varlist = [mod for mod in test_table.modlist if mod["model_type"] == "atmos_mod"][
+        0
+    ]["varlist"]
+    assert varlist[1]["chem_param"][0]["frac_pm1"] == 1
 
 
 def test_set_var_name(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    test_table.set_var_name(old_name="soa", new_name="soc")
-    assert test_table.varlist[1]["variable"] == "soc"
+    test_table = FieldTable.from_file(temp_file)
+    test_table.set_var_name(module="atmos_mod", old_name="soa", new_name="soc")
+    varlist = [mod for mod in test_table.modlist if mod["model_type"] == "atmos_mod"][
+        0
+    ]["varlist"]
+    assert varlist[1]["variable"] == "soc"
 
 
 def test_set_var_attr_name(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
-    test_table.set_var_attr_name(varname="soa", oldname="longname", newname="ln")
-    assert test_table.varlist[1]["ln"]
+    test_table = FieldTable.from_file(temp_file)
+    test_table.set_var_attr_name(
+        module="atmos_mod", varname="soa", oldname="longname", newname="ln"
+    )
+    varlist = [mod for mod in test_table.modlist if mod["model_type"] == "atmos_mod"][
+        0
+    ]["varlist"]
+    assert varlist[1]["ln"]
 
 
 @pytest.mark.xfail(raises=FieldError)
@@ -251,17 +250,24 @@ def test_set_var_attr_name_duplicate(temp_file):
     with open(temp_file, "r") as f:
         config = yaml.safe_load(f)
         test_table = FieldTable.from_dict(config)
-    test_table.set_var_attr_name(varname="soa", oldname="longname", newname="longname")
+    test_table.set_var_attr_name(
+        module="atmos_mod", varname="soa", oldname="longname", newname="longname"
+    )
 
 
 def test_set_subparam_name(temp_file):
-    with open(temp_file, "r") as f:
-        config = yaml.safe_load(f)
-        test_table = FieldTable.from_dict(config)
+    test_table = FieldTable.from_file(temp_file)
     test_table.set_subparam_name(
-        varname="soa", listname="chem_param", oldname="frac_pm1", newname="frac_pm2"
+        module="atmos_mod",
+        varname="soa",
+        listname="chem_param",
+        oldname="frac_pm1",
+        newname="frac_pm2",
     )
-    assert test_table.varlist[1]["chem_param"][0]["frac_pm2"]
+    varlist = [mod for mod in test_table.modlist if mod["model_type"] == "atmos_mod"][
+        0
+    ]["varlist"]
+    assert varlist[1]["chem_param"][0]["frac_pm2"]
 
 
 @pytest.mark.xfail(raises=FieldError)
@@ -270,5 +276,9 @@ def test_set_subparam_name_duplicate(temp_file):
         config = yaml.safe_load(f)
         test_table = FieldTable.from_dict(config)
     test_table.set_subparam_name(
-        varname="soa", listname="chem_param", oldname="frac_pm1", newname="frac_pm1"
+        module="atmos_mod",
+        varname="soa",
+        listname="chem_param",
+        oldname="frac_pm1",
+        newname="frac_pm1",
     )
