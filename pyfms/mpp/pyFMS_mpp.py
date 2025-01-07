@@ -8,17 +8,28 @@ from pyfms.pyFMS_data_handling import *
 class pyFMS_mpp:
     clibFMS: ct.CDLL = None
     
-    def pyfms_declare_pelist(self, pelist: List[int], name_c: Optional[str]=None, commID: Optional[int]=None):
+    def pyfms_declare_pelist(self, pelist: List[int], name: Optional[str]=None, commID: Optional[int]=None):
         _cfms_declare_pelist = self.clibFMS.cFMS_declare_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
-        name_c_p, name_c_t = set_Cchar(name_c)
+        name_p, name_t = set_Cchar(name)
         commID_p, commID_t = setscalar_Cint32(commID)
 
-        _cfms_declare_pelist.argtypes = [pelist_t, name_c_t, commID_t]
+        _cfms_declare_pelist.argtypes = [pelist_t, name_t, commID_t]
         _cfms_declare_pelist.restype = None
 
-        _cfms_declare_pelist(pelist_p, name_c_p, commID_p)
+        _cfms_declare_pelist(pelist_p, name_p, commID_p)
+
+    def pyfms_error(self, errortype: int, errormsg: Optional[str]=None):
+        _cfms_error = self.clibFMS.cFMS_error
+
+        errortype_p, errortype_t = setscalar_Cint32(errortype)
+        errormsg_p, errormsg_t = set_Cchar(errormsg)
+
+        _cfms_error.argtypes = [errortype_t, errormsg_t]
+        _cfms_error.restype = None
+
+        _cfms_error(errortype_p, errormsg_p)
 
     def pyfms_get_current_pelist(self, pelist: List[int], name: Optional[str]=None, commID: Optional[int]=None):
         _cfms_get_current_pelist = self.clibFMS.cFMS_get_current_pelist
