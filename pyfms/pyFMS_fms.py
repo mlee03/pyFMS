@@ -36,6 +36,13 @@ class pyFMS():
 
         self.pyfms_init(self.localcomm, self.alt_input_nml_path, self.ndomain, self.nnest_domain)
 
+    def pyfms_end(self):
+        _cfms_end = self.clibFMS.cFMS_end
+
+        _cfms_end.restype = None
+
+        _cfms_end()
+
     def pyfms_init(
             self, 
             localcomm: Optional[int]=None, 
@@ -64,24 +71,6 @@ class pyFMS():
             ndomain_p,
             nnest_domain_p,
         )
-
-    def pyfms_end(self):
-        _cfms_end = self.clibFMS.cFMS_end
-
-        _cfms_end.restype = None
-
-        _cfms_end()
-
-    def pyfms_error(self, errortype: int, errormsg: Optional[str]=None):
-        _cfms_error = self.clibFMS.cFMS_error
-
-        errortype_p, errortype_t = setscalar_Cint32(errortype)
-        errormsg_p, errormsg_t = set_Cchar(errormsg)
-
-        _cfms_error.argtypes = [errortype_t, errormsg_t]
-        _cfms_error.restype = None
-
-        _cfms_error(errortype_p, errormsg_p)
 
     def pyfms_set_pelist_npes(self, npes_in: int):
         _cfms_set_npes = self.clibFMS.cFMS_set_npes
