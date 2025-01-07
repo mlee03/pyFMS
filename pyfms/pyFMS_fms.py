@@ -10,10 +10,6 @@ import numpy.typing as npt
 from pyfms.pyFMS_data_handling import *
 
 
-#TODO:  get localcomm from pace
-#TODO:  define domain via GFDL_atmos_cubed_sphere/tools/fv_mp_mod
-
-
 @dataclasses.dataclass
 class pyFMS():
 
