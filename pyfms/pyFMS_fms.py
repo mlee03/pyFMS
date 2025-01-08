@@ -3,34 +3,37 @@
 import ctypes as ct
 import dataclasses
 import os
-from typing import List, Optional
+from typing import Optional
 
-import numpy.typing as npt
-
-from pyfms.pyFMS_data_handling import *
+from pyfms.pyFMS_data_handling import set_Cchar, setscalar_Cint32
 
 
 @dataclasses.dataclass
-class pyFMS():
+class pyFMS:
 
     clibFMS_path: str = None
     clibFMS: ct.CDLL = None
     alt_input_nml_path: str = "input/input.nml"
-    localcomm : int = None
+    localcomm: int = None
     ndomain: int = None
     nnest_domain: int = None
 
-    def __post_init__(self) :
+    def __post_init__(self):
 
-        if self.clibFMS_path == None :
-            raise ValueError("Please define the library file path, e.g., as  libFMS(clibFMS_path=./clibFMS.so)")
+        if self.clibFMS_path is None:
+            raise ValueError(
+                "Please define the library file path, e.g., as  libFMS(clibFMS_path=./clibFMS.so)"
+            )
 
-        if not os.path.isfile(self.clibFMS_path) :
+        if not os.path.isfile(self.clibFMS_path):
             raise ValueError(f"Library {self.clibFMS_path} does not exist")
 
-        if self.clibFMS == None : self.clibFMS = c.cdll.LoadLibrary(self.clibFMS_path)
+        if self.clibFMS is None:
+            self.clibFMS = ct.cdll.LoadLibrary(self.clibFMS_path)
 
-        self.pyfms_init(self.localcomm, self.alt_input_nml_path, self.ndomain, self.nnest_domain)
+        self.pyfms_init(
+            self.localcomm, self.alt_input_nml_path, self.ndomain, self.nnest_domain
+        )
 
     def pyfms_end(self):
         _cfms_end = self.clibFMS.cFMS_end
@@ -40,12 +43,12 @@ class pyFMS():
         _cfms_end()
 
     def pyfms_init(
-            self, 
-            localcomm: Optional[int]=None, 
-            alt_input_nml_path: Optional[str]=None,
-            ndomain: Optional[int]=None,
-            nnest_domain: Optional[int]=None,
-    ) :
+        self,
+        localcomm: Optional[int] = None,
+        alt_input_nml_path: Optional[str] = None,
+        ndomain: Optional[int] = None,
+        nnest_domain: Optional[int] = None,
+    ):
         _cfms_init = self.clibFMS.cFMS_init
 
         localcomm_p, localcomm_t = setscalar_Cint32(localcomm)
@@ -54,12 +57,12 @@ class pyFMS():
         nnest_domain_p, nnest_domain_t = setscalar_Cint32(nnest_domain)
 
         _cfms_init.argtypes = [
-            localcomm_t, 
+            localcomm_t,
             alt_input_nml_path_t,
             ndomain_t,
-            nnest_domain_t
+            nnest_domain_t,
         ]
-        _cfms_init.restype  = None
+        _cfms_init.restype = None
 
         _cfms_init(
             localcomm_p,
