@@ -48,28 +48,28 @@ def setscalar_Cint32(arg):
     if arg is None:
         return arg, c.POINTER(c.c_int)
     else:
-        return c.byref(c.c_int(arg)), c.POINTER(c.c_int)
+        return c.byref(arg), c.POINTER(c.c_int)
 
 
 def setscalar_Cfloat(arg):
     if arg is None:
         return arg, c.POINTER(c.c_float)
     else:
-        return c.byref(c.c_float(arg)), c.POINTER(c.c_float)
+        return c.byref(arg), c.POINTER(c.c_float)
 
 
 def setscalar_Cdouble(arg):
     if arg is None:
         return arg, c.POINTER(c.c_double)
     else:
-        return c.byref(c.c_double(arg)), c.POINTER(c.c_double)
+        return c.byref(arg), c.POINTER(c.c_double)
 
 
 def setscalar_Cbool(arg):
     if arg is None:
         return arg, c.POINTER(c.c_double)
     else:
-        return c.byref(c.c_bool(arg)), c.POINTER(c.c_bool)
+        return c.byref(arg), c.POINTER(c.c_bool)
 
 
 def set_sizevars(arg, ndim):
