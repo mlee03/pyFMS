@@ -44,7 +44,7 @@ class pyFMS:
 
     def pyfms_init(
         self,
-        localcomm: Optional[int] = None,
+        localcomm: Optional[ct.c_int] = None,
         alt_input_nml_path: Optional[str] = None,
         ndomain: Optional[int] = None,
         nnest_domain: Optional[int] = None,
