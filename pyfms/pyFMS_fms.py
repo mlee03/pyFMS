@@ -13,7 +13,7 @@ class pyFMS:
 
     clibFMS_path: str = None
     clibFMS: ct.CDLL = None
-    alt_input_nml_path: str = "input/input.nml"
+    alt_input_nml_path: str = None
     localcomm: int = None
     ndomain: int = None
     nnest_domain: int = None
