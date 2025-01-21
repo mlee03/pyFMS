@@ -41,6 +41,7 @@ class pyFMS:
     for the mpp, mpp_domains, and mpp_io modules. If this routine is called
     more than once it will return silently. There are no arguments.
     """
+
     def pyfms_end(self):
         _cfms_end = self.clibFMS.cFMS_end
 
@@ -58,6 +59,7 @@ class pyFMS:
     should explicitly call fms_init. If this routine is called more than once
     it will return silently. There are no arguments.
     """
+
     def pyfms_init(
         self,
         localcomm: Optional[int] = None,
@@ -90,6 +92,7 @@ class pyFMS:
     """
     This method is used to set a npes variable of the cFMS module it wraps
     """
+
     def pyfms_set_pelist_npes(self, npes_in: int):
         _cfms_set_npes = self.clibFMS.cFMS_set_npes
 
