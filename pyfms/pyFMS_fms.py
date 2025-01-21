@@ -35,6 +35,12 @@ class pyFMS:
             self.localcomm, self.alt_input_nml_path, self.ndomain, self.nnest_domain
         )
 
+    """
+    Calls the termination routines for all modules in the MPP package.
+    Termination routine for the fms module. It also calls destructor routines
+    for the mpp, mpp_domains, and mpp_io modules. If this routine is called
+    more than once it will return silently. There are no arguments.
+    """
     def pyfms_end(self):
         _cfms_end = self.clibFMS.cFMS_end
 
@@ -42,9 +48,19 @@ class pyFMS:
 
         _cfms_end()
 
+    """
+    Initializes the FMS module and also calls the initialization routines for
+    all modules in the MPP package. Will be called automatically if the user
+    does not call it.
+    Initialization routine for the fms module. It also calls initialization
+    routines for the mpp, mpp_domains, and mpp_io modules. Although this
+    routine will be called automatically by other fms_mod routines, users
+    should explicitly call fms_init. If this routine is called more than once
+    it will return silently. There are no arguments.
+    """
     def pyfms_init(
         self,
-        localcomm: Optional[ct.c_int] = None,
+        localcomm: Optional[int] = None,
         alt_input_nml_path: Optional[str] = None,
         ndomain: Optional[int] = None,
         nnest_domain: Optional[int] = None,
@@ -71,6 +87,9 @@ class pyFMS:
             nnest_domain_p,
         )
 
+    """
+    This method is used to set a npes variable of the cFMS module it wraps
+    """
     def pyfms_set_pelist_npes(self, npes_in: int):
         _cfms_set_npes = self.clibFMS.cFMS_set_npes
 
