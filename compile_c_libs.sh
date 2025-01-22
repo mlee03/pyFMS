@@ -3,8 +3,6 @@
 curr_dir=$PWD/cFMS
 install_fms=$curr_dir/FMS/gnuFMS
 
-echo $curr_dir
-
 cd $curr_dir/FMS
 autoreconf -iv
 export FCFLAGS="$FCFLAGS -fPIC"
