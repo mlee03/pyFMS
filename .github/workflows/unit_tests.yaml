@@ -20,7 +20,7 @@ jobs:
 
         - name: install packages
           run: |
-            pip install .[test]
+            bash compile_c_libs.sh
 
         - name: run tests
           run: |
