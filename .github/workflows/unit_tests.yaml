@@ -24,4 +24,4 @@ jobs:
 
         - name: run tests
           run: |
-            bash file_check.sh
+            pytest -x tests/
