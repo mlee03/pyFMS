@@ -24,4 +24,4 @@ jobs:
 
         - name: run tests
           run: |
-            mpiexec -n 4 --oversubscribe python -m pytest -x tests/
+            mpirun -n 4 --oversubscribe python -m pytest -x tests/
