@@ -1,8 +1,9 @@
 import os
+
 from mpi4py import MPI
-import pytest
 
 from pyfms import pyFMS
+
 
 # @pytest.fixture(scope="session")
 # def temp_file(tmpdir_factory):
