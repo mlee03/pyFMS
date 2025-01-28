@@ -94,7 +94,7 @@ class pyFMS:
     """
 
     def pyfms_set_pelist_npes(self, npes_in: int):
-        _cfms_set_npes = self.clibFMS.cFMS_set_npes
+        _cfms_set_npes = self.clibFMS.cFMS_set_pelist_npes
 
         npes_in_p, npes_in_t = setscalar_Cint32(npes_in)
 
