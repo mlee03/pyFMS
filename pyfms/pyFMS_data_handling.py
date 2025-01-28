@@ -110,9 +110,9 @@ def setscalar_Cbool(arg):
 
 def set_Cchar(arg):
     if arg is None:
-        return arg, ct.POINTER(ct.c_char_p)
+        return arg, ct.c_char_p
     else:
-        return ct.byref(ct.c_char_p(arg.encode("ascii"))), ct.POINTER(ct.c_char_p)
+        return arg.encode('utf-8'), ct.c_char_p
 
 
 def setscalar_Cdouble(arg):
