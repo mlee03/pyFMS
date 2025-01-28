@@ -51,7 +51,9 @@ Array setting methods
 
 
 def set_ndpointer(arg, c_type):
-    return np.ctypeslib.ndpointer(dtype=c_type, ndim=arg.ndim, shape=arg.shape, flags="FORTRAN")
+    return np.ctypeslib.ndpointer(
+        dtype=c_type, ndim=arg.ndim, shape=arg.shape, flags="FORTRAN"
+    )
 
 
 def setarray_Cbool(arg):
@@ -85,15 +87,21 @@ def setarray_Cint32(arg):
 def set_multi_pointer(arg, c_type, num_ptr: int):
     match num_ptr:
         case 2:
-            return set_ndpointer(arg), ct.POINTER(ct.POINTER(c_type))
+            return set_ndpointer(arg=arg, c_type=c_type), ct.POINTER(ct.POINTER(c_type))
         case 3:
-            return set_ndpointer(arg), ct.POINTER(ct.POINTER(ct.POINTER(c_type)))
+            return set_ndpointer(arg=arg, c_type=c_type), ct.POINTER(
+                ct.POINTER(ct.POINTER(c_type))
+            )
         case 4:
-            return set_ndpointer(arg), ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type))))
+            return set_ndpointer(arg=arg, c_type=c_type), ct.POINTER(
+                ct.POINTER(ct.POINTER(ct.POINTER(c_type)))
+            )
         case 5:
-            return set_ndpointer(arg), ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type)))))
+            return set_ndpointer(arg=arg, c_type=c_type), ct.POINTER(
+                ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type))))
+            )
         case _:
-            return set_ndpointer(arg), ct.POINTER(c_type)
+            return set_ndpointer(arg=arg, c_type=c_type), ct.POINTER(c_type)
 
 
 """
@@ -112,7 +120,7 @@ def set_Cchar(arg):
     if arg is None:
         return arg, ct.c_char_p
     else:
-        return arg.encode('utf-8'), ct.c_char_p
+        return arg.encode("utf-8"), ct.c_char_p
 
 
 def setscalar_Cdouble(arg):
