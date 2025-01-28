@@ -36,6 +36,8 @@ class pyFMS:
         )
 
     """
+    Subroutine: pyfms_end
+
     Calls the termination routines for all modules in the MPP package.
     Termination routine for the fms module. It also calls destructor routines
     for the mpp, mpp_domains, and mpp_io modules. If this routine is called
@@ -50,6 +52,8 @@ class pyFMS:
         _cfms_end()
 
     """
+    Subroutine: pyfms_init
+
     Initializes the FMS module and also calls the initialization routines for
     all modules in the MPP package. Will be called automatically if the user
     does not call it.
@@ -90,6 +94,8 @@ class pyFMS:
         )
 
     """
+    Subroutine: pyfms_set_pelist_npes
+    
     This method is used to set a npes variable of the cFMS module it wraps
     """
 
