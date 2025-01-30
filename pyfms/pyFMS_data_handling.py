@@ -82,18 +82,16 @@ def setarray_Cint32(arg):
         return arg, set_ndpointer(arg, ct.c_int)
 
 
-def set_multi_pointer(arg, c_type, num_ptr: int):
-    match num_ptr:
-        case 2:
-            return set_ndpointer(arg), ct.POINTER(ct.POINTER(c_type))
-        case 3:
-            return set_ndpointer(arg), ct.POINTER(ct.POINTER(ct.POINTER(c_type)))
-        case 4:
-            return set_ndpointer(arg), ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type))))
-        case 5:
-            return set_ndpointer(arg), ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type)))))
-        case _:
-            return set_ndpointer(arg), ct.POINTER(c_type)
+def set_double_pointer(arg, ctype):
+    if arg[0] is None:
+        return None, ct.POINTER(ct.POINTER(ctype))
+    else:
+        rows, cols = arg.shape
+        row_ptrs = (ct.POINTER(ctype) * rows)()
+        for i in range(rows):
+            row_ptrs[i] = arg[i].ctypes.data_as(ct.POINTER(ctype))
+        return row_ptrs, ct.POINTER(ct.POINTER(ctype))
+    
 
 
 """
