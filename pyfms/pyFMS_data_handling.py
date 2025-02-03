@@ -63,8 +63,8 @@ def set_ndpointer(arg: npt.NDArray) -> np.ctypeslib.ndpointer:
 
 
 def setarray_Cbool(
-    arg: npt.NDArray[np.bool],
-) -> Tuple[npt.NDArray[np.bool], np.ctypeslib.ndpointer]:
+    arg: npt.NDArray[np.bool_],
+) -> Tuple[npt.NDArray[np.bool_], np.ctypeslib.ndpointer]:
     return arg, set_ndpointer(arg)
 
 
@@ -158,24 +158,39 @@ Scalar setting methods
 
 
 def setscalar_Cbool(arg: bool) -> Tuple:
-    arg_c = ct.c_bool(arg)
-    return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_bool)
+    if arg is None:
+        return None, None, ct.POINTER(ct.c_bool)
+    else:
+        arg_c = ct.c_bool(arg)
+        return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_bool)
 
 
 def set_Cchar(arg: str) -> Tuple:
-    return ct.create_string_buffer(arg.encode("utf-8")), ct.c_char_p
+    if arg is None:
+        return None, ct.c_char_p
+    else:
+        return ct.create_string_buffer(arg.encode("utf-8")), ct.c_char_p
 
 
 def setscalar_Cdouble(arg: float) -> Tuple:
-    arg_c = ct.c_double(arg)
-    return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_double)
+    if arg is None:
+        return None, None, ct.POINTER(ct.c_double)
+    else:
+        arg_c = ct.c_double(arg)
+        return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_double)
 
 
 def setscalar_Cfloat(arg: float) -> Tuple:
-    arg_c = ct.c_float(arg)
-    return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_float)
+    if arg is None:
+        return None, None, ct.POINTER(ct.c_float)
+    else:
+        arg_c = ct.c_float(arg)
+        return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_float)
 
 
 def setscalar_Cint32(arg: int) -> Tuple:
-    arg_c = ct.c_int(arg)
-    return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_int)
+    if arg is None:
+        return None, None, ct.POINTER(ct.c_int)
+    else:
+        arg_c = ct.c_int(arg)
+        return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_int)
