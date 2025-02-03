@@ -14,20 +14,20 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     
     def pyfms_define_domains(
             self,
-            global_indices: List[int], 
-            layout: List[int], 
+            global_indices: npt.NDArray[np.int32], 
+            layout: npt.NDArray[np.int32], 
             domain_id: Optional[int] = None,
-            pelist: Optional[List[int]]=None, 
+            pelist: Optional[npt.NDArray[np.int32]]=None, 
             xflags: Optional[int]=None, 
             yflags: Optional[int]=None,
             xhalo: Optional[int]=None, 
             yhalo: Optional[int]=None, 
-            xextent: Optional[List[int]]=None,
-            yextent: Optional[List[int]]=None, 
+            xextent: Optional[npt.NDArray[np.int32]]=None,
+            yextent: Optional[npt.NDArray[np.int32]]=None, 
             maskmap: Optional[npt.NDArray[np.bool_]]=None,
             name: Optional[str]=None, 
             symmetry: Optional[bool]=None, 
-            memory_size: Optional[List[int]]=None,
+            memory_size: Optional[npt.NDArray[np.int32]]=None,
             whalo: Optional[int]=None, 
             ehalo: Optional[int]=None, 
             shalo: Optional[int]=None,
@@ -45,17 +45,17 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         global_indices_p, global_indices_t = setarray_Cint32(global_indices)
         layout_p, layout_t = setarray_Cint32(layout)
         domain_id_p, domain_id_t = setscalar_Cint32(domain_id)
-        pelist_p, pelist_t = setarray_Cint32(pelist)    #array(:)
+        pelist_p, pelist_t = setarray_Cint32(pelist)
         xflags_p, xflags_t = setscalar_Cint32(xflags)
         yflags_p, yflags_t = setscalar_Cint32(yflags)
         xhalo_p, xhalo_t = setscalar_Cint32(xhalo)
         yhalo_p, yhalo_t = setscalar_Cint32(yhalo)
-        xextent_p, xextent_t = setarray_Cint32(xextent) #array(:)
-        yextent_p, yextent_t = setarray_Cint32(yextent) #array(:)
-        maskmap_p, maskmap_t = setarray_Cbool(maskmap)  #array(:)
+        xextent_p, xextent_t = setarray_Cint32(xextent)
+        yextent_p, yextent_t = setarray_Cint32(yextent)
+        maskmap_p, maskmap_t = set_multipointer(arg=maskmap, num_ptr=2)
         name_p, name_t       = set_Cchar(name)
         symmetry_p, symmetry_t = setscalar_Cbool(symmetry)
-        memory_size_p, memory_size_t = setarray_Cint32(memory_size) #array(:,:)
+        memory_size_p, memory_size_t = setarray_Cint32(memory_size)
         whalo_p, whalo_t = setscalar_Cint32(whalo)
         ehalo_p, ehalo_t = setscalar_Cint32(ehalo)
         shalo_p, shalo_t = setscalar_Cint32(shalo)
@@ -123,7 +123,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             y_cyclic_offset_p,
         )
 
-    def pyfms_define_io_domain(self, io_layout: List[int], domain_id: Optional[int]=None):
+    def pyfms_define_io_domain(self, io_layout: npt.NDArray[np.int32], domain_id: Optional[int]=None):
         _cfms_define_io_domain = self.clibFMS.cFMS_define_io_domain
 
         io_layout_p, io_layout_t = setarray_Cint32(io_layout)
@@ -134,7 +134,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
         _cfms_define_io_domain(io_layout_p, domain_id_p)
 
-    def pyfms_define_layout(self, global_indices: List[int], ndivs: int, layout: List[int]):
+    def pyfms_define_layout(self, global_indices: npt.NDArray[np.int32], ndivs: int, layout: npt.NDArray[np.int32]):
         _cfms_define_layout = self.clibFMS.cFMS_define_layout
 
         global_indices_p, global_indices_t = setarray_Cint32(global_indices)
@@ -150,17 +150,18 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             self, 
             num_nest: int, 
             ntiles: int, 
-            nest_level: List[int], 
-            tile_fine: List[int], 
-            tile_coarse: List[int],
-            istart_coarse: List[int], 
-            icount_coarse: List[int], 
-            jstart_coarse: List[int], 
-            jcount_coarse: List[int],
-            npes_nest_tile: List[int], 
-            x_refine: List[int], 
-            y_refine: List[int], 
+            nest_level: npt.NDArray[np.int32], 
+            tile_fine: npt.NDArray[np.int32], 
+            tile_coarse: npt.NDArray[np.int32],
+            istart_coarse: npt.NDArray[np.int32], 
+            icount_coarse: npt.NDArray[np.int32], 
+            jstart_coarse: npt.NDArray[np.int32], 
+            jcount_coarse: npt.NDArray[np.int32],
+            npes_nest_tile: npt.NDArray[np.int32], 
+            x_refine: npt.NDArray[np.int32], 
+            y_refine: npt.NDArray[np.int32], 
             nest_domain_id: Optional[int]=None,
+            domain_id: Optional[int] = None,
             extra_halo: Optional[int]=None, 
             name: Optional[str]=None,
     ):
@@ -179,6 +180,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         x_refine_p, x_refine_t = setarray_Cint32(x_refine)
         y_refine_p, y_refine_t = setarray_Cint32(y_refine)
         nest_domain_id_p, nest_domain_id_t = setscalar_Cint32(nest_domain_id)
+        domain_id_p, domain_id_t = setscalar_Cint32(domain_id)
         extra_halo_p, extra_halo_t = setscalar_Cint32(extra_halo)
         name_p, name_t = set_Cchar(name)
 
@@ -195,7 +197,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             npes_nest_tile_t, 
             x_refine_t,
             y_refine_t, 
-            nest_domain_id_t, 
+            nest_domain_id_t,
+            domain_id_t, 
             extra_halo_t, 
             name_t
         ]
@@ -214,7 +217,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             npes_nest_tile_p, 
             x_refine_p, 
             y_refine_p, 
-            nest_domain_id_p, 
+            nest_domain_id_p,
+            domain_id_p, 
             extra_halo_p, 
             name_p
         )
@@ -386,7 +390,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
         _cfms_get_domain_name(domain_name_p, domain_id_p)
 
-    def pyfms_get_layout(self, layout: List[int], domain_id: Optional[int]=None):
+    def pyfms_get_layout(self, layout: npt.NDArray[np.int32], domain_id: Optional[int]=None):
         _cfms_get_layout = self.clibFMS.cFMS_get_layout
 
         layout_p, layout_t = setarray_Cint32(layout)
@@ -397,7 +401,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
         _cfms_get_layout(layout_p, domain_id_p)
 
-    def pyfms_get_domain_pelist(self, pelist: List[int], domain_id: Optional[int]):
+    def pyfms_get_domain_pelist(self, pelist: npt.NDArray[np.int32], domain_id: Optional[int]):
         _cfms_get_domain_pelist = self.clibFMS.cFMS_get_domain_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
