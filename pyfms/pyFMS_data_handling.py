@@ -3,6 +3,7 @@
 import ctypes as ct
 
 import numpy as np
+import numpy.typing as npt
 
 
 """
@@ -50,48 +51,105 @@ Array setting methods
 """
 
 
-def set_ndpointer(arg, c_type):
-    return np.ctypeslib.ndpointer(dtype=c_type, ndim=arg.ndim, shape=arg.shape, flags="FORTRAN")
+def set_ndpointer(arg: npt.NDArray):
+    c_type = np.ctypeslib.as_ctypes_type(arg.dtype)
+    return np.ctypeslib.ndpointer(
+        dtype=c_type, ndim=arg.ndim, shape=arg.shape, flags="FORTRAN"
+    )
 
 
 def setarray_Cbool(arg):
     if arg[0] is None:
         return None, ct.POINTER(ct.c_bool)
     else:
-        return arg, set_ndpointer(arg, ct.c_bool)
+        return arg, set_ndpointer(arg)
 
 
 def setarray_Cdouble(arg):
     if arg[0] is None:
         return None, ct.POINTER(ct.c_double)
     else:
-        return arg, set_ndpointer(arg, ct.c_double)
+        return arg, set_ndpointer(arg)
 
 
 def setarray_Cfloat(arg):
     if arg[0] is None:
         return None, ct.POINTER(ct.c_float32)
     else:
-        return arg, set_ndpointer(arg, ct.c_float)
+        return arg, set_ndpointer(arg)
 
 
 def setarray_Cint32(arg):
     if arg[0] is None:
         return None, ct.POINTER(ct.c_int)
     else:
-        return arg, set_ndpointer(arg, ct.c_int)
+        return arg, set_ndpointer(arg)
 
 
-def set_double_pointer(arg, ctype):
-    if arg[0] is None:
-        return None, ct.POINTER(ct.POINTER(ctype))
-    else:
-        rows, cols = arg.shape
-        row_ptrs = (ct.POINTER(ctype) * rows)()
-        for i in range(rows):
-            row_ptrs[i] = arg[i].ctypes.data_as(ct.POINTER(ctype))
-        return row_ptrs, ct.POINTER(ct.POINTER(ctype))
-    
+"""
+set_multipointer:
+    For converting NumPy arrays to pointer equivalent
+    This method is able to convert a Numpy array of
+    up to 5 dimensions to quintuple pointer (*****).
+
+    If an array of <= 1 or > 5 dimensions is passed
+    as an argument, the method will default to the
+    returning the passed array and the result of a
+    pass to set_ndpointer.
+"""
+
+
+def set_multipointer(arg: npt.NDArray, num_ptr: int):
+    c_type = np.ctypeslib.as_ctypes_type(arg.dtype)
+    match num_ptr:
+        case 2:
+            d_pointer = ct.POINTER(ct.POINTER(c_type))
+            arg_ptr = (ct.POINTER(c_type) * arg.shape[0])()
+            for i in range(arg.shape[0]):
+                arg_ptr[i] = arg[i].ctypes.data_as(ct.POINTER(c_type))
+            return arg_ptr, d_pointer
+        case 3:
+            t_ptr = ct.POINTER(ct.POINTER(ct.POINTER(c_type)))
+            arg_ptr = (ct.POINTER(ct.POINTER(c_type)) * arg.shape[0])()
+            for i in range(arg.shape[0]):
+                arg_ptr[i] = (ct.POINTER(c_type) * arg.shape[1])()
+                for j in range(arg.shape[1]):
+                    arg_ptr[i][j] = arg[i][j].ctypes.data_as(ct.POINTER(c_type))
+            return arg_ptr, t_ptr
+        case 4:
+            quad_ptr = ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type))))
+            arg_ptr = (ct.POINTER(ct.POINTER(ct.POINTER(c_type))) * arg.shape[0])()
+            for i in range(arg.shape[0]):
+                arg_ptr[i] = (ct.POINTER(ct.POINTER(c_type)) * arg.shape[1])()
+                for j in range(arg.shape[1]):
+                    arg_ptr[i][j] = (ct.POINTER(c_type) * arg.shape[2])()
+                    for k in range(arg.shape[2]):
+                        arg_ptr[i][j][k] = arg[i][j][k].ctypes.data_as(
+                            ct.POINTER(c_type)
+                        )
+            return arg_ptr, quad_ptr
+        case 5:
+            quint_ptr = ct.POINTER(
+                ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type))))
+            )
+            arg_ptr = (
+                ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type)))) * arg.shape[0]
+            )()
+            for i in range(arg.shape[0]):
+                arg_ptr[i] = (
+                    ct.POINTER(ct.POINTER(ct.POINTER(c_type))) * arg.shape[1]
+                )()
+                for j in range(arg.shape[1]):
+                    arg_ptr[i][j] = (ct.POINTER(ct.POINTER(c_type)) * arg.shape[2])()
+                    for k in range(arg.shape[2]):
+                        arg_ptr[i][j][k] = (ct.POINTER(c_type) * arg.shape[3])()
+                        for n in range(arg.shape[3]):
+                            arg_ptr[i][j][k][n] = arg[i][j][k][n].ctypes.data_as(
+                                ct.POINTER(c_type)
+                            )
+            return arg_ptr, quint_ptr
+        case _:
+            return arg, set_ndpointer(arg)
 
 
 """
@@ -110,7 +168,7 @@ def set_Cchar(arg):
     if arg is None:
         return arg, ct.c_char_p
     else:
-        return arg.encode('utf-8'), ct.c_char_p
+        return arg.encode("utf-8"), ct.c_char_p
 
 
 def setscalar_Cdouble(arg):
