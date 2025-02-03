@@ -5,6 +5,9 @@ import ctypes as ct
 import numpy as np
 import numpy.typing as npt
 
+from typing import Tuple, Union
+
+
 
 """
 This module allows for conversion between Python object and ctypes objects.
@@ -23,6 +26,9 @@ Scalar methods: Will return a reference to a ctypes object wrapping the passed
                 Python object, the calling method should not only create an
                 explicit ctypes object to wrap passed Python object, but also
                 return the value of the ctypes object to update the value.
+
+All passed in NumPy arrays must make use of the "FORTRAN" flag during
+initialization
 
 Example: Wrapping C function that updates an integer and an array
 
@@ -51,39 +57,27 @@ Array setting methods
 """
 
 
-def set_ndpointer(arg: npt.NDArray):
+def set_ndpointer(arg: npt.NDArray) -> np.ctypeslib.ndpointer:
     c_type = np.ctypeslib.as_ctypes_type(arg.dtype)
     return np.ctypeslib.ndpointer(
         dtype=c_type, ndim=arg.ndim, shape=arg.shape, flags="FORTRAN"
     )
 
 
-def setarray_Cbool(arg):
-    if arg[0] is None:
-        return None, ct.POINTER(ct.c_bool)
-    else:
-        return arg, set_ndpointer(arg)
+def setarray_Cbool(arg: npt.NDArray[np.bool]) -> Tuple[npt.NDArray[np.bool], np.ctypeslib.ndpointer]:
+    return arg, set_ndpointer(arg)
 
 
-def setarray_Cdouble(arg):
-    if arg[0] is None:
-        return None, ct.POINTER(ct.c_double)
-    else:
-        return arg, set_ndpointer(arg)
+def setarray_Cdouble(arg: npt.NDArray[np.float64]) -> Tuple[npt.NDArray[np.float64], np.ctypeslib.ndpointer]:
+    return arg, set_ndpointer(arg)
 
 
-def setarray_Cfloat(arg):
-    if arg[0] is None:
-        return None, ct.POINTER(ct.c_float32)
-    else:
-        return arg, set_ndpointer(arg)
+def setarray_Cfloat(arg: npt.NDArray[np.float32]) -> Tuple[npt.NDArray[np.float32], np.ctypeslib.ndpointer]:
+    return arg, set_ndpointer(arg)
 
 
-def setarray_Cint32(arg):
-    if arg[0] is None:
-        return None, ct.POINTER(ct.c_int)
-    else:
-        return arg, set_ndpointer(arg)
+def setarray_Cint32(arg: npt.NDArray[np.int32]) -> Tuple[npt.NDArray[np.int32], np.ctypeslib.ndpointer]:
+    return arg, set_ndpointer(arg)
 
 
 """
@@ -99,7 +93,7 @@ set_multipointer:
 """
 
 
-def set_multipointer(arg: npt.NDArray, num_ptr: int):
+def set_multipointer(arg: npt.NDArray, num_ptr: int) -> Tuple:
     c_type = np.ctypeslib.as_ctypes_type(arg.dtype)
     match num_ptr:
         case 2:
@@ -157,36 +151,25 @@ Scalar setting methods
 """
 
 
-def setscalar_Cbool(arg):
-    if arg is None:
-        return arg, ct.POINTER(ct.c_double)
-    else:
-        return ct.byref(ct.c_bool(arg)), ct.POINTER(ct.c_bool)
+def setscalar_Cbool(arg: bool) -> Tuple:
+    arg_c = ct.c_bool(arg)
+    return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_bool)
 
 
-def set_Cchar(arg):
-    if arg is None:
-        return arg, ct.c_char_p
-    else:
-        return arg.encode("utf-8"), ct.c_char_p
+def set_Cchar(arg: str) -> Tuple:
+    return ct.create_string_buffer(arg.encode("utf-8")), ct.c_char_p
 
 
-def setscalar_Cdouble(arg):
-    if arg is None:
-        return arg, ct.POINTER(ct.c_double)
-    else:
-        return ct.byref(ct.c_double(arg)), ct.POINTER(ct.c_double)
+def setscalar_Cdouble(arg: float) -> Tuple:
+    arg_c = ct.c_double(arg)
+    return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_double)
 
 
-def setscalar_Cfloat(arg):
-    if arg is None:
-        return arg, ct.POINTER(ct.c_float)
-    else:
-        return ct.byref(ct.c_float(arg)), ct.POINTER(ct.c_float)
+def setscalar_Cfloat(arg: float) -> Tuple:
+    arg_c = ct.c_float(arg)
+    return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_float)
 
 
-def setscalar_Cint32(arg):
-    if arg is None:
-        return arg, ct.POINTER(ct.c_int)
-    else:
-        return ct.byref(ct.c_int(arg)), ct.POINTER(ct.c_int)
+def setscalar_Cint32(arg: int) -> Tuple:
+    arg_c = ct.c_int(arg)
+    return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_int)
