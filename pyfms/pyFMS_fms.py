@@ -99,7 +99,7 @@ class pyFMS:
     This method is used to set a npes variable of the cFMS module it wraps
     """
 
-    def pyfms_set_pelist_npes(self, npes_in: int):
+    def set_pelist_npes(self, npes_in: int):
         _cfms_set_npes = self.clibFMS.cFMS_set_pelist_npes
 
         npes_in_c, npes_in_p, npes_in_t = setscalar_Cint32(npes_in)

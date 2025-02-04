@@ -169,7 +169,7 @@ def set_Cchar(arg: str) -> Tuple:
     if arg is None:
         return None, ct.c_char_p
     else:
-        return ct.create_string_buffer(arg.encode("utf-8")), ct.c_char_p
+        return ct.c_char_p(arg.encode('utf-8')), ct.c_char_p
 
 
 def setscalar_Cdouble(arg: float) -> Tuple:
