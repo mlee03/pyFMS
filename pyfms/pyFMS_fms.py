@@ -73,10 +73,10 @@ class pyFMS:
     ):
         _cfms_init = self.clibFMS.cFMS_init
 
-        localcomm_c, localcomm_p, localcomm_t = setscalar_Cint32(localcomm)
-        alt_input_nml_path_p, alt_input_nml_path_t = set_Cchar(alt_input_nml_path)
-        ndomain_c, ndomain_p, ndomain_t = setscalar_Cint32(ndomain)
-        nnest_domain_c, nnest_domain_p, nnest_domain_t = setscalar_Cint32(nnest_domain)
+        localcomm_c, localcomm_t = setscalar_Cint32(localcomm)
+        alt_input_nml_path_c, alt_input_nml_path_t = set_Cchar(alt_input_nml_path)
+        ndomain_c, ndomain_t = setscalar_Cint32(ndomain)
+        nnest_domain_c, nnest_domain_t = setscalar_Cint32(nnest_domain)
 
         _cfms_init.argtypes = [
             localcomm_t,
@@ -87,10 +87,10 @@ class pyFMS:
         _cfms_init.restype = None
 
         _cfms_init(
-            localcomm_p,
-            alt_input_nml_path_p,
-            ndomain_p,
-            nnest_domain_p,
+            localcomm_c,
+            alt_input_nml_path_c,
+            ndomain_c,
+            nnest_domain_c,
         )
 
     """
@@ -102,9 +102,9 @@ class pyFMS:
     def set_pelist_npes(self, npes_in: int):
         _cfms_set_npes = self.clibFMS.cFMS_set_pelist_npes
 
-        npes_in_c, npes_in_p, npes_in_t = setscalar_Cint32(npes_in)
+        npes_in_c, npes_in_t = setscalar_Cint32(npes_in)
 
         _cfms_set_npes.argtypes = [npes_in_t]
         _cfms_set_npes.restype = None
 
-        _cfms_set_npes(npes_in_p)
+        _cfms_set_npes(npes_in_c)

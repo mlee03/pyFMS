@@ -159,38 +159,34 @@ Scalar setting methods
 
 def setscalar_Cbool(arg: bool) -> Tuple:
     if arg is None:
-        return None, None, ct.POINTER(ct.c_bool)
+        return None, ct.POINTER(ct.c_bool)
     else:
-        arg_c = ct.c_bool(arg)
-        return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_bool)
+        return ct.c_bool(arg), ct.POINTER(ct.c_bool)
 
 
 def set_Cchar(arg: str) -> Tuple:
     if arg is None:
         return None, ct.c_char_p
     else:
-        return ct.c_char_p(arg.encode('utf-8')), ct.c_char_p
+        return ct.c_char_p(arg.encode("utf-8")), ct.c_char_p
 
 
 def setscalar_Cdouble(arg: float) -> Tuple:
     if arg is None:
-        return None, None, ct.POINTER(ct.c_double)
+        return None, ct.POINTER(ct.c_double)
     else:
-        arg_c = ct.c_double(arg)
-        return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_double)
+        return ct.c_double(arg), ct.POINTER(ct.c_double)
 
 
 def setscalar_Cfloat(arg: float) -> Tuple:
     if arg is None:
-        return None, None, ct.POINTER(ct.c_float)
+        return None, ct.POINTER(ct.c_float)
     else:
-        arg_c = ct.c_float(arg)
-        return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_float)
+        return ct.c_float(arg), ct.POINTER(ct.c_float)
 
 
 def setscalar_Cint32(arg: int) -> Tuple:
     if arg is None:
-        return None, None, ct.POINTER(ct.c_int)
+        return None, ct.POINTER(ct.c_int)
     else:
-        arg_c = ct.c_int(arg)
-        return arg_c, ct.byref(arg_c), ct.POINTER(ct.c_int)
+        return ct.c_int(arg), ct.POINTER(ct.c_int)
