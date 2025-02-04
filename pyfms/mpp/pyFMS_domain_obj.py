@@ -1,7 +1,9 @@
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
+
 import numpy as np
 from numpy.typing import NDArray
+
 
 @dataclass
 class Domain:
@@ -13,7 +15,7 @@ class Domain:
     yflags: Optional[int] = None
     xextent: Optional[NDArray[np.int32]] = None
     yextent: Optional[NDArray[np.int32]] = None
-    maskmap: Optional[NDArray[np.bool]] = None
+    maskmap: Optional[NDArray[np.bool_]] = None
     name: Optional[str] = None
     symmetry: Optional[bool] = None
     memory_size: Optional[NDArray[np.int32]] = None
@@ -27,6 +29,7 @@ class Domain:
     complete: Optional[bool] = None
     x_cyclic_offset: Optional[int] = None
     y_cyclic_offset: Optional[int] = None
+
 
 @dataclass
 class NestDomain:
@@ -46,5 +49,3 @@ class NestDomain:
     domain_id: Optional[int] = None
     extra_halo: Optional[int] = None
     name: Optional[str] = None
-
-

@@ -1,6 +1,7 @@
 import ctypes as ct
 import dataclasses
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -8,13 +9,14 @@ from pyfms.pyFMS_data_handling import (
     set_Cchar,
     setarray_Cint32,
     setscalar_Cbool,
-    setscalar_Cint32
+    setscalar_Cint32,
 )
+
 
 @dataclasses.dataclass
 class pyFMS_mpp:
     clibFMS: ct.CDLL = None
-    
+
     """
     Subroutine: declare_pelist
 
@@ -34,17 +36,23 @@ class pyFMS_mpp:
     Returns: commID is returned, and the object passed to the method should be
     set to the result of the call
     """
-    def declare_pelist(self, pelist: NDArray[np.int32], name: Optional[str]=None, commID: Optional[int]=None) -> int | None:
+
+    def declare_pelist(
+        self,
+        pelist: NDArray[np.int32],
+        name: Optional[str] = None,
+        commID: Optional[int] = None,
+    ) -> int | None:
         _cfms_declare_pelist = self.clibFMS.cFMS_declare_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
-        name_p, name_t = set_Cchar(name)
-        commID_c, commID_p, commID_t = setscalar_Cint32(commID)
+        name_c, name_t = set_Cchar(name)
+        commID_c, commID_t = setscalar_Cint32(commID)
 
         _cfms_declare_pelist.argtypes = [pelist_t, name_t, commID_t]
         _cfms_declare_pelist.restype = None
 
-        _cfms_declare_pelist(pelist_p, name_p, commID_p)
+        _cfms_declare_pelist(pelist_p, name_c, commID_c)
 
         if commID is not None:
             commID = commID_c.value
@@ -57,16 +65,17 @@ class pyFMS_mpp:
 
     Returns: No return
     """
-    def pyfms_error(self, errortype: int, errormsg: Optional[str]=None):
+
+    def pyfms_error(self, errortype: int, errormsg: Optional[str] = None):
         _cfms_error = self.clibFMS.cFMS_error
 
-        errortype_c, errortype_p, errortype_t = setscalar_Cint32(errortype)
-        errormsg_p, errormsg_t = set_Cchar(errormsg)
+        errortype_c, errortype_t = setscalar_Cint32(errortype)
+        errormsg_c, errormsg_t = set_Cchar(errormsg)
 
         _cfms_error.argtypes = [errortype_t, errormsg_t]
         _cfms_error.restype = None
 
-        _cfms_error(errortype_p, errormsg_p)
+        _cfms_error(errortype_c, errormsg_c)
 
     """
     Subroutine: get_current_pelist
@@ -78,26 +87,32 @@ class pyFMS_mpp:
 
     Returns: In the Fortran source, pelist, name, and commID will be updated
     The passed NumPy array for the pelist argument will be updated, to update
-    the values of the passed name and commID, the passed objects should also 
+    the values of the passed name and commID, the passed objects should also
     be set to the result of this method.
     """
-    def get_current_pelist(self, pelist: NDArray[np.int32], name: Optional[str]=None, commID: Optional[int]=None) -> Tuple:
+
+    def get_current_pelist(
+        self,
+        pelist: NDArray[np.int32],
+        name: Optional[str] = None,
+        commID: Optional[int] = None,
+    ) -> Tuple:
         _cfms_get_current_pelist = self.clibFMS.cFMS_get_current_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
-        name_p, name_t = set_Cchar(name)
-        commID_c, commID_p, commID_t = setscalar_Cint32(commID)
+        name_c, name_t = set_Cchar(name)
+        commID_c, commID_t = setscalar_Cint32(commID)
 
         _cfms_get_current_pelist.argtypes = [pelist_t, name_t, commID_t]
         _cfms_get_current_pelist.restype = None
 
-        _cfms_get_current_pelist(pelist_p, name_p, commID_p)
+        _cfms_get_current_pelist(pelist_p, name_c, commID_c)
 
         if commID is not None:
             commID = commID_c.value
 
         if name is not None:
-            name = name_p.value.decode('utf-8')
+            name = name_c.value.decode("utf-8")
 
         return commID, name
 
@@ -106,25 +121,27 @@ class pyFMS_mpp:
 
     Returns: number of pes in use
     """
+
     def npes(self) -> int:
         _cfms_npes = self.clibFMS.cFMS_npes
 
         _cfms_npes.restype = ct.c_int32
 
         return _cfms_npes().value
-    
+
     """
     Function: pe
 
     Returns: pe number of calling pe
     """
+
     def pe(self) -> int:
         _cfms_pe = self.clibFMS.cFMS_pe
 
         _cfms_pe.restype = ct.c_int32
 
         return _cfms_pe().value
-    
+
     """
     Subroutine: set_current_pelist
 
@@ -135,13 +152,16 @@ class pyFMS_mpp:
 
     Returns: No return
     """
-    def set_current_pelist(self, pelist: Optional[NDArray[np.int32]]=None, no_sync: Optional[bool]=None):
+
+    def set_current_pelist(
+        self, pelist: Optional[NDArray[np.int32]] = None, no_sync: Optional[bool] = None
+    ):
         _cfms_set_current_pelist = self.clibFMS.cFMS_set_current_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
-        no_sync_p, no_sync_t = setscalar_Cbool(no_sync)
+        no_sync_c, no_sync_t = setscalar_Cbool(no_sync)
 
         _cfms_set_current_pelist.argtypes = [pelist_t, no_sync_t]
         _cfms_set_current_pelist.restype = None
 
-        _cfms_set_current_pelist(pelist_p, no_sync_p)
+        _cfms_set_current_pelist(pelist_p, no_sync_c)
