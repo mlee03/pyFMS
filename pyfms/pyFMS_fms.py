@@ -95,7 +95,7 @@ class pyFMS:
 
     """
     Subroutine: pyfms_set_pelist_npes
-    
+
     This method is used to set a npes variable of the cFMS module it wraps
     """
 
