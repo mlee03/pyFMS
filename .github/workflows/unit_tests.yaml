@@ -24,4 +24,4 @@ jobs:
 
         - name: run tests
           run: |
-            mpirun -n 1 python -m pytest -x tests/
+            python -m pytest -vsx tests/
