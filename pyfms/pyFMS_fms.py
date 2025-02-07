@@ -13,7 +13,7 @@ class pyFMS:
 
     clibFMS_path: str = "./cFMS/libcFMS/.libs/libcFMS.so"
     clibFMS: ctypes.CDLL = None
-    alt_input_nml_path: str = "input/input.nml"
+    alt_input_nml_path: str = None
     localcomm: int = None
     ndomain: int = None
     nnest_domain: int = None
@@ -63,6 +63,7 @@ class pyFMS:
     should explicitly call fms_init. If this routine is called more than once
     it will return silently. There are no arguments.
     """
+
 
     def pyfms_init(
         self,

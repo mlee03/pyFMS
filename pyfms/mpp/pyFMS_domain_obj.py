@@ -13,6 +13,8 @@ class Domain:
     pelist: Optional[NDArray[np.int32]] = None
     xflags: Optional[int] = None
     yflags: Optional[int] = None
+    xhalo: Optional[int] = None
+    yhalo: Optional[int] = None
     xextent: Optional[NDArray[np.int32]] = None
     yextent: Optional[NDArray[np.int32]] = None
     maskmap: Optional[NDArray[np.bool_]] = None
@@ -29,6 +31,33 @@ class Domain:
     complete: Optional[bool] = None
     x_cyclic_offset: Optional[int] = None
     y_cyclic_offset: Optional[int] = None
+
+    def null(self):
+        self.global_indices = None
+        self.layout = None
+        self.domain_id = None
+        self.pelist = None
+        self.xflags = None
+        self.yflags = None
+        self.xhalo = None
+        self.yhalo = None
+        self.xextent = None
+        self.yextent = None
+        self.maskmap = None
+        self.name = None
+        self.symmetry = None
+        self.memory_size = None
+        self.whalo = None
+        self.ehalo = None
+        self.shalo = None
+        self.nhalo = None
+        self.is_mosaic = None
+        self.tile_count = None
+        self.tile_id = None
+        self.complete = None
+        self.x_cyclic_offset = None
+        self.y_cyclic_offset = None
+
 
 
 @dataclass
@@ -49,3 +78,21 @@ class NestDomain:
     domain_id: Optional[int] = None
     extra_halo: Optional[int] = None
     name: Optional[str] = None
+
+    def null(self):
+        self.num_nest = None
+        self.ntiles = None
+        self.nest_level = None
+        self.tile_fine = None
+        self.tile_coarse = None
+        self.istart_coarse = None
+        self.icount_coarse = None
+        self.jstart_coarse = None
+        self.jcount_coarse = None
+        self.npes_nest_tile = None
+        self.x_refine = None
+        self.y_refine = None
+        self.nest_domain_id = None
+        self.domain_id = None
+        self.extra_halo = None
+        self.name = None
