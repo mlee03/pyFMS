@@ -61,6 +61,9 @@ def test_define_domains():
     pyfms = pyFMS(
         localcomm=fcomm,
         clibFMS_path="./cFMS/libcFMS/.libs/libcFMS.so",
+        alt_input_nml_path="input.nml",
+        ndomain=ndomain,
+        nnest_domain=nnest_domain,
     )
     mpp = pyFMS_mpp(clibFMS=pyfms.clibFMS)
 
@@ -81,11 +84,9 @@ def test_define_domains():
     pyfms.set_pelist_npes(npes_in=coarse_npes)
     commID = mpp.declare_pelist(pelist=coarse_pelist, name=name_coarse)
 
-    print(coarse_pelist)
-
     if any(coarse_npes, coarse_pelist, mpp.pe()):
         pyfms.set_pelist_npes(coarse_npes)
-        mpp.set_current_pelist(pelist=coarse_pelist)
+        # mpp.set_current_pelist(pelist=coarse_pelist)
         # name = "test coarse domain"
         # domain.maskmap = np.full(shape=(2,4), fill_value=True, dtype=np.bool_)
 
@@ -118,7 +119,7 @@ def test_define_domains():
         # mpp_domains.define_domains_easy(domain)
         # domain.null()
 
-        mpp.set_current_pelist()
+        # mpp.set_current_pelist()
 
     # set fine domain as tile=1
 
