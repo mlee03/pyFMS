@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import ctypes as ct
+import ctypes
 import dataclasses
 import os
 from typing import Optional
@@ -11,9 +11,9 @@ from pyfms.pyFMS_data_handling import set_Cchar, setscalar_Cint32
 @dataclasses.dataclass
 class pyFMS:
 
-    clibFMS_path: str = None
-    clibFMS: ct.CDLL = None
-    alt_input_nml_path: str = None
+    clibFMS_path: str = "./cFMS/libcFMS/.libs/libcFMS.so"
+    clibFMS: ctypes.CDLL = None
+    alt_input_nml_path: str = "input/input.nml"
     localcomm: int = None
     ndomain: int = None
     nnest_domain: int = None
@@ -29,7 +29,7 @@ class pyFMS:
             raise ValueError(f"Library {self.clibFMS_path} does not exist")
 
         if self.clibFMS is None:
-            self.clibFMS = ct.cdll.LoadLibrary(self.clibFMS_path)
+            self.clibFMS = ctypes.cdll.LoadLibrary(self.clibFMS_path)
 
         self.pyfms_init(
             self.localcomm, self.alt_input_nml_path, self.ndomain, self.nnest_domain

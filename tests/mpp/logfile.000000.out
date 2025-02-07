@@ -1,0 +1,44 @@
+========================================================================
+READ_ASCII_FILE: unknown
+READ_ASCII_FILE: File: ./input.nml
+========================================================================
+READ_INPUT_NML: unknown
+READ_INPUT_NML: ./input.nml 
+ 
+
+MPP ========================================================================
+READ_INPUT_NML: unknown
+READ_INPUT_NML: ./input.nml 
+ 
+
+MPP module unknown
+MPP started with NPES=     1
+Using MPI library for message passing...
+Realtime clock resolution=  1.0000E-09 sec ( 999999999 ti
+MPP_DOMAINS module unknown
+
+================================================================================
+FMS_MOD
+unknown
+&FMS_NML
+ READ_ALL_PE=T,
+ CLOCK_GRA
+================================================================================
+FMS_MOD
+unknown
+&FMS_NML
+ READ_ALL_PE=T,
+ CLOCK_GRAIN="NONE            ",
+ CLOCK_FLAGS="NONE           
+================================================================================
+CONSTANTS_MOD
+FMSConstants: GFDL
+
+                                     time
+Total runtime                         0.000983
+=========
+CONSTANTS_MOD
+FMSConstants: GFDL
+
+                                     time
+Total runtime                         0.000938
