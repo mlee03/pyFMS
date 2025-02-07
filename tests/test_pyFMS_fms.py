@@ -13,7 +13,7 @@ def test_pyfms_init():
     pyfmsobj = pyFMS(
         localcomm=fcomm,
         clibFMS_path="./cFMS/libcFMS/.libs/libcFMS.so",
-        alt_input_nml_path="input.nml"
+        alt_input_nml_path="input.nml",
     )
 
     assert isinstance(pyfmsobj, pyFMS)
