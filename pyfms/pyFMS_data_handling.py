@@ -65,25 +65,37 @@ def set_ndpointer(arg: npt.NDArray) -> np.ctypeslib.ndpointer:
 def setarray_Cbool(
     arg: npt.NDArray[np.bool_],
 ) -> Tuple[npt.NDArray[np.bool_], np.ctypeslib.ndpointer]:
-    return arg, set_ndpointer(arg)
+    if arg is None:
+        return None, ct.POINTER(ct.c_bool)
+    else:
+        return arg, set_ndpointer(arg)
 
 
 def setarray_Cdouble(
     arg: npt.NDArray[np.float64],
 ) -> Tuple[npt.NDArray[np.float64], np.ctypeslib.ndpointer]:
-    return arg, set_ndpointer(arg)
+    if arg is None:
+        return None, ct.POINTER(ct.c_double)
+    else:
+        return arg, set_ndpointer(arg)
 
 
 def setarray_Cfloat(
     arg: npt.NDArray[np.float32],
 ) -> Tuple[npt.NDArray[np.float32], np.ctypeslib.ndpointer]:
-    return arg, set_ndpointer(arg)
+    if arg is None:
+        return None, ct.POINTER(ct.c_float)
+    else:
+        return arg, set_ndpointer(arg)
 
 
 def setarray_Cint32(
     arg: npt.NDArray[np.int32],
 ) -> Tuple[npt.NDArray[np.int32], np.ctypeslib.ndpointer]:
-    return arg, set_ndpointer(arg)
+    if arg is None:
+        return None, ct.POINTER(ct.c_int)
+    else:
+        return arg, set_ndpointer(arg)
 
 
 """
