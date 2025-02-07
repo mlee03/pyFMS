@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import ctypes as ct
+import ctypes
 from typing import Tuple
 
 import numpy as np
@@ -66,7 +66,7 @@ def setarray_Cbool(
     arg: npt.NDArray[np.bool_],
 ) -> Tuple[npt.NDArray[np.bool_], np.ctypeslib.ndpointer]:
     if arg is None:
-        return None, ct.POINTER(ct.c_bool)
+        return arg, ctypes.POINTER(ctypes.c_bool)
     else:
         return arg, set_ndpointer(arg)
 
@@ -75,7 +75,7 @@ def setarray_Cdouble(
     arg: npt.NDArray[np.float64],
 ) -> Tuple[npt.NDArray[np.float64], np.ctypeslib.ndpointer]:
     if arg is None:
-        return None, ct.POINTER(ct.c_double)
+        return arg, ctypes.POINTER(ctypes.c_double)
     else:
         return arg, set_ndpointer(arg)
 
@@ -84,7 +84,7 @@ def setarray_Cfloat(
     arg: npt.NDArray[np.float32],
 ) -> Tuple[npt.NDArray[np.float32], np.ctypeslib.ndpointer]:
     if arg is None:
-        return None, ct.POINTER(ct.c_float)
+        return arg, ctypes.POINTER(ctypes.c_float)
     else:
         return arg, set_ndpointer(arg)
 
@@ -93,9 +93,8 @@ def setarray_Cint32(
     arg: npt.NDArray[np.int32],
 ) -> Tuple[npt.NDArray[np.int32], np.ctypeslib.ndpointer]:
     if arg is None:
-        return None, ct.POINTER(ct.c_int)
-    else:
-        return arg, set_ndpointer(arg)
+        return arg, ctypes.POINTER(ctypes.c_int)
+    return arg, set_ndpointer(arg)
 
 
 """
@@ -115,49 +114,57 @@ def set_multipointer(arg: npt.NDArray, num_ptr: int) -> Tuple:
     c_type = np.ctypeslib.as_ctypes_type(arg.dtype)
     match num_ptr:
         case 2:
-            d_pointer = ct.POINTER(ct.POINTER(c_type))
-            arg_ptr = (ct.POINTER(c_type) * arg.shape[0])()
+            d_pointer = ctypes.POINTER(ctypes.POINTER(c_type))
+            arg_ptr = (ctypes.POINTER(c_type) * arg.shape[0])()
             for i in range(arg.shape[0]):
-                arg_ptr[i] = arg[i].ctypes.data_as(ct.POINTER(c_type))
+                arg_ptr[i] = arg[i].ctypes.data_as(ctypes.POINTER(c_type))
             return arg_ptr, d_pointer
         case 3:
-            t_ptr = ct.POINTER(ct.POINTER(ct.POINTER(c_type)))
-            arg_ptr = (ct.POINTER(ct.POINTER(c_type)) * arg.shape[0])()
+            t_ptr = ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
+            arg_ptr = (ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[0])()
             for i in range(arg.shape[0]):
-                arg_ptr[i] = (ct.POINTER(c_type) * arg.shape[1])()
+                arg_ptr[i] = (ctypes.POINTER(c_type) * arg.shape[1])()
                 for j in range(arg.shape[1]):
-                    arg_ptr[i][j] = arg[i][j].ctypes.data_as(ct.POINTER(c_type))
+                    arg_ptr[i][j] = arg[i][j].ctypes.data_as(ctypes.POINTER(c_type))
             return arg_ptr, t_ptr
         case 4:
-            quad_ptr = ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type))))
-            arg_ptr = (ct.POINTER(ct.POINTER(ct.POINTER(c_type))) * arg.shape[0])()
+            quad_ptr = ctypes.POINTER(
+                ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
+            )
+            arg_ptr = (
+                ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))) * arg.shape[0]
+            )()
             for i in range(arg.shape[0]):
-                arg_ptr[i] = (ct.POINTER(ct.POINTER(c_type)) * arg.shape[1])()
+                arg_ptr[i] = (ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[1])()
                 for j in range(arg.shape[1]):
-                    arg_ptr[i][j] = (ct.POINTER(c_type) * arg.shape[2])()
+                    arg_ptr[i][j] = (ctypes.POINTER(c_type) * arg.shape[2])()
                     for k in range(arg.shape[2]):
                         arg_ptr[i][j][k] = arg[i][j][k].ctypes.data_as(
-                            ct.POINTER(c_type)
+                            ctypes.POINTER(c_type)
                         )
             return arg_ptr, quad_ptr
         case 5:
-            quint_ptr = ct.POINTER(
-                ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type))))
+            quint_ptr = ctypes.POINTER(
+                ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
             )
             arg_ptr = (
-                ct.POINTER(ct.POINTER(ct.POINTER(ct.POINTER(c_type)))) * arg.shape[0]
+                ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
+                * arg.shape[0]
             )()
             for i in range(arg.shape[0]):
                 arg_ptr[i] = (
-                    ct.POINTER(ct.POINTER(ct.POINTER(c_type))) * arg.shape[1]
+                    ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
+                    * arg.shape[1]
                 )()
                 for j in range(arg.shape[1]):
-                    arg_ptr[i][j] = (ct.POINTER(ct.POINTER(c_type)) * arg.shape[2])()
+                    arg_ptr[i][j] = (
+                        ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[2]
+                    )()
                     for k in range(arg.shape[2]):
-                        arg_ptr[i][j][k] = (ct.POINTER(c_type) * arg.shape[3])()
+                        arg_ptr[i][j][k] = (ctypes.POINTER(c_type) * arg.shape[3])()
                         for n in range(arg.shape[3]):
                             arg_ptr[i][j][k][n] = arg[i][j][k][n].ctypes.data_as(
-                                ct.POINTER(c_type)
+                                ctypes.POINTER(c_type)
                             )
             return arg_ptr, quint_ptr
         case _:
@@ -171,34 +178,34 @@ Scalar setting methods
 
 def setscalar_Cbool(arg: bool) -> Tuple:
     if arg is None:
-        return None, ct.POINTER(ct.c_bool)
+        return arg, ctypes.POINTER(ctypes.c_bool)
     else:
-        return ct.c_bool(arg), ct.POINTER(ct.c_bool)
+        return ctypes.c_bool(arg), ctypes.POINTER(ctypes.c_bool)
 
 
 def set_Cchar(arg: str) -> Tuple:
     if arg is None:
-        return None, ct.c_char_p
+        return arg, ctypes.c_char_p
     else:
-        return ct.c_char_p(arg.encode("utf-8")), ct.c_char_p
+        return ctypes.c_char_p(arg.encode("utf-8")), ctypes.c_char_p
 
 
 def setscalar_Cdouble(arg: float) -> Tuple:
     if arg is None:
-        return None, ct.POINTER(ct.c_double)
+        return arg, ctypes.POINTER(ctypes.c_double)
     else:
-        return ct.c_double(arg), ct.POINTER(ct.c_double)
+        return ctypes.c_double(arg), ctypes.POINTER(ctypes.c_double)
 
 
 def setscalar_Cfloat(arg: float) -> Tuple:
     if arg is None:
-        return None, ct.POINTER(ct.c_float)
+        return arg, ctypes.POINTER(ctypes.c_float)
     else:
-        return ct.c_float(arg), ct.POINTER(ct.c_float)
+        return ctypes.c_float(arg), ctypes.POINTER(ctypes.c_float)
 
 
 def setscalar_Cint32(arg: int) -> Tuple:
     if arg is None:
-        return None, ct.POINTER(ct.c_int)
+        return arg, ctypes.POINTER(ctypes.c_int)
     else:
-        return ct.c_int(arg), ct.POINTER(ct.c_int)
+        return ctypes.c_int(arg), ctypes.POINTER(ctypes.c_int)

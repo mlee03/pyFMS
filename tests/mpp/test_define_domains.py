@@ -1,21 +1,19 @@
+import ctypes as ct
 import os
+
 import numpy as np
 import numpy.typing as npt
-import ctypes as ct
 from mpi4py import MPI
-from pyfms import(
-    pyFMS,
-    pyFMS_mpp,
-    pyFMS_mpp_domains, 
-    Domain, 
-    NestDomain,
-)
+
+from pyfms import Domain, NestDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
+
 
 def any(n: int, array: npt.NDArray, value: int) -> bool:
     for i in range(n):
         if value == array[i]:
             return True
     return False
+
 
 def test_define_domains():
     fcomm = MPI.COMM_WORLD.py2f()
@@ -37,9 +35,9 @@ def test_define_domains():
     domain = Domain()
     nest_domain = NestDomain()
 
-    coarse_global_indices = np.array([0, NX-1, 0, NY-1], dtype=np.int32)
+    coarse_global_indices = np.array([0, NX - 1, 0, NY - 1], dtype=np.int32)
     coarse_npes = COARSE_NPES
-    coarse_pelist = np.empty(shape=COARSE_NPES, dtype=np.int32, order='F')
+    coarse_pelist = np.empty(shape=COARSE_NPES, dtype=np.int32, order="F")
     coarse_tile_id = 0
     coarse_whalo = 2
     coarse_ehalo = 2
@@ -49,9 +47,9 @@ def test_define_domains():
     coarse_yflags = 2
     is_mosaic = False
 
-    fine_global_indices = np.array([0, NX_FINE-1, 0, NY_FINE-1], dtype=np.int32)
+    fine_global_indices = np.array([0, NX_FINE - 1, 0, NY_FINE - 1], dtype=np.int32)
     fine_npes = FINE_NPES
-    fine_pelist = np.empty(shape=FINE_NPES, dtype=np.int32, order='F')
+    fine_pelist = np.empty(shape=FINE_NPES, dtype=np.int32, order="F")
     fine_tile_id = 1
     fine_whalo = 2
     fine_ehalo = 2
@@ -71,7 +69,7 @@ def test_define_domains():
     # get global pelist
 
     npes = mpp.npes()
-    global_pelist = np.empty(shape=npes, dtype=np.int32, order='F')
+    global_pelist = np.empty(shape=npes, dtype=np.int32, order="F")
     pyfms.set_pelist_npes(npes_in=npes)
     commID, name_current = mpp.get_current_pelist(pelist=global_pelist)
 
@@ -184,12 +182,3 @@ def test_define_domains():
 
 if __name__ == "__main__":
     test_define_domains()
-
-
-        
-
-        
-
-
-
-

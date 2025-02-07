@@ -1,13 +1,9 @@
 import numpy as np
 import numpy.typing as npt
 from mpi4py import MPI
-from pyfms import(
-    pyFMS,
-    pyFMS_mpp,
-    pyFMS_mpp_domains, 
-    Domain, 
-    NestDomain,
-)
+
+from pyfms import Domain, NestDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
+
 
 def test_getset_domains():
     """
@@ -24,7 +20,7 @@ def test_getset_domains():
     domain = Domain()
     domain_id = 0
     ndiv = 4
-    global_indices = np.array([0,3,0,3], dtype=np.int32)
+    global_indices = np.array([0, 3, 0, 3], dtype=np.int32)
     whalo = 2
     ehalo = 2
     shalo = 2
@@ -46,7 +42,9 @@ def test_getset_domains():
     domain.name = name
 
     domain.layout = np.empty(shape=2, dtype=np.int32)
-    mpp_domains.define_layout(global_indices=global_indices, ndivs=ndiv, layout=domain.layout)
+    mpp_domains.define_layout(
+        global_indices=global_indices, ndivs=ndiv, layout=domain.layout
+    )
 
     mpp_domains.define_domains_easy(domain)
     if not mpp_domains.domain_is_initialized(domain_id):
@@ -62,10 +60,10 @@ def test_getset_domains():
     pe 3: isc=4, iec=5, jsc=4, jec=5 --> pe 0
     """
 
-    isc = np.array([4,2,4,2], dtype=np.int32)
-    iec = np.array([5,3,5,3], dtype=np.int32)
-    jsc = np.array([4,4,2,2], dtype=np.int32)
-    jec = np.array([5,5,3,3], dtype=np.int32)
+    isc = np.array([4, 2, 4, 2], dtype=np.int32)
+    iec = np.array([5, 3, 5, 3], dtype=np.int32)
+    jsc = np.array([4, 4, 2, 2], dtype=np.int32)
+    jec = np.array([5, 5, 3, 3], dtype=np.int32)
 
     """
     pe 0: isd=0, ied=5, jsd=0, jed=5 --> pe 3
@@ -74,10 +72,10 @@ def test_getset_domains():
     pe 3: isd=2, ied=7, jsd=2, jed=7 --> pe 0
     """
 
-    isd = np.array([2,0,2,0], dtype=np.int32)
-    ied = np.array([7,5,7,5], dtype=np.int32)
-    jsd = np.array([2,2,0,0], dtype=np.int32)
-    jed = np.array([7,7,5,5], dtype=np.int32)
+    isd = np.array([2, 0, 2, 0], dtype=np.int32)
+    ied = np.array([7, 5, 7, 5], dtype=np.int32)
+    jsd = np.array([2, 2, 0, 0], dtype=np.int32)
+    jed = np.array([7, 7, 5, 5], dtype=np.int32)
 
     pe = mpp.pe()
     tile_count = 0
@@ -90,10 +88,10 @@ def test_getset_domains():
     ysize = 2
     mpp_domains.set_compute_domain(
         domain_id=domain_id,
-        xbegin=isc+pe,
-        xend=iec+pe,
-        ybegin=jsc+pe,
-        yend=jec+pe,
+        xbegin=isc + pe,
+        xend=iec + pe,
+        ybegin=jsc + pe,
+        yend=jec + pe,
         xsize=xsize,
         ysize=ysize,
         x_is_global=x_is_global,
@@ -107,10 +105,10 @@ def test_getset_domains():
     ysize = 6
     mpp_domains.set_data_domain(
         domain_id=domain_id,
-        xbegin=isd+pe,
-        xend=ied+pe,
-        ybegin=jsd+pe,
-        yend=jed+pe,
+        xbegin=isd + pe,
+        xend=ied + pe,
+        ybegin=jsd + pe,
+        yend=jed + pe,
         xsize=xsize,
         ysize=ysize,
         x_is_global=x_is_global,
@@ -121,7 +119,7 @@ def test_getset_domains():
     )
 
     # get domain
-    
+
     is_check = 0
     ie_check = 0
     js_check = 0
@@ -132,8 +130,20 @@ def test_getset_domains():
     ymax_size_check = 0
     x_is_global_check = True
     y_is_global_check = True
-    
-    is_check, ie_check, js_check, je_check, xsize_check, xmax_size_check, ysize_check, ymax_size_check, x_is_global_check, y_is_global_check, tile_count = mpp_domains.get_compute_domain(
+
+    (
+        is_check,
+        ie_check,
+        js_check,
+        je_check,
+        xsize_check,
+        xmax_size_check,
+        ysize_check,
+        ymax_size_check,
+        x_is_global_check,
+        y_is_global_check,
+        tile_count,
+    ) = mpp_domains.get_compute_domain(
         domain_id=domain_id,
         xbegin=is_check,
         xend=ie_check,
@@ -172,7 +182,19 @@ def test_getset_domains():
     if y_is_global_check:
         mpp.pyfms_error(FATAL, "incorrect y_is_global for compute domain")
 
-    is_check, ie_check, js_check, je_check, xsize_check, xmax_size_check, ysize_check, ymax_size_check, x_is_global_check, y_is_global_check, tile_count = mpp_domains.get_data_domain(
+    (
+        is_check,
+        ie_check,
+        js_check,
+        je_check,
+        xsize_check,
+        xmax_size_check,
+        ysize_check,
+        ymax_size_check,
+        x_is_global_check,
+        y_is_global_check,
+        tile_count,
+    ) = mpp_domains.get_data_domain(
         domain_id=domain_id,
         xbegin=is_check,
         xend=ie_check,
@@ -213,8 +235,6 @@ def test_getset_domains():
 
     pyfms.pyfms_end()
 
+
 if __name__ == "__main__":
     test_getset_domains()
-
-
-
