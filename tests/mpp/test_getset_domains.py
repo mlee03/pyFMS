@@ -213,5 +213,8 @@ def test_getset_domains():
 
     pyfms.pyfms_end()
 
+if __name__ == "__main__":
+    test_getset_domains()
+
 
 

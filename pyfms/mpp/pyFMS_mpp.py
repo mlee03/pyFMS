@@ -127,7 +127,7 @@ class pyFMS_mpp:
 
         _cfms_npes.restype = ct.c_int32
 
-        return _cfms_npes().value
+        return _cfms_npes()
 
     """
     Function: pe
@@ -140,7 +140,7 @@ class pyFMS_mpp:
 
         _cfms_pe.restype = ct.c_int32
 
-        return _cfms_pe().value
+        return _cfms_pe()
 
     """
     Subroutine: set_current_pelist
