@@ -111,62 +111,74 @@ set_multipointer:
 
 
 def set_multipointer(arg: npt.NDArray, num_ptr: int) -> Tuple:
-    c_type = np.ctypeslib.as_ctypes_type(arg.dtype)
+    if arg is not None:
+        c_type = np.ctypeslib.as_ctypes_type(arg.dtype)
     match num_ptr:
         case 2:
-            d_pointer = ctypes.POINTER(ctypes.POINTER(c_type))
-            arg_ptr = (ctypes.POINTER(c_type) * arg.shape[0])()
-            for i in range(arg.shape[0]):
-                arg_ptr[i] = arg[i].ctypes.data_as(ctypes.POINTER(c_type))
-            return arg_ptr, d_pointer
+            if arg is not None:
+                arg_ptr = (ctypes.POINTER(c_type) * arg.shape[0])()
+                for i in range(arg.shape[0]):
+                    arg_ptr[i] = arg[i].ctypes.data_as(ctypes.POINTER(c_type))
+                return arg_ptr, ctypes.POINTER(ctypes.POINTER(c_type))
+            else:
+                return arg, ctypes.POINTER(ctypes.POINTER(ctypes.c_int))
         case 3:
             t_ptr = ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
-            arg_ptr = (ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[0])()
-            for i in range(arg.shape[0]):
-                arg_ptr[i] = (ctypes.POINTER(c_type) * arg.shape[1])()
-                for j in range(arg.shape[1]):
-                    arg_ptr[i][j] = arg[i][j].ctypes.data_as(ctypes.POINTER(c_type))
-            return arg_ptr, t_ptr
+            if arg is not None:
+                arg_ptr = (ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[0])()
+                for i in range(arg.shape[0]):
+                    arg_ptr[i] = (ctypes.POINTER(c_type) * arg.shape[1])()
+                    for j in range(arg.shape[1]):
+                        arg_ptr[i][j] = arg[i][j].ctypes.data_as(ctypes.POINTER(c_type))
+                return arg_ptr, t_ptr
+            else:
+                return arg, t_ptr
         case 4:
             quad_ptr = ctypes.POINTER(
                 ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
             )
-            arg_ptr = (
-                ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))) * arg.shape[0]
-            )()
-            for i in range(arg.shape[0]):
-                arg_ptr[i] = (ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[1])()
-                for j in range(arg.shape[1]):
-                    arg_ptr[i][j] = (ctypes.POINTER(c_type) * arg.shape[2])()
-                    for k in range(arg.shape[2]):
-                        arg_ptr[i][j][k] = arg[i][j][k].ctypes.data_as(
-                            ctypes.POINTER(c_type)
-                        )
-            return arg_ptr, quad_ptr
+            if arg is not None:
+                arg_ptr = (
+                    ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))) * arg.shape[0]
+                )()
+                for i in range(arg.shape[0]):
+                    arg_ptr[i] = (ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[1])()
+                    for j in range(arg.shape[1]):
+                        arg_ptr[i][j] = (ctypes.POINTER(c_type) * arg.shape[2])()
+                        for k in range(arg.shape[2]):
+                            arg_ptr[i][j][k] = arg[i][j][k].ctypes.data_as(
+                                ctypes.POINTER(c_type)
+                            )
+                return arg_ptr, quad_ptr
+            else:
+                return arg, quad_ptr
         case 5:
             quint_ptr = ctypes.POINTER(
                 ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
             )
-            arg_ptr = (
-                ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
-                * arg.shape[0]
-            )()
-            for i in range(arg.shape[0]):
-                arg_ptr[i] = (
-                    ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
-                    * arg.shape[1]
+            if arg is not None:
+                arg_ptr = (
+                    ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
+                    * arg.shape[0]
                 )()
-                for j in range(arg.shape[1]):
-                    arg_ptr[i][j] = (
-                        ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[2]
+                for i in range(arg.shape[0]):
+                    arg_ptr[i] = (
+                        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
+                        * arg.shape[1]
                     )()
-                    for k in range(arg.shape[2]):
-                        arg_ptr[i][j][k] = (ctypes.POINTER(c_type) * arg.shape[3])()
-                        for n in range(arg.shape[3]):
-                            arg_ptr[i][j][k][n] = arg[i][j][k][n].ctypes.data_as(
-                                ctypes.POINTER(c_type)
-                            )
-            return arg_ptr, quint_ptr
+                    for j in range(arg.shape[1]):
+                        arg_ptr[i][j] = (
+                            ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[2]
+                        )()
+                        for k in range(arg.shape[2]):
+                            arg_ptr[i][j][k] = (ctypes.POINTER(c_type) * arg.shape[3])()
+                            for n in range(arg.shape[3]):
+                                arg_ptr[i][j][k][n] = arg[i][j][k][n].ctypes.data_as(
+                                    ctypes.POINTER(c_type)
+                                )
+                return arg_ptr, quint_ptr
+            else:
+                return arg, quint_ptr
         case _:
             return arg, set_ndpointer(arg)
 

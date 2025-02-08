@@ -223,9 +223,9 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         extra_halo: Optional[int] = None,
         name: Optional[str] = None,
     ):
-        _cfms_define_nest_domain = self.clibFMS.cFMS_define_nest_domain
+        _cfms_define_nest_domain = self.clibFMS.cFMS_define_nest_domains
 
-        num_nest_p, num_nest_t = setarray_Cint32(num_nest)
+        num_nest_p, num_nest_t = setscalar_Cint32(num_nest)
         ntiles_c, ntiles_t = setscalar_Cint32(ntiles)
         nest_level_p, nest_level_t = setarray_Cint32(nest_level)
         tile_fine_p, tile_fine_t = setarray_Cint32(tile_fine)
@@ -298,7 +298,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         _cfms_domain_is_initialized.argtypes = [domain_id_t]
         _cfms_domain_is_initialized.restype = ct.c_bool
 
-        return _cfms_domain_is_initialized(domain_id_c).value
+        return _cfms_domain_is_initialized(domain_id_c)
 
     """
     Subroutine: get_compute_domain
