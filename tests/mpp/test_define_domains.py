@@ -45,10 +45,16 @@ def test_define_domains():
     is_mosaic = False
     symmetry = False
 
-    coarse_xextent = np.array([NX/2, NX/2, NX/2, NX/2], dtype=np.int32, order="F")
-    coarse_yextent = np.array([NY/2, NY/2, NY/2, NY/2], dtype=np.int32, order="F")
+    coarse_xextent = np.array(
+        [NX / 2, NX / 2, NX / 2, NX / 2], dtype=np.int32, order="F"
+    )
+    coarse_yextent = np.array(
+        [NY / 2, NY / 2, NY / 2, NY / 2], dtype=np.int32, order="F"
+    )
 
-    fine_global_indices = np.array([0, NX_FINE - 1, 0, NY_FINE - 1], dtype=np.int32, order="F")
+    fine_global_indices = np.array(
+        [0, NX_FINE - 1, 0, NY_FINE - 1], dtype=np.int32, order="F"
+    )
     fine_npes = FINE_NPES
     fine_pelist = np.empty(shape=FINE_NPES, dtype=np.int32, order="F")
     fine_tile_id = 1
@@ -86,7 +92,9 @@ def test_define_domains():
         pyfms.set_pelist_npes(coarse_npes)
         mpp.set_current_pelist(coarse_pelist)
         name = "test coarse domain"
-        domain.maskmap = np.full(shape=(2,4), fill_value=True, dtype=np.bool_, order="F")
+        domain.maskmap = np.full(
+            shape=(2, 4), fill_value=True, dtype=np.bool_, order="F"
+        )
 
         xextent = np.zeros(shape=2, dtype=np.int32, order="F")
         yextent = np.zeros(shape=2, dtype=np.int32, order="F")
@@ -111,7 +119,9 @@ def test_define_domains():
         domain.layout = np.empty(shape=2, dtype=np.int32, order="F")
         ndivs = coarse_npes
 
-        mpp_domains.define_layout(global_indices=coarse_global_indices, ndivs=ndivs, layout=domain.layout)
+        mpp_domains.define_layout(
+            global_indices=coarse_global_indices, ndivs=ndivs, layout=domain.layout
+        )
 
         domain.tile_count, domain.tile_id = mpp_domains.define_domains(
             global_indices=domain.global_indices,
@@ -147,7 +157,7 @@ def test_define_domains():
 
     name_fine = "test fine pelist"
     for i in range(fine_npes):
-        fine_pelist[i] = global_pelist[COARSE_NPES+i]
+        fine_pelist[i] = global_pelist[COARSE_NPES + i]
     pyfms.set_pelist_npes(fine_npes)
     mpp.declare_pelist(pelist=fine_pelist, name=name_fine)
 
@@ -167,7 +177,9 @@ def test_define_domains():
         domain.layout = np.empty(shape=2, dtype=np.int32, order="F")
         ndivs = FINE_NPES
 
-        mpp_domains.define_layout(global_indices=fine_global_indices, ndivs=ndivs, layout=domain.layout)
+        mpp_domains.define_layout(
+            global_indices=fine_global_indices, ndivs=ndivs, layout=domain.layout
+        )
 
         domain.tile_count, domain.tile_id = mpp_domains.define_domains(
             global_indices=domain.global_indices,
@@ -214,7 +226,9 @@ def test_define_domains():
     nest_domain.icount_coarse = np.array([24], dtype=np.int32, order="F")
     nest_domain.jstart_coarse = np.array([24], dtype=np.int32, order="F")
     nest_domain.jcount_coarse = np.array([24], dtype=np.int32, order="F")
-    nest_domain.npes_nest_tile = np.array([COARSE_NPES, FINE_NPES], dtype=np.int32, order="F")
+    nest_domain.npes_nest_tile = np.array(
+        [COARSE_NPES, FINE_NPES], dtype=np.int32, order="F"
+    )
     nest_domain.x_refine = np.array([X_REFINE], dtype=np.int32, order="F")
     nest_domain.y_refine = np.array([Y_REFINE], dtype=np.int32, order="F")
     nest_domain.tile_fine = np.array([fine_tile_id], dtype=np.int32, order="F")

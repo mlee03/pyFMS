@@ -59,7 +59,6 @@ class Domain:
         self.y_cyclic_offset = None
 
 
-
 @dataclass
 class NestDomain:
     num_nest: Optional[int] = None
