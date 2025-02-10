@@ -123,20 +123,16 @@ def set_multipointer(arg: npt.NDArray, num_ptr: int) -> Tuple:
             else:
                 return arg, ctypes.POINTER(ctypes.POINTER(ctypes.c_int))
         case 3:
-            t_ptr = ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
             if arg is not None:
                 arg_ptr = (ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[0])()
                 for i in range(arg.shape[0]):
                     arg_ptr[i] = (ctypes.POINTER(c_type) * arg.shape[1])()
                     for j in range(arg.shape[1]):
                         arg_ptr[i][j] = arg[i][j].ctypes.data_as(ctypes.POINTER(c_type))
-                return arg_ptr, t_ptr
+                return arg_ptr, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
             else:
-                return arg, t_ptr
+                return arg, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int)))
         case 4:
-            quad_ptr = ctypes.POINTER(
-                ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
-            )
             if arg is not None:
                 arg_ptr = (
                     ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))) * arg.shape[0]
@@ -149,13 +145,10 @@ def set_multipointer(arg: npt.NDArray, num_ptr: int) -> Tuple:
                             arg_ptr[i][j][k] = arg[i][j][k].ctypes.data_as(
                                 ctypes.POINTER(c_type)
                             )
-                return arg_ptr, quad_ptr
+                return arg_ptr, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
             else:
-                return arg, quad_ptr
+                return arg, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))))
         case 5:
-            quint_ptr = ctypes.POINTER(
-                ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
-            )
             if arg is not None:
                 arg_ptr = (
                     ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
@@ -176,11 +169,14 @@ def set_multipointer(arg: npt.NDArray, num_ptr: int) -> Tuple:
                                 arg_ptr[i][j][k][n] = arg[i][j][k][n].ctypes.data_as(
                                     ctypes.POINTER(c_type)
                                 )
-                return arg_ptr, quint_ptr
+                return arg_ptr, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))))
             else:
-                return arg, quint_ptr
+                return arg, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int)))))
         case _:
-            return arg, set_ndpointer(arg)
+            if arg is not None:
+                return arg, set_ndpointer(arg)
+            else:
+                return arg, ctypes.POINTER(ctypes.c_int)
 
 
 """
