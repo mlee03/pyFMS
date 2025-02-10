@@ -135,23 +135,32 @@ def set_multipointer(arg: npt.NDArray, num_ptr: int) -> Tuple:
         case 4:
             if arg is not None:
                 arg_ptr = (
-                    ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))) * arg.shape[0]
+                    ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
+                    * arg.shape[0]
                 )()
                 for i in range(arg.shape[0]):
-                    arg_ptr[i] = (ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[1])()
+                    arg_ptr[i] = (
+                        ctypes.POINTER(ctypes.POINTER(c_type)) * arg.shape[1]
+                    )()
                     for j in range(arg.shape[1]):
                         arg_ptr[i][j] = (ctypes.POINTER(c_type) * arg.shape[2])()
                         for k in range(arg.shape[2]):
                             arg_ptr[i][j][k] = arg[i][j][k].ctypes.data_as(
                                 ctypes.POINTER(c_type)
                             )
-                return arg_ptr, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
+                return arg_ptr, ctypes.POINTER(
+                    ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
+                )
             else:
-                return arg, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int))))
+                return arg, ctypes.POINTER(
+                    ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int)))
+                )
         case 5:
             if arg is not None:
                 arg_ptr = (
-                    ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type))))
+                    ctypes.POINTER(
+                        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
+                    )
                     * arg.shape[0]
                 )()
                 for i in range(arg.shape[0]):
@@ -169,9 +178,17 @@ def set_multipointer(arg: npt.NDArray, num_ptr: int) -> Tuple:
                                 arg_ptr[i][j][k][n] = arg[i][j][k][n].ctypes.data_as(
                                     ctypes.POINTER(c_type)
                                 )
-                return arg_ptr, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))))
+                return arg_ptr, ctypes.POINTER(
+                    ctypes.POINTER(
+                        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(c_type)))
+                    )
+                )
             else:
-                return arg, ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int)))))
+                return arg, ctypes.POINTER(
+                    ctypes.POINTER(
+                        ctypes.POINTER(ctypes.POINTER(ctypes.POINTER(ctypes.c_int)))
+                    )
+                )
         case _:
             if arg is not None:
                 return arg, set_ndpointer(arg)

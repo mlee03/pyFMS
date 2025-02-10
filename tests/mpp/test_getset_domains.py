@@ -1,7 +1,6 @@
 import numpy as np
-import numpy.typing as npt
 
-from pyfms import Domain, NestDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
+from pyfms import Domain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
 
 def test_getset_domains():
@@ -46,32 +45,32 @@ def test_getset_domains():
     )
 
     domain.tile_count, domain.tile_id = mpp_domains.define_domains(
-            global_indices=domain.global_indices,
-            layout=domain.layout,
-            domain_id=domain.domain_id,
-            pelist=domain.pelist,
-            xflags=domain.xflags,
-            yflags=domain.yflags,
-            xhalo=domain.xhalo,
-            yhalo=domain.yhalo,
-            xextent=domain.xextent,
-            yextent=domain.yextent,
-            maskmap=domain.maskmap,
-            name=domain.name,
-            symmetry=domain.symmetry,
-            memory_size=domain.memory_size,
-            whalo=domain.whalo,
-            ehalo=domain.ehalo,
-            shalo=domain.shalo,
-            nhalo=domain.nhalo,
-            is_mosaic=domain.is_mosaic,
-            tile_count=domain.tile_count,
-            tile_id=domain.tile_id,
-            complete=domain.complete,
-            x_cyclic_offset=domain.x_cyclic_offset,
-            y_cyclic_offset=domain.y_cyclic_offset,
-        )
-    
+        global_indices=domain.global_indices,
+        layout=domain.layout,
+        domain_id=domain.domain_id,
+        pelist=domain.pelist,
+        xflags=domain.xflags,
+        yflags=domain.yflags,
+        xhalo=domain.xhalo,
+        yhalo=domain.yhalo,
+        xextent=domain.xextent,
+        yextent=domain.yextent,
+        maskmap=domain.maskmap,
+        name=domain.name,
+        symmetry=domain.symmetry,
+        memory_size=domain.memory_size,
+        whalo=domain.whalo,
+        ehalo=domain.ehalo,
+        shalo=domain.shalo,
+        nhalo=domain.nhalo,
+        is_mosaic=domain.is_mosaic,
+        tile_count=domain.tile_count,
+        tile_id=domain.tile_id,
+        complete=domain.complete,
+        x_cyclic_offset=domain.x_cyclic_offset,
+        y_cyclic_offset=domain.y_cyclic_offset,
+    )
+
     # TODO: find integer value for FATAL
     if not mpp_domains.domain_is_initialized(domain_id):
         mpp.pyfms_error(1, "error in setting domain")

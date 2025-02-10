@@ -64,7 +64,6 @@ class pyFMS:
     it will return silently. There are no arguments.
     """
 
-
     def pyfms_init(
         self,
         localcomm: Optional[int] = None,
