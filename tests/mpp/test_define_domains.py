@@ -1,6 +1,3 @@
-import ctypes as ct
-import os
-
 import numpy as np
 import numpy.typing as npt
 

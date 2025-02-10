@@ -330,7 +330,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
     ):
-        _cfms_get_compute_domain = self.clibFMS.cFMS_get_data_domain
+        _cfms_get_compute_domain = self.clibFMS.cFMS_get_compute_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
@@ -785,8 +785,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         x_is_global_c, x_is_global_t = setscalar_Cbool(x_is_global)
         y_is_global_c, y_is_global_t = setscalar_Cbool(y_is_global)
         tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
-        whalo_c, whalo_t = setarray_Cint32(whalo)
-        shalo_c, shalo_t = setarray_Cint32(shalo)
+        whalo_c, whalo_t = setscalar_Cint32(whalo)
+        shalo_c, shalo_t = setscalar_Cint32(shalo)
 
         _cfms_set_data_domain.argtypes = [
             domain_id_t,
