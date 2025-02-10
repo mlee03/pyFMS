@@ -211,10 +211,7 @@ def test_define_domains():
 
     mpp.set_current_pelist()
 
-    # TODO: Find FATAL value
-
-    if not mpp_domains.domain_is_initialized(domain_id):
-        mpp.pyfms_error(1, "domain is not initialized")
+    assert mpp_domains.domain_is_initialized(domain_id)
 
     # set nest domain
 
@@ -256,7 +253,8 @@ def test_define_domains():
     )
     nest_domain.null()
 
-    # mpp.set_current_pelist()
+    mpp.set_current_pelist()
+
     pyfms.pyfms_end()
 
 

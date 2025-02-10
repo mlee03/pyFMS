@@ -71,7 +71,6 @@ def test_getset_domains():
         y_cyclic_offset=domain.y_cyclic_offset,
     )
 
-    # TODO: find integer value for FATAL
     if not mpp_domains.domain_is_initialized(domain_id):
         mpp.pyfms_error(1, "error in setting domain")
 
@@ -186,7 +185,6 @@ def test_getset_domains():
         shalo=shalo,
     )
 
-    # TODO: Find integer value for FATAL
     assert is_check == isc[pe]
     assert ie_check == iec[pe]
     assert js_check == jsc[pe]
@@ -228,7 +226,6 @@ def test_getset_domains():
         shalo=shalo,
     )
 
-    # TODO: Find integer value for FATAL
     assert is_check == isd[pe]
     assert ie_check == ied[pe]
     assert js_check == jsd[pe]

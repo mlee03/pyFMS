@@ -22,6 +22,22 @@ jobs:
           run: |
             pip install .[test]
 
-        - name: run tests
+        - name: run build test
           run: |
-            mpirun -n 1 python -m pytest -x tests/
+            python -m pytest -x tests/test_build.py
+
+        - name: run field manager test
+          run: |
+            python -m pytest -x tests/test_pyFMS_field_manager.py
+
+        - name: run pyFMS init test
+          run: |
+            python -m pytest -x tests/test_pyFMS_fms.py
+
+        - name: run define domains test
+          run: |
+            mpirun -n 8 --oversubscribe python -m pytest -x tests/mpp/test_define_domains.py
+
+        - name: run get/set domains test
+          run: |
+            mpirun -n 4 --oversubscribe python -m pytest -x tests/mpp/test_getset_domains.py
