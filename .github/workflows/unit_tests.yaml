@@ -33,3 +33,11 @@ jobs:
         - name: run pyFMS init test
           run: |
             python -m pytest -x tests/test_pyFMS_fms.py
+
+        - name: run pyFMS test define domains
+          run: |
+            mpiexec -np 8 --oversubscribe python -m mpi4py -m pytest tests/mpp/test_define_domains.py
+
+        - name: run pyFMS test get/set domains
+          run: |
+            mpiexec -np 4 --oversubscribe python -m mpi4py -m pytest tests/mpp/test_getset_domains.py
