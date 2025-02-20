@@ -3,9 +3,11 @@
 import ctypes as ct
 import dataclasses
 import os
+from pyfms.horiz_interp import HorizInterp
 from typing import Optional
 
 from pyfms.pyFMS_data_handling import set_Cchar, setscalar_Cint32
+from pyfms.pyfms_utils.grid_utils import GridUtils
 
 
 @dataclasses.dataclass
@@ -18,6 +20,9 @@ class pyFMS:
     ndomain: int = None
     nnest_domain: int = None
 
+    #horiz_interp : Optional[HorizInterp] = None
+    #grid_utils : Optional[GridUtils] = None
+    
     def __post_init__(self):
 
         if self.clibFMS_path is None:
@@ -34,8 +39,9 @@ class pyFMS:
         self.pyfms_init(
             self.localcomm, self.alt_input_nml_path, self.ndomain, self.nnest_domain
         )
-
-    """
+        
+        
+        """
     Calls the termination routines for all modules in the MPP package.
     Termination routine for the fms module. It also calls destructor routines
     for the mpp, mpp_domains, and mpp_io modules. If this routine is called
