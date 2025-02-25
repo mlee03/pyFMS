@@ -18,5 +18,5 @@ export CFLAGS="$CFLAGS -I$install_fms/include -fPIC"
 export LDFLAGS="$LDFLAGS -lFMS -L$install_fms/lib"
 
 autoreconf -iv
-./configure --prefix=$curr_dir/cgnuFMS
+./configure --with-yaml --prefix=$curr_dir/cgnuFMS
 make
