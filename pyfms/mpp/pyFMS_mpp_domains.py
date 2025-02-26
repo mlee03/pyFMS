@@ -297,10 +297,12 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     Arguments passed to function will generate and update data for a
     compute domain
 
-    Returns: In the Fortran source, xbegin, xend, ybegin, yend, xsize,
-    xmax_size, ysize, ymax_size, x_is_global, y_is_global, and tile_count
-    are all updated. Python objects passed for those arguments should be
-    set to the return of this method to update their values.
+    Returns: In the Fortran source, when passed in xbegin, xend, ybegin, yend,
+    xsize, xmax_size, ysize, ymax_size, x_is_global, y_is_global, and
+    tile_count are updated. To obtain access to their values, an integer
+    Python object should be passed in as an argument for the desired variable.
+    This method will return a dictionary containing values for those arguments
+    which were passed, overwriting the passed value.
     """
 
     def get_compute_domain(
@@ -320,7 +322,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ):
+    ) -> dict:
         _cfms_get_compute_domain = self.clibFMS.cFMS_get_compute_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -376,19 +378,30 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        return (
-            xbegin_c.value if xbegin is not None else xbegin,
-            xend_c.value if xend is not None else xend,
-            ybegin_c.value if ybegin is not None else ybegin,
-            yend_c.value if yend is not None else yend,
-            xsize_c.value if xsize is not None else xsize,
-            xmax_size_c.value if xmax_size is not None else xmax_size,
-            ysize_c.value if ysize is not None else ysize,
-            ymax_size_c.value if ymax_size is not None else ymax_size,
-            x_is_global_c.value if x_is_global is not None else x_is_global,
-            y_is_global_c.value if y_is_global is not None else y_is_global,
-            tile_count_c.value if tile_count is not None else tile_count,
+        out_dict = {}
+        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
+        out_dict["xend"] = xend_c.value if xend is not None else xend
+        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
+        out_dict["yend"] = yend_c.value if yend is not None else yend
+        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
+        out_dict["xmax_size"] = (
+            xmax_size_c.value if xmax_size is not None else xmax_size
         )
+        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
+        out_dict["ymax_size"] = (
+            ymax_size_c.value if ymax_size is not None else ymax_size
+        )
+        out_dict["x_is_global"] = (
+            x_is_global_c.value if x_is_global is not None else x_is_global
+        )
+        out_dict["y_is_global"] = (
+            y_is_global_c.value if y_is_global is not None else y_is_global
+        )
+        out_dict["tile_count"] = (
+            tile_count_c.value if tile_count is not None else tile_count
+        )
+
+        return out_dict
 
     """
     Subroutine: get_data_domain
@@ -396,10 +409,12 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     Arguments passed to function will generate and update data for a
     data domain
 
-    Returns: In the Fortran source, xbegin, xend, ybegin, yend, xsize,
-    xmax_size, ysize, ymax_size, x_is_global, y_is_global, and tile_count
-    are all updated. Python objects passed for those arguments should be
-    set to the return of this method to update their values.
+    Returns: In the Fortran source, when passed in xbegin, xend, ybegin, yend,
+    xsize, xmax_size, ysize, ymax_size, x_is_global, y_is_global, and
+    tile_count are updated. To obtain access to their values, an integer
+    Python object should be passed in as an argument for the desired variable.
+    This method will return a dictionary containing values for those arguments
+    which were passed, overwriting the passed value.
     """
 
     def get_data_domain(
@@ -419,7 +434,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ):
+    ) -> dict:
         _cfms_get_data_domain = self.clibFMS.cFMS_get_data_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -475,19 +490,30 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        return (
-            xbegin_c.value if xbegin is not None else xbegin,
-            xend_c.value if xend is not None else xend,
-            ybegin_c.value if ybegin is not None else ybegin,
-            yend_c.value if yend is not None else yend,
-            xsize_c.value if xsize is not None else xsize,
-            xmax_size_c.value if xmax_size is not None else xmax_size,
-            ysize_c.value if ysize is not None else ysize,
-            ymax_size_c.value if ymax_size is not None else ymax_size,
-            x_is_global_c.value if x_is_global is not None else x_is_global,
-            y_is_global_c.value if y_is_global is not None else y_is_global,
-            tile_count_c.value if tile_count is not None else tile_count,
+        out_dict = {}
+        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
+        out_dict["xend"] = xend_c.value if xend is not None else xend
+        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
+        out_dict["yend"] = yend_c.value if yend is not None else yend
+        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
+        out_dict["xmax_size"] = (
+            xmax_size_c.value if xmax_size is not None else xmax_size
         )
+        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
+        out_dict["ymax_size"] = (
+            ymax_size_c.value if ymax_size is not None else ymax_size
+        )
+        out_dict["x_is_global"] = (
+            x_is_global_c.value if x_is_global is not None else x_is_global
+        )
+        out_dict["y_is_global"] = (
+            y_is_global_c.value if y_is_global is not None else y_is_global
+        )
+        out_dict["tile_count"] = (
+            tile_count_c.value if tile_count is not None else tile_count
+        )
+
+        return out_dict
 
     """
     Subroutine: get_domain_name
@@ -500,7 +526,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     its value as well.
     """
 
-    def get_domain_name(self, domain_name: str, domain_id: Optional[int] = None):
+    def get_domain_name(self, domain_name: str, domain_id: Optional[int] = None) -> str:
         _cfms_get_domain_name = self.clibFMS.cFMS_get_domain_name
 
         domain_name_c, domain_name_t = set_Cchar(domain_name)
@@ -560,6 +586,12 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     ysize, x_is_global, y_is_global, and tile_count are updated.
     Python objects passed as arguments should be set to the result
     of the call.
+    Returns: In the Fortran source, when passed in xbegin, xend, ybegin, yend,
+    xsize, ysize, x_is_global, y_is_global, and tile_count are updated. To
+    obtain access to their values, an integer Python object should be passed
+    in as an argument for the desired variable.
+    This method will return a dictionary containing values for those arguments
+    which were passed, overwriting the passed value.
     """
 
     def set_compute_domain(
@@ -576,7 +608,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         tile_count: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ):
+    ) -> dict:
         _cfms_set_compute_domain = self.clibFMS.cFMS_set_compute_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -623,17 +655,24 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        return (
-            xbegin_c.value if xbegin is not None else xbegin,
-            xend_c.value if xend is not None else xend,
-            ybegin_c.value if ybegin is not None else ybegin,
-            yend_c.value if yend is not None else yend,
-            xsize_c.value if xsize is not None else xsize,
-            ysize_c.value if ysize is not None else ysize,
-            x_is_global_c.value if x_is_global is not None else x_is_global,
-            y_is_global_c.value if y_is_global is not None else y_is_global,
-            tile_count_c.value if tile_count is not None else tile_count,
+        out_dict = {}
+        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
+        out_dict["xend"] = xend_c.value if xend is not None else xend
+        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
+        out_dict["yend"] = yend_c.value if yend is not None else yend
+        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
+        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
+        out_dict["x_is_global"] = (
+            x_is_global_c.value if x_is_global is not None else x_is_global
         )
+        out_dict["y_is_global"] = (
+            y_is_global_c.value if y_is_global is not None else y_is_global
+        )
+        out_dict["tile_count"] = (
+            tile_count_c.value if tile_count is not None else tile_count
+        )
+
+        return out_dict
 
     """
     Subroutine: set_current_domain
@@ -674,10 +713,12 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     Passed arguments will set data for data domain
 
-    Returns: In Fortran source, xbegin, xend, ybegin, yend, xsize,
-    ysize, x_is_global, y_is_global, and tile_count are updated.
-    Python objects passed as arguments should be set to the result
-    of the call.
+    Returns: In the Fortran source, when passed in xbegin, xend, ybegin, yend,
+    xsize, ysize, x_is_global, y_is_global, and tile_count are updated. To
+    obtain access to their values, an integer Python object should be passed
+    in as an argument for the desired variable.
+    This method will return a dictionary containing values for those arguments
+    which were passed, overwriting the passed value.
     """
 
     def set_data_domain(
@@ -694,7 +735,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         tile_count: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ):
+    ) -> dict:
         _cfms_set_data_domain = self.clibFMS.cFMS_set_data_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -741,17 +782,24 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        return (
-            xbegin_c.value if xbegin is not None else xbegin,
-            xend_c.value if xend is not None else xend,
-            ybegin_c.value if ybegin is not None else ybegin,
-            yend_c.value if yend is not None else yend,
-            xsize_c.value if xsize is not None else xsize,
-            ysize_c.value if ysize is not None else ysize,
-            x_is_global_c.value if x_is_global is not None else x_is_global,
-            y_is_global_c.value if y_is_global is not None else y_is_global,
-            tile_count_c.value if tile_count is not None else tile_count,
+        out_dict = {}
+        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
+        out_dict["xend"] = xend_c.value if xend is not None else xend
+        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
+        out_dict["yend"] = yend_c.value if yend is not None else yend
+        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
+        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
+        out_dict["x_is_global"] = (
+            x_is_global_c.value if x_is_global is not None else x_is_global
         )
+        out_dict["y_is_global"] = (
+            y_is_global_c.value if y_is_global is not None else y_is_global
+        )
+        out_dict["tile_count"] = (
+            tile_count_c.value if tile_count is not None else tile_count
+        )
+
+        return out_dict
 
     """
     Subroutine: set_global_domain
@@ -762,6 +810,12 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     ysize, and tile_count are updated.
     Python objects passed as arguments should be set to the result
     of the call.
+    Returns: In the Fortran source, when passed in xbegin, xend, ybegin, yend,
+    xsize, ysize, and tile_count are updated. To obtain access to their values,
+    an integer Python object should be passed in as an argument for the
+    desired variable.
+    This method will return a dictionary containing values for those arguments
+    which were passed, overwriting the passed value.
     """
 
     def set_global_domain(
@@ -776,7 +830,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         tile_count: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ):
+    ) -> dict:
         _cfms_set_global_domain = self.clibFMS.cFMS_set_global_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -817,12 +871,15 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        return (
-            xbegin_c.value if xbegin is not None else xbegin,
-            xend_c.value if xend is not None else xend,
-            ybegin_c.value if ybegin is not None else ybegin,
-            yend_c.value if yend is not None else yend,
-            xsize_c.value if xsize is not None else xsize,
-            ysize_c.value if ysize is not None else ysize,
-            tile_count_c.value if tile_count is not None else tile_count,
+        out_dict = {}
+        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
+        out_dict["xend"] = xend_c.value if xend is not None else xend
+        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
+        out_dict["yend"] = yend_c.value if yend is not None else yend
+        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
+        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
+        out_dict["tile_count"] = (
+            tile_count_c.value if tile_count is not None else tile_count
         )
+
+        return out_dict

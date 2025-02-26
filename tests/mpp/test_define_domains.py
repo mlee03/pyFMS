@@ -1,6 +1,6 @@
 import numpy as np
 
-from pyfms import Domain, NestDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
+from pyfms import pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
 
 def test_define_domains():
@@ -20,9 +20,6 @@ def test_define_domains():
     nnest_domain = 2
     domain_id = 1
     nest_domain_id = 1
-
-    domain = Domain()
-    nest_domain = NestDomain()
 
     coarse_global_indices = np.array([0, NX - 1, 0, NY - 1], dtype=np.int32, order="C")
     coarse_npes = COARSE_NPES
@@ -84,64 +81,38 @@ def test_define_domains():
         pyfms.set_pelist_npes(coarse_npes)
         mpp.set_current_pelist(coarse_pelist)
         name = "test coarse domain"
-        domain.maskmap = np.full(
-            shape=(2, 4), fill_value=True, dtype=np.bool_, order="C"
-        )
+        maskmap = np.full(shape=(2, 4), fill_value=True, dtype=np.bool_, order="C")
 
         xextent = np.zeros(shape=2, dtype=np.int32, order="C")
         yextent = np.zeros(shape=2, dtype=np.int32, order="C")
         is_mosaic = False
 
-        domain.domain_id = domain_id
-        domain.name = name
-        domain.pelist = coarse_pelist
-        domain.global_indices = coarse_global_indices
-        domain.whalo = coarse_whalo
-        domain.ehalo = coarse_ehalo
-        domain.shalo = coarse_shalo
-        domain.nhalo = coarse_nhalo
-        domain.tile_id = coarse_tile_id
-        domain.xextent = coarse_xextent
-        domain.yextent = coarse_yextent
-        domain.xflags = coarse_xflags
-        domain.yflags = coarse_yflags
-        domain.xextent = xextent
-        domain.yextent = yextent
-        domain.is_mosaic = is_mosaic
-        domain.layout = np.empty(shape=2, dtype=np.int32, order="C")
+        layout = np.empty(shape=2, dtype=np.int32, order="C")
         ndivs = coarse_npes
 
         mpp_domains.define_layout(
-            global_indices=coarse_global_indices, ndivs=ndivs, layout=domain.layout
+            global_indices=coarse_global_indices, ndivs=ndivs, layout=layout
         )
 
         mpp_domains.define_domains(
-            global_indices=domain.global_indices,
-            layout=domain.layout,
-            domain_id=domain.domain_id,
-            pelist=domain.pelist,
-            xflags=domain.xflags,
-            yflags=domain.yflags,
-            xhalo=domain.xhalo,
-            yhalo=domain.yhalo,
-            xextent=domain.xextent,
-            yextent=domain.yextent,
-            maskmap=domain.maskmap,
-            name=domain.name,
-            symmetry=domain.symmetry,
-            memory_size=domain.memory_size,
-            whalo=domain.whalo,
-            ehalo=domain.ehalo,
-            shalo=domain.shalo,
-            nhalo=domain.nhalo,
-            is_mosaic=domain.is_mosaic,
-            tile_count=domain.tile_count,
-            tile_id=domain.tile_id,
-            complete=domain.complete,
-            x_cyclic_offset=domain.x_cyclic_offset,
-            y_cyclic_offset=domain.y_cyclic_offset,
+            global_indices=coarse_global_indices,
+            layout=layout,
+            domain_id=domain_id,
+            pelist=coarse_pelist,
+            xflags=coarse_xflags,
+            yflags=coarse_yflags,
+            xextent=xextent,
+            yextent=yextent,
+            maskmap=maskmap,
+            name=name,
+            symmetry=symmetry,
+            whalo=coarse_whalo,
+            ehalo=coarse_ehalo,
+            shalo=coarse_shalo,
+            nhalo=coarse_nhalo,
+            is_mosaic=is_mosaic,
+            tile_id=coarse_tile_id,
         )
-        domain.null()
 
     mpp.set_current_pelist()
 
@@ -158,48 +129,27 @@ def test_define_domains():
         mpp.set_current_pelist(pelist=fine_pelist)
 
         name = "test fine domain"
-        domain.name = name
-        domain.global_indices = fine_global_indices
-        domain.tile_id = fine_tile_id
-        domain.whalo = fine_whalo
-        domain.ehalo = fine_ehalo
-        domain.shalo = fine_shalo
-        domain.nhalo = fine_nhalo
-        domain.domain_id = domain_id
-        domain.layout = np.empty(shape=2, dtype=np.int32, order="C")
+        layout = np.empty(shape=2, dtype=np.int32, order="C")
         ndivs = FINE_NPES
 
         mpp_domains.define_layout(
-            global_indices=fine_global_indices, ndivs=ndivs, layout=domain.layout
+            global_indices=fine_global_indices, ndivs=ndivs, layout=layout
         )
 
         mpp_domains.define_domains(
-            global_indices=domain.global_indices,
-            layout=domain.layout,
-            domain_id=domain.domain_id,
-            pelist=domain.pelist,
-            xflags=domain.xflags,
-            yflags=domain.yflags,
-            xhalo=domain.xhalo,
-            yhalo=domain.yhalo,
-            xextent=domain.xextent,
-            yextent=domain.yextent,
-            maskmap=domain.maskmap,
-            name=domain.name,
-            symmetry=domain.symmetry,
-            memory_size=domain.memory_size,
-            whalo=domain.whalo,
-            ehalo=domain.ehalo,
-            shalo=domain.shalo,
-            nhalo=domain.nhalo,
-            is_mosaic=domain.is_mosaic,
-            tile_count=domain.tile_count,
-            tile_id=domain.tile_id,
-            complete=domain.complete,
-            x_cyclic_offset=domain.x_cyclic_offset,
-            y_cyclic_offset=domain.y_cyclic_offset,
+            global_indices=fine_global_indices,
+            layout=layout,
+            domain_id=domain_id,
+            pelist=fine_pelist,
+            name=name,
+            symmetry=symmetry,
+            whalo=fine_whalo,
+            ehalo=fine_ehalo,
+            shalo=fine_shalo,
+            nhalo=fine_nhalo,
+            is_mosaic=is_mosaic,
+            tile_id=fine_tile_id,
         )
-        domain.null()
 
     mpp.set_current_pelist()
 
@@ -207,43 +157,40 @@ def test_define_domains():
 
     # set nest domain
 
-    nest_domain.name = "test nest domain"
-    nest_domain.num_nest = 1
-    nest_domain.ntiles = 2
-    nest_domain.nest_level = np.array([1], dtype=np.int32, order="C")
-    nest_domain.istart_coarse = np.array([24], dtype=np.int32, order="C")
-    nest_domain.icount_coarse = np.array([24], dtype=np.int32, order="C")
-    nest_domain.jstart_coarse = np.array([24], dtype=np.int32, order="C")
-    nest_domain.jcount_coarse = np.array([24], dtype=np.int32, order="C")
-    nest_domain.npes_nest_tile = np.array(
-        [COARSE_NPES, FINE_NPES], dtype=np.int32, order="C"
-    )
-    nest_domain.x_refine = np.array([X_REFINE], dtype=np.int32, order="C")
-    nest_domain.y_refine = np.array([Y_REFINE], dtype=np.int32, order="C")
-    nest_domain.tile_fine = np.array([fine_tile_id], dtype=np.int32, order="C")
-    nest_domain.tile_coarse = np.array([coarse_tile_id], dtype=np.int32, order="C")
-    nest_domain.nest_domain_id = nest_domain_id
-    nest_domain.domain_id = domain_id
+    name = "test nest domain"
+    num_nest = 1
+    ntiles = 2
+    nest_level = np.array([1], dtype=np.int32, order="C")
+    istart_coarse = np.array([24], dtype=np.int32, order="C")
+    icount_coarse = np.array([24], dtype=np.int32, order="C")
+    jstart_coarse = np.array([24], dtype=np.int32, order="C")
+    jcount_coarse = np.array([24], dtype=np.int32, order="C")
+    npes_nest_tile = np.array([COARSE_NPES, FINE_NPES], dtype=np.int32, order="C")
+    x_refine = np.array([X_REFINE], dtype=np.int32, order="C")
+    y_refine = np.array([Y_REFINE], dtype=np.int32, order="C")
+    tile_fine = np.array([fine_tile_id], dtype=np.int32, order="C")
+    tile_coarse = np.array([coarse_tile_id], dtype=np.int32, order="C")
+    nest_domain_id = nest_domain_id
+    domain_id = domain_id
 
     mpp_domains.define_nest_domains(
-        num_nest=nest_domain.num_nest,
-        ntiles=nest_domain.ntiles,
-        nest_level=nest_domain.nest_level,
-        tile_fine=nest_domain.tile_fine,
-        tile_coarse=nest_domain.tile_coarse,
-        istart_coarse=nest_domain.istart_coarse,
-        icount_coarse=nest_domain.icount_coarse,
-        jstart_coarse=nest_domain.jstart_coarse,
-        jcount_coarse=nest_domain.jcount_coarse,
-        npes_nest_tile=nest_domain.npes_nest_tile,
-        x_refine=nest_domain.x_refine,
-        y_refine=nest_domain.y_refine,
-        nest_domain_id=nest_domain.nest_domain_id,
-        domain_id=nest_domain.domain_id,
-        extra_halo=nest_domain.extra_halo,
-        name=nest_domain.name,
+        num_nest=num_nest,
+        ntiles=ntiles,
+        nest_level=nest_level,
+        tile_fine=tile_fine,
+        tile_coarse=tile_coarse,
+        istart_coarse=istart_coarse,
+        icount_coarse=icount_coarse,
+        jstart_coarse=jstart_coarse,
+        jcount_coarse=jcount_coarse,
+        npes_nest_tile=npes_nest_tile,
+        x_refine=x_refine,
+        y_refine=y_refine,
+        nest_domain_id=nest_domain_id,
+        domain_id=domain_id,
+        extra_halo=None,
+        name=name,
     )
-    nest_domain.null()
 
     mpp.set_current_pelist()
 
