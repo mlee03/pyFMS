@@ -107,6 +107,9 @@ set_multipointer:
     as an argument, the method will default to the
     returning the passed array and the result of a
     pass to set_ndpointer.
+
+    This method is expected to be slow, and when
+    possible avoided.
 """
 
 
