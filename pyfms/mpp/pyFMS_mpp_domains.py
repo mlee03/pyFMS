@@ -1,6 +1,6 @@
 import ctypes as ct
 import dataclasses
-from typing import Optional, Tuple
+from typing import Optional
 
 import numpy as np
 from numpy.typing import NDArray
@@ -57,7 +57,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         complete: Optional[bool] = None,
         x_cyclic_offset: Optional[int] = None,
         y_cyclic_offset: Optional[int] = None,
-    ) -> Tuple:
+    ):
 
         _cfms_define_domains = self.clibFMS.cFMS_define_domains
 
@@ -140,11 +140,6 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             complete_c,
             x_cyclic_offset_c,
             y_cyclic_offset_c,
-        )
-
-        return (
-            tile_count_c.value if tile_count is not None else tile_count,
-            tile_id_c.value if tile_id is not None else tile_id,
         )
 
     """
