@@ -1,8 +1,7 @@
 import ctypes as ct
 import dataclasses
-from typing import Optional, Tuple
+from typing import Optional
 
-import numpy as np
 from numpy.typing import NDArray
 
 from pyfms.pyFMS_data_handling import (
@@ -39,7 +38,7 @@ class pyFMS_mpp:
 
     def declare_pelist(
         self,
-        pelist: NDArray[np.int32],
+        pelist: NDArray,
         name: Optional[str] = None,
         commID: Optional[int] = None,
     ) -> int | None:
@@ -67,6 +66,11 @@ class pyFMS_mpp:
     """
 
     def pyfms_error(self, errortype: int, errormsg: Optional[str] = None):
+        if errormsg and len(errormsg) > 128:
+            raise ValueError(
+                "errormsg must be less than 128 characters, "
+                f"current errormsg {len(errormsg)} characters"
+            )
         _cfms_error = self.clibFMS.cFMS_error
 
         errortype_c, errortype_t = setscalar_Cint32(errortype)
@@ -93,10 +97,10 @@ class pyFMS_mpp:
 
     def get_current_pelist(
         self,
-        pelist: NDArray[np.int32],
+        pelist: NDArray,
         name: Optional[str] = None,
         commID: Optional[int] = None,
-    ) -> Tuple:
+    ) -> int:
         _cfms_get_current_pelist = self.clibFMS.cFMS_get_current_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
@@ -111,10 +115,14 @@ class pyFMS_mpp:
         if commID is not None:
             commID = commID_c.value
 
-        if name is not None:
-            name = name_c.value.decode("utf-8")
+        # TODO: allow for return of name after cFMS fix
 
-        return commID, name
+        # if name is not None:
+        #     name = name_c.value.decode("utf-8")
+
+        # return commID, name
+
+        return commID
 
     """
     Function: npes
@@ -154,7 +162,7 @@ class pyFMS_mpp:
     """
 
     def set_current_pelist(
-        self, pelist: Optional[NDArray[np.int32]] = None, no_sync: Optional[bool] = None
+        self, pelist: Optional[NDArray] = None, no_sync: Optional[bool] = None
     ):
         _cfms_set_current_pelist = self.clibFMS.cFMS_set_current_pelist
 
