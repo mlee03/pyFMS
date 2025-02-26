@@ -1,6 +1,6 @@
 import numpy as np
 
-from pyfms import Domain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
+from pyfms import pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
 
 def test_getset_domains():
@@ -15,7 +15,6 @@ def test_getset_domains():
           *     *     *     *
           *     *     *     *
     """
-    domain = Domain()
     domain_id = 0
     ndiv = 4
     global_indices = np.array([0, 3, 0, 3], dtype=np.int32, order="C")
@@ -31,44 +30,18 @@ def test_getset_domains():
 
     # set domain
 
-    domain.global_indices = global_indices
-    domain.domain_id = domain_id
-    domain.whalo = whalo
-    domain.ehalo = ehalo
-    domain.shalo = shalo
-    domain.nhalo = nhalo
-    domain.name = name
+    layout = np.empty(shape=2, dtype=np.int32, order="C")
+    mpp_domains.define_layout(global_indices=global_indices, ndivs=ndiv, layout=layout)
 
-    domain.layout = np.empty(shape=2, dtype=np.int32, order="C")
-    mpp_domains.define_layout(
-        global_indices=global_indices, ndivs=ndiv, layout=domain.layout
-    )
-
-    domain.tile_count, domain.tile_id = mpp_domains.define_domains(
-        global_indices=domain.global_indices,
-        layout=domain.layout,
-        domain_id=domain.domain_id,
-        pelist=domain.pelist,
-        xflags=domain.xflags,
-        yflags=domain.yflags,
-        xhalo=domain.xhalo,
-        yhalo=domain.yhalo,
-        xextent=domain.xextent,
-        yextent=domain.yextent,
-        maskmap=domain.maskmap,
-        name=domain.name,
-        symmetry=domain.symmetry,
-        memory_size=domain.memory_size,
-        whalo=domain.whalo,
-        ehalo=domain.ehalo,
-        shalo=domain.shalo,
-        nhalo=domain.nhalo,
-        is_mosaic=domain.is_mosaic,
-        tile_count=domain.tile_count,
-        tile_id=domain.tile_id,
-        complete=domain.complete,
-        x_cyclic_offset=domain.x_cyclic_offset,
-        y_cyclic_offset=domain.y_cyclic_offset,
+    mpp_domains.define_domains(
+        global_indices=global_indices,
+        layout=layout,
+        domain_id=domain_id,
+        name=name,
+        whalo=whalo,
+        ehalo=ehalo,
+        shalo=shalo,
+        nhalo=nhalo,
     )
 
     if not mpp_domains.domain_is_initialized(domain_id):
@@ -155,19 +128,7 @@ def test_getset_domains():
     x_is_global_check = True
     y_is_global_check = True
 
-    (
-        is_check,
-        ie_check,
-        js_check,
-        je_check,
-        xsize_check,
-        xmax_size_check,
-        ysize_check,
-        ymax_size_check,
-        x_is_global_check,
-        y_is_global_check,
-        tile_count,
-    ) = mpp_domains.get_compute_domain(
+    out_dict = mpp_domains.get_compute_domain(
         domain_id=domain_id,
         xbegin=is_check,
         xend=ie_check,
@@ -185,30 +146,18 @@ def test_getset_domains():
         shalo=shalo,
     )
 
-    assert is_check == isc[pe]
-    assert ie_check == iec[pe]
-    assert js_check == jsc[pe]
-    assert je_check == jec[pe]
-    assert xsize_check == 2
-    assert ysize_check == 2
-    assert xmax_size_check == 2
-    assert ymax_size_check == 2
-    assert x_is_global_check is False
-    assert y_is_global_check is False
+    assert out_dict["xbegin"] == isc[pe]
+    assert out_dict["xend"] == iec[pe]
+    assert out_dict["ybegin"] == jsc[pe]
+    assert out_dict["yend"] == jec[pe]
+    assert out_dict["xsize"] == 2
+    assert out_dict["ysize"] == 2
+    assert out_dict["xmax_size"] == 2
+    assert out_dict["ymax_size"] == 2
+    assert out_dict["x_is_global"] is False
+    assert out_dict["y_is_global"] is False
 
-    (
-        is_check,
-        ie_check,
-        js_check,
-        je_check,
-        xsize_check,
-        xmax_size_check,
-        ysize_check,
-        ymax_size_check,
-        x_is_global_check,
-        y_is_global_check,
-        tile_count,
-    ) = mpp_domains.get_data_domain(
+    out_dict = mpp_domains.get_data_domain(
         domain_id=domain_id,
         xbegin=is_check,
         xend=ie_check,
@@ -226,14 +175,14 @@ def test_getset_domains():
         shalo=shalo,
     )
 
-    assert is_check == isd[pe]
-    assert ie_check == ied[pe]
-    assert js_check == jsd[pe]
-    assert je_check == jed[pe]
-    assert xsize_check == 6
-    assert ysize_check == 6
-    assert xmax_size_check == 6
-    assert ymax_size_check == 6
+    assert out_dict["xbegin"] == isd[pe]
+    assert out_dict["xend"] == ied[pe]
+    assert out_dict["ybegin"] == jsd[pe]
+    assert out_dict["yend"] == jed[pe]
+    assert out_dict["xsize"] == 6
+    assert out_dict["ysize"] == 6
+    assert out_dict["xmax_size"] == 6
+    assert out_dict["ymax_size"] == 6
 
     pyfms.pyfms_end()
 
