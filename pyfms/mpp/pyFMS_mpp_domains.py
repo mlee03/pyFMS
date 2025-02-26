@@ -299,8 +299,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     Returns: In the Fortran source, when passed in xbegin, xend, ybegin, yend,
     xsize, xmax_size, ysize, ymax_size, x_is_global, y_is_global, and
-    tile_count are updated. To obtain access to their values, an integer
-    Python object should be passed in as an argument for the desired variable.
+    tile_count are updated. To obtain access to the updated value the flag
+    associated with the desired variable should be set to true.
     This method will return a dictionary containing values for those arguments
     which were passed, overwriting the passed value.
     """
@@ -308,17 +308,17 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     def get_compute_domain(
         self,
         domain_id: Optional[int] = None,
-        xbegin: Optional[int] = None,
-        xend: Optional[int] = None,
-        ybegin: Optional[int] = None,
-        yend: Optional[int] = None,
-        xsize: Optional[int] = None,
-        xmax_size: Optional[int] = None,
-        ysize: Optional[int] = None,
-        ymax_size: Optional[int] = None,
-        x_is_global: Optional[bool] = None,
-        y_is_global: Optional[bool] = None,
-        tile_count: Optional[int] = None,
+        get_xbegin: Optional[bool] = False,
+        get_xend: Optional[bool] = False,
+        get_ybegin: Optional[bool] = False,
+        get_yend: Optional[bool] = False,
+        get_xsize: Optional[bool] = False,
+        get_xmax_size: Optional[bool] = False,
+        get_ysize: Optional[bool] = False,
+        get_ymax_size: Optional[bool] = False,
+        get_x_is_global: Optional[bool] = False,
+        get_y_is_global: Optional[bool] = False,
+        get_tile_count: Optional[bool] = False,
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
@@ -326,17 +326,17 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         _cfms_get_compute_domain = self.clibFMS.cFMS_get_compute_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
-        xend_c, xend_t = setscalar_Cint32(xend)
-        ybegin_c, ybegin_t = setscalar_Cint32(ybegin)
-        yend_c, yend_t = setscalar_Cint32(yend)
-        xsize_c, xsize_t = setscalar_Cint32(xsize)
-        xmax_size_c, xmax_size_t = setscalar_Cint32(xmax_size)
-        ysize_c, ysize_t = setscalar_Cint32(ysize)
-        ymax_size_c, ymax_size_t = setscalar_Cint32(ymax_size)
-        x_is_global_c, x_is_global_t = setscalar_Cbool(x_is_global)
-        y_is_global_c, y_is_global_t = setscalar_Cbool(y_is_global)
-        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
+        xbegin_c, xbegin_t = setscalar_Cint32(arg=get_xbegin, get=True)
+        xend_c, xend_t = setscalar_Cint32(arg=get_xend, get=True)
+        ybegin_c, ybegin_t = setscalar_Cint32(arg=get_ybegin, get=True)
+        yend_c, yend_t = setscalar_Cint32(arg=get_yend, get=True)
+        xsize_c, xsize_t = setscalar_Cint32(arg=get_xsize, get=True)
+        xmax_size_c, xmax_size_t = setscalar_Cint32(arg=get_xmax_size, get=True)
+        ysize_c, ysize_t = setscalar_Cint32(arg=get_ysize, get=True)
+        ymax_size_c, ymax_size_t = setscalar_Cint32(arg=get_ymax_size, get=True)
+        x_is_global_c, x_is_global_t = setscalar_Cbool(arg=get_x_is_global, get=True)
+        y_is_global_c, y_is_global_t = setscalar_Cbool(arg=get_y_is_global, get=True)
+        tile_count_c, tile_count_t = setscalar_Cint32(arg=get_tile_count, get=True)
         position_c, position_t = setscalar_Cint32(position)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
@@ -379,27 +379,17 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         )
 
         out_dict = {}
-        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
-        out_dict["xend"] = xend_c.value if xend is not None else xend
-        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
-        out_dict["yend"] = yend_c.value if yend is not None else yend
-        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
-        out_dict["xmax_size"] = (
-            xmax_size_c.value if xmax_size is not None else xmax_size
-        )
-        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
-        out_dict["ymax_size"] = (
-            ymax_size_c.value if ymax_size is not None else ymax_size
-        )
-        out_dict["x_is_global"] = (
-            x_is_global_c.value if x_is_global is not None else x_is_global
-        )
-        out_dict["y_is_global"] = (
-            y_is_global_c.value if y_is_global is not None else y_is_global
-        )
-        out_dict["tile_count"] = (
-            tile_count_c.value if tile_count is not None else tile_count
-        )
+        out_dict["xbegin"] = xbegin_c.value if get_xbegin else None
+        out_dict["xend"] = xend_c.value if get_xend else None
+        out_dict["ybegin"] = ybegin_c.value if get_ybegin else None
+        out_dict["yend"] = yend_c.value if get_yend else None
+        out_dict["xsize"] = xsize_c.value if get_xsize else None
+        out_dict["xmax_size"] = xmax_size_c.value if get_xmax_size else None
+        out_dict["ysize"] = ysize_c.value if get_ysize else None
+        out_dict["ymax_size"] = ymax_size_c.value if get_ymax_size else None
+        out_dict["x_is_global"] = x_is_global_c.value if get_x_is_global else None
+        out_dict["y_is_global"] = y_is_global_c.value if get_y_is_global else None
+        out_dict["tile_count"] = tile_count_c.value if get_tile_count else None
 
         return out_dict
 
@@ -411,8 +401,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     Returns: In the Fortran source, when passed in xbegin, xend, ybegin, yend,
     xsize, xmax_size, ysize, ymax_size, x_is_global, y_is_global, and
-    tile_count are updated. To obtain access to their values, an integer
-    Python object should be passed in as an argument for the desired variable.
+    tile_count are updated. To obtain access to the updated value the flag
+    associated with the desired variable should be set to true.
     This method will return a dictionary containing values for those arguments
     which were passed, overwriting the passed value.
     """
@@ -420,17 +410,17 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     def get_data_domain(
         self,
         domain_id: Optional[int] = None,
-        xbegin: Optional[int] = None,
-        xend: Optional[int] = None,
-        ybegin: Optional[int] = None,
-        yend: Optional[int] = None,
-        xsize: Optional[int] = None,
-        xmax_size: Optional[int] = None,
-        ysize: Optional[int] = None,
-        ymax_size: Optional[int] = None,
-        x_is_global: Optional[bool] = None,
-        y_is_global: Optional[bool] = None,
-        tile_count: Optional[int] = None,
+        get_xbegin: Optional[bool] = False,
+        get_xend: Optional[bool] = False,
+        get_ybegin: Optional[bool] = False,
+        get_yend: Optional[bool] = False,
+        get_xsize: Optional[bool] = False,
+        get_xmax_size: Optional[bool] = False,
+        get_ysize: Optional[bool] = False,
+        get_ymax_size: Optional[bool] = False,
+        get_x_is_global: Optional[bool] = False,
+        get_y_is_global: Optional[bool] = False,
+        get_tile_count: Optional[bool] = False,
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
@@ -438,17 +428,17 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         _cfms_get_data_domain = self.clibFMS.cFMS_get_data_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
-        xend_c, xend_t = setscalar_Cint32(xend)
-        ybegin_c, ybegin_t = setscalar_Cint32(ybegin)
-        yend_c, yend_t = setscalar_Cint32(yend)
-        xsize_c, xsize_t = setscalar_Cint32(xsize)
-        xmax_size_c, xmax_size_t = setscalar_Cint32(xmax_size)
-        ysize_c, ysize_t = setscalar_Cint32(ysize)
-        ymax_size_c, ymax_size_t = setscalar_Cint32(ymax_size)
-        x_is_global_c, x_is_global_t = setscalar_Cbool(x_is_global)
-        y_is_global_c, y_is_global_t = setscalar_Cbool(y_is_global)
-        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
+        xbegin_c, xbegin_t = setscalar_Cint32(arg=get_xbegin, get=True)
+        xend_c, xend_t = setscalar_Cint32(arg=get_xend, get=True)
+        ybegin_c, ybegin_t = setscalar_Cint32(arg=get_ybegin, get=True)
+        yend_c, yend_t = setscalar_Cint32(arg=get_yend, get=True)
+        xsize_c, xsize_t = setscalar_Cint32(arg=get_xsize, get=True)
+        xmax_size_c, xmax_size_t = setscalar_Cint32(arg=get_xmax_size, get=True)
+        ysize_c, ysize_t = setscalar_Cint32(arg=get_ysize, get=True)
+        ymax_size_c, ymax_size_t = setscalar_Cint32(arg=get_ymax_size, get=True)
+        x_is_global_c, x_is_global_t = setscalar_Cbool(arg=get_x_is_global, get=True)
+        y_is_global_c, y_is_global_t = setscalar_Cbool(arg=get_y_is_global, get=True)
+        tile_count_c, tile_count_t = setscalar_Cint32(arg=get_tile_count, get=True)
         position_c, position_t = setscalar_Cint32(position)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
@@ -491,27 +481,17 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         )
 
         out_dict = {}
-        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
-        out_dict["xend"] = xend_c.value if xend is not None else xend
-        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
-        out_dict["yend"] = yend_c.value if yend is not None else yend
-        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
-        out_dict["xmax_size"] = (
-            xmax_size_c.value if xmax_size is not None else xmax_size
-        )
-        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
-        out_dict["ymax_size"] = (
-            ymax_size_c.value if ymax_size is not None else ymax_size
-        )
-        out_dict["x_is_global"] = (
-            x_is_global_c.value if x_is_global is not None else x_is_global
-        )
-        out_dict["y_is_global"] = (
-            y_is_global_c.value if y_is_global is not None else y_is_global
-        )
-        out_dict["tile_count"] = (
-            tile_count_c.value if tile_count is not None else tile_count
-        )
+        out_dict["xbegin"] = xbegin_c.value if get_xbegin else None
+        out_dict["xend"] = xend_c.value if get_xend else None
+        out_dict["ybegin"] = ybegin_c.value if get_ybegin else None
+        out_dict["yend"] = yend_c.value if get_yend else None
+        out_dict["xsize"] = xsize_c.value if get_xsize else None
+        out_dict["xmax_size"] = xmax_size_c.value if get_xmax_size else None
+        out_dict["ysize"] = ysize_c.value if get_ysize else None
+        out_dict["ymax_size"] = ymax_size_c.value if get_ymax_size else None
+        out_dict["x_is_global"] = x_is_global_c.value if get_x_is_global else None
+        out_dict["y_is_global"] = y_is_global_c.value if get_y_is_global else None
+        out_dict["tile_count"] = tile_count_c.value if get_tile_count else None
 
         return out_dict
 
@@ -603,8 +583,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         yend: Optional[int] = None,
         xsize: Optional[int] = None,
         ysize: Optional[int] = None,
-        x_is_global: Optional[bool] = None,
-        y_is_global: Optional[bool] = None,
+        x_is_global: Optional[bool] = False,
+        y_is_global: Optional[bool] = False,
         tile_count: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
