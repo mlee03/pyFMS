@@ -115,7 +115,7 @@ def test_define_domains():
             global_indices=coarse_global_indices, ndivs=ndivs, layout=domain.layout
         )
 
-        domain.tile_count, domain.tile_id = mpp_domains.define_domains(
+        mpp_domains.define_domains(
             global_indices=domain.global_indices,
             layout=domain.layout,
             domain_id=domain.domain_id,
@@ -173,7 +173,7 @@ def test_define_domains():
             global_indices=fine_global_indices, ndivs=ndivs, layout=domain.layout
         )
 
-        domain.tile_count, domain.tile_id = mpp_domains.define_domains(
+        mpp_domains.define_domains(
             global_indices=domain.global_indices,
             layout=domain.layout,
             domain_id=domain.domain_id,
