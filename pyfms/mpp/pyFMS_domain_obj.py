@@ -7,8 +7,8 @@ from numpy.typing import NDArray
 
 @dataclass
 class Domain:
-    global_indices: Optional[NDArray[np.int32]] = None
-    layout: Optional[Tuple[int, ...]] = None
+    global_indices: NDArray = None
+    layout: Tuple[int, ...] = None
     domain_id: Optional[int] = None
     pelist: Optional[NDArray[np.int32]] = None
     xflags: Optional[int] = None
@@ -61,18 +61,18 @@ class Domain:
 
 @dataclass
 class NestDomain:
-    num_nest: Optional[int] = None
-    ntiles: Optional[int] = None
-    nest_level: Optional[NDArray[np.int32]] = None
-    tile_fine: Optional[NDArray[np.int32]] = None
-    tile_coarse: Optional[NDArray[np.int32]] = None
-    istart_coarse: Optional[NDArray[np.int32]] = None
-    icount_coarse: Optional[NDArray[np.int32]] = None
-    jstart_coarse: Optional[NDArray[np.int32]] = None
-    jcount_coarse: Optional[NDArray[np.int32]] = None
-    npes_nest_tile: Optional[NDArray[np.int32]] = None
-    x_refine: Optional[NDArray[np.int32]] = None
-    y_refine: Optional[NDArray[np.int32]] = None
+    num_nest: int = None
+    ntiles: int = None
+    nest_level: NDArray = None
+    tile_fine: NDArray = None
+    tile_coarse: NDArray = None
+    istart_coarse: NDArray = None
+    icount_coarse: NDArray = None
+    jstart_coarse: NDArray = None
+    jcount_coarse: NDArray = None
+    npes_nest_tile: NDArray = None
+    x_refine: NDArray = None
+    y_refine: NDArray = None
     nest_domain_id: Optional[int] = None
     domain_id: Optional[int] = None
     extra_halo: Optional[int] = None

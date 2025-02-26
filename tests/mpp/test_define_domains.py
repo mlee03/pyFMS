@@ -1,14 +1,6 @@
 import numpy as np
-import numpy.typing as npt
 
 from pyfms import Domain, NestDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
-
-
-def any(n: int, array: npt.NDArray, value: int) -> bool:
-    for i in range(n):
-        if value == array[i]:
-            return True
-    return False
 
 
 def test_define_domains():
@@ -32,9 +24,9 @@ def test_define_domains():
     domain = Domain()
     nest_domain = NestDomain()
 
-    coarse_global_indices = np.array([0, NX - 1, 0, NY - 1], dtype=np.int32, order="F")
+    coarse_global_indices = np.array([0, NX - 1, 0, NY - 1], dtype=np.int32, order="C")
     coarse_npes = COARSE_NPES
-    coarse_pelist = np.empty(shape=COARSE_NPES, dtype=np.int32, order="F")
+    coarse_pelist = np.empty(shape=COARSE_NPES, dtype=np.int32, order="C")
     coarse_tile_id = 0
     coarse_whalo = 2
     coarse_ehalo = 2
@@ -46,17 +38,17 @@ def test_define_domains():
     symmetry = False
 
     coarse_xextent = np.array(
-        [NX / 2, NX / 2, NX / 2, NX / 2], dtype=np.int32, order="F"
+        [NX / 2, NX / 2, NX / 2, NX / 2], dtype=np.int32, order="C"
     )
     coarse_yextent = np.array(
-        [NY / 2, NY / 2, NY / 2, NY / 2], dtype=np.int32, order="F"
+        [NY / 2, NY / 2, NY / 2, NY / 2], dtype=np.int32, order="C"
     )
 
     fine_global_indices = np.array(
-        [0, NX_FINE - 1, 0, NY_FINE - 1], dtype=np.int32, order="F"
+        [0, NX_FINE - 1, 0, NY_FINE - 1], dtype=np.int32, order="C"
     )
     fine_npes = FINE_NPES
-    fine_pelist = np.empty(shape=FINE_NPES, dtype=np.int32, order="F")
+    fine_pelist = np.empty(shape=FINE_NPES, dtype=np.int32, order="C")
     fine_tile_id = 1
     fine_whalo = 2
     fine_ehalo = 2
@@ -76,7 +68,7 @@ def test_define_domains():
     # get global pelist
 
     npes = mpp.npes()
-    global_pelist = np.empty(shape=npes, dtype=np.int32, order="F")
+    global_pelist = np.empty(shape=npes, dtype=np.int32, order="C")
     pyfms.set_pelist_npes(npes_in=npes)
     mpp.get_current_pelist(pelist=global_pelist)
 
@@ -88,16 +80,16 @@ def test_define_domains():
     pyfms.set_pelist_npes(npes_in=coarse_npes)
     mpp.declare_pelist(pelist=coarse_pelist, name=name_coarse)
 
-    if any(coarse_npes, coarse_pelist, mpp.pe()):
+    if mpp.pe() in coarse_pelist:
         pyfms.set_pelist_npes(coarse_npes)
         mpp.set_current_pelist(coarse_pelist)
         name = "test coarse domain"
         domain.maskmap = np.full(
-            shape=(2, 4), fill_value=True, dtype=np.bool_, order="F"
+            shape=(2, 4), fill_value=True, dtype=np.bool_, order="C"
         )
 
-        xextent = np.zeros(shape=2, dtype=np.int32, order="F")
-        yextent = np.zeros(shape=2, dtype=np.int32, order="F")
+        xextent = np.zeros(shape=2, dtype=np.int32, order="C")
+        yextent = np.zeros(shape=2, dtype=np.int32, order="C")
         is_mosaic = False
 
         domain.domain_id = domain_id
@@ -116,7 +108,7 @@ def test_define_domains():
         domain.xextent = xextent
         domain.yextent = yextent
         domain.is_mosaic = is_mosaic
-        domain.layout = np.empty(shape=2, dtype=np.int32, order="F")
+        domain.layout = np.empty(shape=2, dtype=np.int32, order="C")
         ndivs = coarse_npes
 
         mpp_domains.define_layout(
@@ -161,7 +153,7 @@ def test_define_domains():
     pyfms.set_pelist_npes(fine_npes)
     mpp.declare_pelist(pelist=fine_pelist, name=name_fine)
 
-    if any(FINE_NPES, fine_pelist, mpp.pe()):
+    if mpp.pe() in fine_pelist:
         pyfms.set_pelist_npes(fine_npes)
         mpp.set_current_pelist(pelist=fine_pelist)
 
@@ -174,7 +166,7 @@ def test_define_domains():
         domain.shalo = fine_shalo
         domain.nhalo = fine_nhalo
         domain.domain_id = domain_id
-        domain.layout = np.empty(shape=2, dtype=np.int32, order="F")
+        domain.layout = np.empty(shape=2, dtype=np.int32, order="C")
         ndivs = FINE_NPES
 
         mpp_domains.define_layout(
@@ -218,18 +210,18 @@ def test_define_domains():
     nest_domain.name = "test nest domain"
     nest_domain.num_nest = 1
     nest_domain.ntiles = 2
-    nest_domain.nest_level = np.array([1], dtype=np.int32, order="F")
-    nest_domain.istart_coarse = np.array([24], dtype=np.int32, order="F")
-    nest_domain.icount_coarse = np.array([24], dtype=np.int32, order="F")
-    nest_domain.jstart_coarse = np.array([24], dtype=np.int32, order="F")
-    nest_domain.jcount_coarse = np.array([24], dtype=np.int32, order="F")
+    nest_domain.nest_level = np.array([1], dtype=np.int32, order="C")
+    nest_domain.istart_coarse = np.array([24], dtype=np.int32, order="C")
+    nest_domain.icount_coarse = np.array([24], dtype=np.int32, order="C")
+    nest_domain.jstart_coarse = np.array([24], dtype=np.int32, order="C")
+    nest_domain.jcount_coarse = np.array([24], dtype=np.int32, order="C")
     nest_domain.npes_nest_tile = np.array(
-        [COARSE_NPES, FINE_NPES], dtype=np.int32, order="F"
+        [COARSE_NPES, FINE_NPES], dtype=np.int32, order="C"
     )
-    nest_domain.x_refine = np.array([X_REFINE], dtype=np.int32, order="F")
-    nest_domain.y_refine = np.array([Y_REFINE], dtype=np.int32, order="F")
-    nest_domain.tile_fine = np.array([fine_tile_id], dtype=np.int32, order="F")
-    nest_domain.tile_coarse = np.array([coarse_tile_id], dtype=np.int32, order="F")
+    nest_domain.x_refine = np.array([X_REFINE], dtype=np.int32, order="C")
+    nest_domain.y_refine = np.array([Y_REFINE], dtype=np.int32, order="C")
+    nest_domain.tile_fine = np.array([fine_tile_id], dtype=np.int32, order="C")
+    nest_domain.tile_coarse = np.array([coarse_tile_id], dtype=np.int32, order="C")
     nest_domain.nest_domain_id = nest_domain_id
     nest_domain.domain_id = domain_id
 

@@ -3,7 +3,7 @@ import dataclasses
 from typing import Optional, Tuple
 
 import numpy as np
-import numpy.typing as npt
+from numpy.typing import NDArray
 
 from pyfms import pyFMS_mpp
 from pyfms.pyFMS_data_handling import (
@@ -33,20 +33,20 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def define_domains(
         self,
-        global_indices: npt.NDArray[np.int32],
-        layout: npt.NDArray[np.int32],
+        global_indices: NDArray,
+        layout: NDArray,
         domain_id: Optional[int] = None,
-        pelist: Optional[npt.NDArray[np.int32]] = None,
+        pelist: Optional[NDArray] = None,
         xflags: Optional[int] = None,
         yflags: Optional[int] = None,
         xhalo: Optional[int] = None,
         yhalo: Optional[int] = None,
-        xextent: Optional[npt.NDArray[np.int32]] = None,
-        yextent: Optional[npt.NDArray[np.int32]] = None,
-        maskmap: Optional[npt.NDArray[np.bool_]] = None,
+        xextent: Optional[NDArray] = None,
+        yextent: Optional[NDArray] = None,
+        maskmap: Optional[NDArray[np.bool_]] = None,
         name: Optional[str] = None,
         symmetry: Optional[bool] = None,
-        memory_size: Optional[npt.NDArray[np.int32]] = None,
+        memory_size: Optional[NDArray] = None,
         whalo: Optional[int] = None,
         ehalo: Optional[int] = None,
         shalo: Optional[int] = None,
@@ -142,12 +142,10 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             y_cyclic_offset_c,
         )
 
-        if tile_count is not None:
-            tile_count = tile_count_c.value
-        if tile_id is not None:
-            tile_id = tile_id_c.value
-
-        return tile_count, tile_id
+        return (
+            tile_count_c.value if tile_count is not None else tile_count,
+            tile_id_c.value if tile_id is not None else tile_id,
+        )
 
     """
     Subroutine: define_io_domains
@@ -157,9 +155,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     Returns: No return
     """
 
-    def define_io_domain(
-        self, io_layout: npt.NDArray[np.int32], domain_id: Optional[int] = None
-    ):
+    def define_io_domain(self, io_layout: NDArray, domain_id: Optional[int] = None):
         _cfms_define_io_domain = self.clibFMS.cFMS_define_io_domain
 
         io_layout_p, io_layout_t = setarray_Cint32(io_layout)
@@ -181,9 +177,9 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def define_layout(
         self,
-        global_indices: npt.NDArray[np.int32],
+        global_indices: NDArray,
         ndivs: int,
-        layout: npt.NDArray[np.int32],
+        layout: NDArray,
     ):
         _cfms_define_layout = self.clibFMS.cFMS_define_layout
 
@@ -208,16 +204,16 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         self,
         num_nest: int,
         ntiles: int,
-        nest_level: npt.NDArray[np.int32],
-        tile_fine: npt.NDArray[np.int32],
-        tile_coarse: npt.NDArray[np.int32],
-        istart_coarse: npt.NDArray[np.int32],
-        icount_coarse: npt.NDArray[np.int32],
-        jstart_coarse: npt.NDArray[np.int32],
-        jcount_coarse: npt.NDArray[np.int32],
-        npes_nest_tile: npt.NDArray[np.int32],
-        x_refine: npt.NDArray[np.int32],
-        y_refine: npt.NDArray[np.int32],
+        nest_level: NDArray,
+        tile_fine: NDArray,
+        tile_coarse: NDArray,
+        istart_coarse: NDArray,
+        icount_coarse: NDArray,
+        jstart_coarse: NDArray,
+        jcount_coarse: NDArray,
+        npes_nest_tile: NDArray,
+        x_refine: NDArray,
+        y_refine: NDArray,
         nest_domain_id: Optional[int] = None,
         domain_id: Optional[int] = None,
         extra_halo: Optional[int] = None,
@@ -385,41 +381,18 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        if xbegin is not None:
-            xbegin = xbegin_c.value
-        if xend is not None:
-            xend = xend_c.value
-        if ybegin is not None:
-            ybegin = ybegin_c.value
-        if yend is not None:
-            yend = yend_c.value
-        if xsize is not None:
-            xsize = xsize_c.value
-        if xmax_size is not None:
-            xmax_size = xmax_size_c.value
-        if ysize is not None:
-            ysize = ysize_c.value
-        if ymax_size is not None:
-            ymax_size = ymax_size_c.value
-        if x_is_global is not None:
-            x_is_global = x_is_global_c.value
-        if y_is_global is not None:
-            y_is_global = y_is_global_c.value
-        if tile_count is not None:
-            tile_count = tile_count_c.value
-
         return (
-            xbegin,
-            xend,
-            ybegin,
-            yend,
-            xsize,
-            xmax_size,
-            ysize,
-            ymax_size,
-            x_is_global,
-            y_is_global,
-            tile_count,
+            xbegin_c.value if xbegin is not None else xbegin,
+            xend_c.value if xend is not None else xend,
+            ybegin_c.value if ybegin is not None else ybegin,
+            yend_c.value if yend is not None else yend,
+            xsize_c.value if xsize is not None else xsize,
+            xmax_size_c.value if xmax_size is not None else xmax_size,
+            ysize_c.value if ysize is not None else ysize,
+            ymax_size_c.value if ymax_size is not None else ymax_size,
+            x_is_global_c.value if x_is_global is not None else x_is_global,
+            y_is_global_c.value if y_is_global is not None else y_is_global,
+            tile_count_c.value if tile_count is not None else tile_count,
         )
 
     """
@@ -507,41 +480,18 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        if xbegin is not None:
-            xbegin = xbegin_c.value
-        if xend is not None:
-            xend = xend_c.value
-        if ybegin is not None:
-            ybegin = ybegin_c.value
-        if yend is not None:
-            yend = yend_c.value
-        if xsize is not None:
-            xsize = xsize_c.value
-        if xmax_size is not None:
-            xmax_size = xmax_size_c.value
-        if ysize is not None:
-            ysize = ysize_c.value
-        if ymax_size is not None:
-            ymax_size = ymax_size_c.value
-        if x_is_global is not None:
-            x_is_global = x_is_global_c.value
-        if y_is_global is not None:
-            y_is_global = y_is_global_c.value
-        if tile_count is not None:
-            tile_count = tile_count_c.value
-
         return (
-            xbegin,
-            xend,
-            ybegin,
-            yend,
-            xsize,
-            xmax_size,
-            ysize,
-            ymax_size,
-            x_is_global,
-            y_is_global,
-            tile_count,
+            xbegin_c.value if xbegin is not None else xbegin,
+            xend_c.value if xend is not None else xend,
+            ybegin_c.value if ybegin is not None else ybegin,
+            yend_c.value if yend is not None else yend,
+            xsize_c.value if xsize is not None else xsize,
+            xmax_size_c.value if xmax_size is not None else xmax_size,
+            ysize_c.value if ysize is not None else ysize,
+            ymax_size_c.value if ymax_size is not None else ymax_size,
+            x_is_global_c.value if x_is_global is not None else x_is_global,
+            y_is_global_c.value if y_is_global is not None else y_is_global,
+            tile_count_c.value if tile_count is not None else tile_count,
         )
 
     """
@@ -576,9 +526,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     Returns: Passed layout NumPy array will be automatically updated
     """
 
-    def get_layout(
-        self, layout: npt.NDArray[np.int32], domain_id: Optional[int] = None
-    ):
+    def get_layout(self, layout: NDArray, domain_id: Optional[int] = None):
         _cfms_get_layout = self.clibFMS.cFMS_get_layout
 
         layout_p, layout_t = setarray_Cint32(layout)
@@ -597,9 +545,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     Returns: Passed layout NumPy array will be automatically updated
     """
 
-    def get_domain_pelist(
-        self, pelist: npt.NDArray[np.int32], domain_id: Optional[int]
-    ):
+    def get_domain_pelist(self, pelist: NDArray, domain_id: Optional[int]):
         _cfms_get_domain_pelist = self.clibFMS.cFMS_get_domain_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
@@ -682,35 +628,16 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        if xbegin is not None:
-            xbegin = xbegin_c.value
-        if xend is not None:
-            xend = xend_c.value
-        if ybegin is not None:
-            ybegin = ybegin_c.value
-        if yend is not None:
-            yend = yend_c.value
-        if xsize is not None:
-            xsize = xsize_c.value
-        if ysize is not None:
-            ysize = ysize_c.value
-        if x_is_global is not None:
-            x_is_global = x_is_global_c.value
-        if y_is_global is not None:
-            y_is_global = y_is_global_c.value
-        if tile_count is not None:
-            tile_count = tile_count_c.value
-
         return (
-            xbegin,
-            xend,
-            ybegin,
-            yend,
-            xsize,
-            ysize,
-            x_is_global,
-            y_is_global,
-            tile_count,
+            xbegin_c.value if xbegin is not None else xbegin,
+            xend_c.value if xend is not None else xend,
+            ybegin_c.value if ybegin is not None else ybegin,
+            yend_c.value if yend is not None else yend,
+            xsize_c.value if xsize is not None else xsize,
+            ysize_c.value if ysize is not None else ysize,
+            x_is_global_c.value if x_is_global is not None else x_is_global,
+            y_is_global_c.value if y_is_global is not None else y_is_global,
+            tile_count_c.value if tile_count is not None else tile_count,
         )
 
     """
@@ -819,35 +746,16 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        if xbegin is not None:
-            xbegin = xbegin_c.value
-        if xend is not None:
-            xend = xend_c.value
-        if ybegin is not None:
-            ybegin = ybegin_c.value
-        if yend is not None:
-            yend = yend_c.value
-        if xsize is not None:
-            xsize = xsize_c.value
-        if ysize is not None:
-            ysize = ysize_c.value
-        if x_is_global is not None:
-            x_is_global = x_is_global_c.value
-        if y_is_global is not None:
-            y_is_global = y_is_global_c.value
-        if tile_count is not None:
-            tile_count = tile_count_c.value
-
         return (
-            xbegin,
-            xend,
-            ybegin,
-            yend,
-            xsize,
-            ysize,
-            x_is_global,
-            y_is_global,
-            tile_count,
+            xbegin_c.value if xbegin is not None else xbegin,
+            xend_c.value if xend is not None else xend,
+            ybegin_c.value if ybegin is not None else ybegin,
+            yend_c.value if yend is not None else yend,
+            xsize_c.value if xsize is not None else xsize,
+            ysize_c.value if ysize is not None else ysize,
+            x_is_global_c.value if x_is_global is not None else x_is_global,
+            y_is_global_c.value if y_is_global is not None else y_is_global,
+            tile_count_c.value if tile_count is not None else tile_count,
         )
 
     """
@@ -914,19 +822,12 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        if xbegin is not None:
-            xbegin = xbegin_c.value
-        if xend is not None:
-            xend = xend_c.value
-        if ybegin is not None:
-            ybegin = ybegin_c.value
-        if yend is not None:
-            yend = yend_c.value
-        if xsize is not None:
-            xsize = xsize_c.value
-        if ysize is not None:
-            ysize = ysize_c.value
-        if tile_count is not None:
-            tile_count = tile_count_c.value
-
-        return xbegin, xend, ybegin, yend, xsize, ysize, tile_count
+        return (
+            xbegin_c.value if xbegin is not None else xbegin,
+            xend_c.value if xend is not None else xend,
+            ybegin_c.value if ybegin is not None else ybegin,
+            yend_c.value if yend is not None else yend,
+            xsize_c.value if xsize is not None else xsize,
+            ysize_c.value if ysize is not None else ysize,
+            tile_count_c.value if tile_count is not None else tile_count,
+        )

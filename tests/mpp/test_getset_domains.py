@@ -18,7 +18,7 @@ def test_getset_domains():
     domain = Domain()
     domain_id = 0
     ndiv = 4
-    global_indices = np.array([0, 3, 0, 3], dtype=np.int32, order="F")
+    global_indices = np.array([0, 3, 0, 3], dtype=np.int32, order="C")
     whalo = 2
     ehalo = 2
     shalo = 2
@@ -39,7 +39,7 @@ def test_getset_domains():
     domain.nhalo = nhalo
     domain.name = name
 
-    domain.layout = np.empty(shape=2, dtype=np.int32, order="F")
+    domain.layout = np.empty(shape=2, dtype=np.int32, order="C")
     mpp_domains.define_layout(
         global_indices=global_indices, ndivs=ndiv, layout=domain.layout
     )
@@ -84,10 +84,10 @@ def test_getset_domains():
     pe 3: isc=4, iec=5, jsc=4, jec=5 --> pe 0
     """
 
-    isc = np.array([4, 2, 4, 2], dtype=np.int32, order="F")
-    iec = np.array([5, 3, 5, 3], dtype=np.int32, order="F")
-    jsc = np.array([4, 4, 2, 2], dtype=np.int32, order="F")
-    jec = np.array([5, 5, 3, 3], dtype=np.int32, order="F")
+    isc = np.array([4, 2, 4, 2], dtype=np.int32, order="C")
+    iec = np.array([5, 3, 5, 3], dtype=np.int32, order="C")
+    jsc = np.array([4, 4, 2, 2], dtype=np.int32, order="C")
+    jec = np.array([5, 5, 3, 3], dtype=np.int32, order="C")
 
     """
     pe 0: isd=0, ied=5, jsd=0, jed=5 --> pe 3
@@ -96,10 +96,10 @@ def test_getset_domains():
     pe 3: isd=2, ied=7, jsd=2, jed=7 --> pe 0
     """
 
-    isd = np.array([2, 0, 2, 0], dtype=np.int32, order="F")
-    ied = np.array([7, 5, 7, 5], dtype=np.int32, order="F")
-    jsd = np.array([2, 2, 0, 0], dtype=np.int32, order="F")
-    jed = np.array([7, 7, 5, 5], dtype=np.int32, order="F")
+    isd = np.array([2, 0, 2, 0], dtype=np.int32, order="C")
+    ied = np.array([7, 5, 7, 5], dtype=np.int32, order="C")
+    jsd = np.array([2, 2, 0, 0], dtype=np.int32, order="C")
+    jed = np.array([7, 7, 5, 5], dtype=np.int32, order="C")
 
     pe = mpp.pe()
     tile_count = 0
