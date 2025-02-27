@@ -9,8 +9,6 @@ def test_define_domains():
     NY = 96
     NX_FINE = 48
     NY_FINE = 48
-    LAYOUT_X = 2
-    LAYOUT_Y = 2
     X_REFINE = 2
     Y_REFINE = 2
     COARSE_NPES = 4
@@ -33,13 +31,6 @@ def test_define_domains():
     coarse_yflags = 2
     is_mosaic = False
     symmetry = False
-
-    coarse_xextent = np.array(
-        [NX / 2, NX / 2, NX / 2, NX / 2], dtype=np.int32, order="C"
-    )
-    coarse_yextent = np.array(
-        [NY / 2, NY / 2, NY / 2, NY / 2], dtype=np.int32, order="C"
-    )
 
     fine_global_indices = np.array(
         [0, NX_FINE - 1, 0, NY_FINE - 1], dtype=np.int32, order="C"

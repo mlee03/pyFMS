@@ -5,7 +5,7 @@ import dataclasses
 import os
 from typing import Optional
 
-from pyfms.pyFMS_data_handling import set_Cchar, setscalar_Cint32
+from pyfms.pyfms_data_handling import set_Cchar, setscalar_Cint32
 
 
 @dataclasses.dataclass
