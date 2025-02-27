@@ -5,7 +5,8 @@ from typing import Optional
 import numpy as np
 from numpy.typing import NDArray
 
-from pyfms import pyFMS_mpp
+from pyfms.mpp.pyfms_mpp import pyFMS_mpp
+from pyfms.mpp.pyfms_pydomain import pyDomainData
 from pyfms.pyfms_data_handling import (
     set_Cchar,
     set_multipointer,
@@ -307,36 +308,26 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def get_compute_domain(
         self,
+        domain_data: pyDomainData = None,
         domain_id: Optional[int] = None,
-        get_xbegin: Optional[bool] = False,
-        get_xend: Optional[bool] = False,
-        get_ybegin: Optional[bool] = False,
-        get_yend: Optional[bool] = False,
-        get_xsize: Optional[bool] = False,
-        get_xmax_size: Optional[bool] = False,
-        get_ysize: Optional[bool] = False,
-        get_ymax_size: Optional[bool] = False,
-        get_x_is_global: Optional[bool] = False,
-        get_y_is_global: Optional[bool] = False,
-        tile_count: Optional[int] = None,
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ) -> dict:
+    ):
         _cfms_get_compute_domain = self.clibFMS.cFMS_get_compute_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(arg=get_xbegin, get=True)
-        xend_c, xend_t = setscalar_Cint32(arg=get_xend, get=True)
-        ybegin_c, ybegin_t = setscalar_Cint32(arg=get_ybegin, get=True)
-        yend_c, yend_t = setscalar_Cint32(arg=get_yend, get=True)
-        xsize_c, xsize_t = setscalar_Cint32(arg=get_xsize, get=True)
-        xmax_size_c, xmax_size_t = setscalar_Cint32(arg=get_xmax_size, get=True)
-        ysize_c, ysize_t = setscalar_Cint32(arg=get_ysize, get=True)
-        ymax_size_c, ymax_size_t = setscalar_Cint32(arg=get_ymax_size, get=True)
-        x_is_global_c, x_is_global_t = setscalar_Cbool(arg=get_x_is_global, get=True)
-        y_is_global_c, y_is_global_t = setscalar_Cbool(arg=get_y_is_global, get=True)
-        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
+        xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
+        xend_c, xend_t = setscalar_Cint32(domain_data.xend)
+        ybegin_c, ybegin_t = setscalar_Cint32(domain_data.ybegin)
+        yend_c, yend_t = setscalar_Cint32(domain_data.yend)
+        xsize_c, xsize_t = setscalar_Cint32(domain_data.xsize)
+        xmax_size_c, xmax_size_t = setscalar_Cint32(domain_data.xmax_size)
+        ysize_c, ysize_t = setscalar_Cint32(domain_data.ysize)
+        ymax_size_c, ymax_size_t = setscalar_Cint32(domain_data.ymax_size)
+        x_is_global_c, x_is_global_t = setscalar_Cbool(domain_data.x_is_global)
+        y_is_global_c, y_is_global_t = setscalar_Cbool(domain_data.y_is_global)
+        tile_count_c, tile_count_t = setscalar_Cint32(domain_data.tile_count)
         position_c, position_t = setscalar_Cint32(position)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
@@ -378,21 +369,6 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        out_dict = {}
-        out_dict["xbegin"] = xbegin_c.value if get_xbegin else None
-        out_dict["xend"] = xend_c.value if get_xend else None
-        out_dict["ybegin"] = ybegin_c.value if get_ybegin else None
-        out_dict["yend"] = yend_c.value if get_yend else None
-        out_dict["xsize"] = xsize_c.value if get_xsize else None
-        out_dict["xmax_size"] = xmax_size_c.value if get_xmax_size else None
-        out_dict["ysize"] = ysize_c.value if get_ysize else None
-        out_dict["ymax_size"] = ymax_size_c.value if get_ymax_size else None
-        out_dict["x_is_global"] = x_is_global_c.value if get_x_is_global else None
-        out_dict["y_is_global"] = y_is_global_c.value if get_y_is_global else None
-        out_dict["tile_count"] = tile_count_c.value if get_tile_count else None
-
-        return out_dict
-
     """
     Subroutine: get_data_domain
 
@@ -409,36 +385,26 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def get_data_domain(
         self,
+        domain_data: pyDomainData,
         domain_id: Optional[int] = None,
-        get_xbegin: Optional[bool] = False,
-        get_xend: Optional[bool] = False,
-        get_ybegin: Optional[bool] = False,
-        get_yend: Optional[bool] = False,
-        get_xsize: Optional[bool] = False,
-        get_xmax_size: Optional[bool] = False,
-        get_ysize: Optional[bool] = False,
-        get_ymax_size: Optional[bool] = False,
-        get_x_is_global: Optional[bool] = False,
-        get_y_is_global: Optional[bool] = False,
-        get_tile_count: Optional[bool] = False,
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ) -> dict:
+    ):
         _cfms_get_data_domain = self.clibFMS.cFMS_get_data_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(arg=get_xbegin, get=True)
-        xend_c, xend_t = setscalar_Cint32(arg=get_xend, get=True)
-        ybegin_c, ybegin_t = setscalar_Cint32(arg=get_ybegin, get=True)
-        yend_c, yend_t = setscalar_Cint32(arg=get_yend, get=True)
-        xsize_c, xsize_t = setscalar_Cint32(arg=get_xsize, get=True)
-        xmax_size_c, xmax_size_t = setscalar_Cint32(arg=get_xmax_size, get=True)
-        ysize_c, ysize_t = setscalar_Cint32(arg=get_ysize, get=True)
-        ymax_size_c, ymax_size_t = setscalar_Cint32(arg=get_ymax_size, get=True)
-        x_is_global_c, x_is_global_t = setscalar_Cbool(arg=get_x_is_global, get=True)
-        y_is_global_c, y_is_global_t = setscalar_Cbool(arg=get_y_is_global, get=True)
-        tile_count_c, tile_count_t = setscalar_Cint32(arg=get_tile_count, get=True)
+        xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
+        xend_c, xend_t = setscalar_Cint32(domain_data.xend)
+        ybegin_c, ybegin_t = setscalar_Cint32(domain_data.ybegin)
+        yend_c, yend_t = setscalar_Cint32(domain_data.yend)
+        xsize_c, xsize_t = setscalar_Cint32(domain_data.xsize)
+        xmax_size_c, xmax_size_t = setscalar_Cint32(domain_data.xmax_size)
+        ysize_c, ysize_t = setscalar_Cint32(domain_data.ysize)
+        ymax_size_c, ymax_size_t = setscalar_Cint32(domain_data.ymax_size)
+        x_is_global_c, x_is_global_t = setscalar_Cbool(domain_data.x_is_global)
+        y_is_global_c, y_is_global_t = setscalar_Cbool(domain_data.y_is_global)
+        tile_count_c, tile_count_t = setscalar_Cint32(domain_data.tile_count)
         position_c, position_t = setscalar_Cint32(position)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
@@ -479,21 +445,6 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             whalo_c,
             shalo_c,
         )
-
-        out_dict = {}
-        out_dict["xbegin"] = xbegin_c.value if get_xbegin else None
-        out_dict["xend"] = xend_c.value if get_xend else None
-        out_dict["ybegin"] = ybegin_c.value if get_ybegin else None
-        out_dict["yend"] = yend_c.value if get_yend else None
-        out_dict["xsize"] = xsize_c.value if get_xsize else None
-        out_dict["xmax_size"] = xmax_size_c.value if get_xmax_size else None
-        out_dict["ysize"] = ysize_c.value if get_ysize else None
-        out_dict["ymax_size"] = ymax_size_c.value if get_ymax_size else None
-        out_dict["x_is_global"] = x_is_global_c.value if get_x_is_global else None
-        out_dict["y_is_global"] = y_is_global_c.value if get_y_is_global else None
-        out_dict["tile_count"] = tile_count_c.value if get_tile_count else None
-
-        return out_dict
 
     """
     Subroutine: get_domain_name
@@ -578,31 +529,23 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def set_compute_domain(
         self,
+        domain_data: pyDomainData,
         domain_id: Optional[int] = None,
-        xbegin: Optional[int] = None,
-        xend: Optional[int] = None,
-        ybegin: Optional[int] = None,
-        yend: Optional[int] = None,
-        xsize: Optional[int] = None,
-        ysize: Optional[int] = None,
-        x_is_global: Optional[bool] = False,
-        y_is_global: Optional[bool] = False,
-        tile_count: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ) -> dict:
+    ):
         _cfms_set_compute_domain = self.clibFMS.cFMS_set_compute_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
-        xend_c, xend_t = setscalar_Cint32(xend)
-        ybegin_c, ybegin_t = setscalar_Cint32(ybegin)
-        yend_c, yend_t = setscalar_Cint32(yend)
-        xsize_c, xsize_t = setscalar_Cint32(xsize)
-        ysize_c, ysize_t = setscalar_Cint32(ysize)
-        x_is_global_c, x_is_global_t = setscalar_Cbool(x_is_global)
-        y_is_global_c, y_is_global_t = setscalar_Cbool(y_is_global)
-        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
+        xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
+        xend_c, xend_t = setscalar_Cint32(domain_data.xend)
+        ybegin_c, ybegin_t = setscalar_Cint32(domain_data.ybegin)
+        yend_c, yend_t = setscalar_Cint32(domain_data.yend)
+        xsize_c, xsize_t = setscalar_Cint32(domain_data.xsize)
+        ysize_c, ysize_t = setscalar_Cint32(domain_data.ysize)
+        x_is_global_c, x_is_global_t = setscalar_Cbool(domain_data.x_is_global)
+        y_is_global_c, y_is_global_t = setscalar_Cbool(domain_data.y_is_global)
+        tile_count_c, tile_count_t = setscalar_Cint32(domain_data.tile_count)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
 
@@ -636,25 +579,6 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             whalo_c,
             shalo_c,
         )
-
-        out_dict = {}
-        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
-        out_dict["xend"] = xend_c.value if xend is not None else xend
-        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
-        out_dict["yend"] = yend_c.value if yend is not None else yend
-        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
-        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
-        out_dict["x_is_global"] = (
-            x_is_global_c.value if x_is_global is not None else x_is_global
-        )
-        out_dict["y_is_global"] = (
-            y_is_global_c.value if y_is_global is not None else y_is_global
-        )
-        out_dict["tile_count"] = (
-            tile_count_c.value if tile_count is not None else tile_count
-        )
-
-        return out_dict
 
     """
     Subroutine: set_current_domain
@@ -705,31 +629,23 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def set_data_domain(
         self,
+        domain_data: pyDomainData,
         domain_id: Optional[int] = None,
-        xbegin: Optional[int] = None,
-        xend: Optional[int] = None,
-        ybegin: Optional[int] = None,
-        yend: Optional[int] = None,
-        xsize: Optional[int] = None,
-        ysize: Optional[int] = None,
-        x_is_global: Optional[bool] = None,
-        y_is_global: Optional[bool] = None,
-        tile_count: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ) -> dict:
+    ):
         _cfms_set_data_domain = self.clibFMS.cFMS_set_data_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
-        xend_c, xend_t = setscalar_Cint32(xend)
-        ybegin_c, ybegin_t = setscalar_Cint32(ybegin)
-        yend_c, yend_t = setscalar_Cint32(yend)
-        xsize_c, xsize_t = setscalar_Cint32(xsize)
-        ysize_c, ysize_t = setscalar_Cint32(ysize)
-        x_is_global_c, x_is_global_t = setscalar_Cbool(x_is_global)
-        y_is_global_c, y_is_global_t = setscalar_Cbool(y_is_global)
-        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
+        xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
+        xend_c, xend_t = setscalar_Cint32(domain_data.xend)
+        ybegin_c, ybegin_t = setscalar_Cint32(domain_data.ybegin)
+        yend_c, yend_t = setscalar_Cint32(domain_data.yend)
+        xsize_c, xsize_t = setscalar_Cint32(domain_data.xsize)
+        ysize_c, ysize_t = setscalar_Cint32(domain_data.ysize)
+        x_is_global_c, x_is_global_t = setscalar_Cbool(domain_data.x_is_global)
+        y_is_global_c, y_is_global_t = setscalar_Cbool(domain_data.y_is_global)
+        tile_count_c, tile_count_t = setscalar_Cint32(domain_data.tile_count)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
 
@@ -764,25 +680,6 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
-        out_dict = {}
-        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
-        out_dict["xend"] = xend_c.value if xend is not None else xend
-        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
-        out_dict["yend"] = yend_c.value if yend is not None else yend
-        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
-        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
-        out_dict["x_is_global"] = (
-            x_is_global_c.value if x_is_global is not None else x_is_global
-        )
-        out_dict["y_is_global"] = (
-            y_is_global_c.value if y_is_global is not None else y_is_global
-        )
-        out_dict["tile_count"] = (
-            tile_count_c.value if tile_count is not None else tile_count
-        )
-
-        return out_dict
-
     """
     Subroutine: set_global_domain
 
@@ -802,27 +699,21 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def set_global_domain(
         self,
+        domain_data: pyDomainData,
         domain_id: Optional[int] = None,
-        xbegin: Optional[int] = None,
-        xend: Optional[int] = None,
-        ybegin: Optional[int] = None,
-        yend: Optional[int] = None,
-        xsize: Optional[int] = None,
-        ysize: Optional[int] = None,
-        tile_count: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ) -> dict:
+    ):
         _cfms_set_global_domain = self.clibFMS.cFMS_set_global_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
-        xend_c, xend_t = setscalar_Cint32(xend)
-        ybegin_c, ybegin_t = setscalar_Cint32(ybegin)
-        yend_c, yend_t = setscalar_Cint32(yend)
-        xsize_c, xsize_t = setscalar_Cint32(xsize)
-        ysize_c, ysize_t = setscalar_Cint32(ysize)
-        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
+        xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
+        xend_c, xend_t = setscalar_Cint32(domain_data.xend)
+        ybegin_c, ybegin_t = setscalar_Cint32(domain_data.ybegin)
+        yend_c, yend_t = setscalar_Cint32(domain_data.yend)
+        xsize_c, xsize_t = setscalar_Cint32(domain_data.xsize)
+        ysize_c, ysize_t = setscalar_Cint32(domain_data.ysize)
+        tile_count_c, tile_count_t = setscalar_Cint32(domain_data.tile_count)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
 
@@ -852,16 +743,3 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             whalo_c,
             shalo_c,
         )
-
-        out_dict = {}
-        out_dict["xbegin"] = xbegin_c.value if xbegin is not None else xbegin
-        out_dict["xend"] = xend_c.value if xend is not None else xend
-        out_dict["ybegin"] = ybegin_c.value if ybegin is not None else ybegin
-        out_dict["yend"] = yend_c.value if yend is not None else yend
-        out_dict["xsize"] = xsize_c.value if xsize is not None else xsize
-        out_dict["ysize"] = ysize_c.value if ysize is not None else ysize
-        out_dict["tile_count"] = (
-            tile_count_c.value if tile_count is not None else tile_count
-        )
-
-        return out_dict

@@ -4,7 +4,7 @@ from typing import Optional
 
 from numpy.typing import NDArray
 
-from pyfms.pyFMS_data_handling import (
+from pyfms.pyfms_data_handling import (
     set_Cchar,
     setarray_Cint32,
     setscalar_Cbool,

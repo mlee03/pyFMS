@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import ctypes
-from typing import Optional, Tuple
+from typing import Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -205,36 +205,36 @@ Scalar setting methods
 """
 
 
-def setscalar_Cbool(arg: bool) -> Tuple:
-    if arg is None:
+def setscalar_Cbool(arg) -> Tuple:
+    if ctypes.c_bool == type(arg) or arg is None:
         return arg, ctypes.POINTER(ctypes.c_bool)
     else:
         return ctypes.c_bool(arg), ctypes.POINTER(ctypes.c_bool)
 
 
-def set_Cchar(arg: str) -> Tuple:
+def set_Cchar(arg) -> Tuple:
     if arg is None:
         return arg, ctypes.c_char_p
     else:
         return ctypes.c_char_p(arg.encode("utf-8")), ctypes.c_char_p
 
 
-def setscalar_Cdouble(arg: float) -> Tuple:
-    if arg is None:
+def setscalar_Cdouble(arg) -> Tuple:
+    if ctypes.c_double == type(arg) or arg is None:
         return arg, ctypes.POINTER(ctypes.c_double)
     else:
         return ctypes.c_double(arg), ctypes.POINTER(ctypes.c_double)
 
 
-def setscalar_Cfloat(arg: float) -> Tuple:
-    if arg is None:
+def setscalar_Cfloat(arg) -> Tuple:
+    if ctypes.c_float == type(arg) or arg is None:
         return arg, ctypes.POINTER(ctypes.c_float)
     else:
         return ctypes.c_float(arg), ctypes.POINTER(ctypes.c_float)
 
 
-def setscalar_Cint32(arg: int) -> Tuple:
-    if arg is None:
+def setscalar_Cint32(arg) -> Tuple:
+    if ctypes.c_int == type(arg) or arg is None:
         return arg, ctypes.POINTER(ctypes.c_int)
     else:
         return ctypes.c_int(arg), ctypes.POINTER(ctypes.c_int)
