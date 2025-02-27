@@ -51,14 +51,6 @@ x = wrapper_func(x, var_array)
 """
 
 
-def convert_get(get):
-    if get:
-        out = 0
-    else:
-        out = None
-    return out
-
-
 """
 Array setting methods
 """
@@ -213,9 +205,7 @@ Scalar setting methods
 """
 
 
-def setscalar_Cbool(arg: bool, get: Optional[bool] = False) -> Tuple:
-    if get:
-        arg = convert_get(arg)
+def setscalar_Cbool(arg: bool) -> Tuple:
     if arg is None:
         return arg, ctypes.POINTER(ctypes.c_bool)
     else:
@@ -229,27 +219,21 @@ def set_Cchar(arg: str) -> Tuple:
         return ctypes.c_char_p(arg.encode("utf-8")), ctypes.c_char_p
 
 
-def setscalar_Cdouble(arg: float, get: Optional[bool] = False) -> Tuple:
-    if get:
-        arg = convert_get(arg)
+def setscalar_Cdouble(arg: float) -> Tuple:
     if arg is None:
         return arg, ctypes.POINTER(ctypes.c_double)
     else:
         return ctypes.c_double(arg), ctypes.POINTER(ctypes.c_double)
 
 
-def setscalar_Cfloat(arg: float, get: Optional[bool] = False) -> Tuple:
-    if get:
-        arg = convert_get(arg)
+def setscalar_Cfloat(arg: float) -> Tuple:
     if arg is None:
         return arg, ctypes.POINTER(ctypes.c_float)
     else:
         return ctypes.c_float(arg), ctypes.POINTER(ctypes.c_float)
 
 
-def setscalar_Cint32(arg: int, get: Optional[bool] = False) -> Tuple:
-    if get:
-        arg = convert_get(arg)
+def setscalar_Cint32(arg: int) -> Tuple:
     if arg is None:
         return arg, ctypes.POINTER(ctypes.c_int)
     else:

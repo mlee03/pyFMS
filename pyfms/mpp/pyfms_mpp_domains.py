@@ -6,7 +6,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from pyfms import pyFMS_mpp
-from pyfms.pyFMS_data_handling import (
+from pyfms.pyfms_data_handling import (
     set_Cchar,
     set_multipointer,
     setarray_Cint32,
@@ -318,7 +318,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         get_ymax_size: Optional[bool] = False,
         get_x_is_global: Optional[bool] = False,
         get_y_is_global: Optional[bool] = False,
-        get_tile_count: Optional[bool] = False,
+        tile_count: Optional[int] = None,
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
@@ -336,7 +336,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         ymax_size_c, ymax_size_t = setscalar_Cint32(arg=get_ymax_size, get=True)
         x_is_global_c, x_is_global_t = setscalar_Cbool(arg=get_x_is_global, get=True)
         y_is_global_c, y_is_global_t = setscalar_Cbool(arg=get_y_is_global, get=True)
-        tile_count_c, tile_count_t = setscalar_Cint32(arg=get_tile_count, get=True)
+        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
         position_c, position_t = setscalar_Cint32(position)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
@@ -506,8 +506,10 @@ class pyFMS_mpp_domains(pyFMS_mpp):
     its value as well.
     """
 
-    def get_domain_name(self, domain_name: str, domain_id: Optional[int] = None) -> str:
+    def get_domain_name(self, domain_id: Optional[int] = None) -> str:
         _cfms_get_domain_name = self.clibFMS.cFMS_get_domain_name
+
+        domain_name = ""
 
         domain_name_c, domain_name_t = set_Cchar(domain_name)
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
