@@ -66,11 +66,10 @@ class pyFMS_mpp:
     """
 
     def pyfms_error(self, errortype: int, errormsg: Optional[str] = None):
-        if errormsg and len(errormsg) > 128:
-            raise ValueError(
-                "errormsg must be less than 128 characters, "
-                f"current errormsg {len(errormsg)} characters"
-            )
+        # truncating string
+        if errormsg is not None:
+            errormsg = errormsg[:128]
+
         _cfms_error = self.clibFMS.cFMS_error
 
         errortype_c, errortype_t = setscalar_Cint32(errortype)

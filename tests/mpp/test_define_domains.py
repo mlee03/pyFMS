@@ -187,6 +187,8 @@ def test_define_domains():
 
     pyfms.pyfms_end()
 
+    mpp.pyfms_error(errortype=1)
+
 
 if __name__ == "__main__":
     test_define_domains()

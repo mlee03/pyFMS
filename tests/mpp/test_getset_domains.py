@@ -90,15 +90,17 @@ def test_getset_domains():
 
     xsize = 2
     ysize = 2
-    compute_domain_data.xbegin = isc[pe]
-    compute_domain_data.xend = iec[pe]
-    compute_domain_data.ybegin = jsc[pe]
-    compute_domain_data.yend = jec[pe]
-    compute_domain_data.xsize = xsize
-    compute_domain_data.ysize = ysize
-    compute_domain_data.x_is_global = x_is_global
-    compute_domain_data.y_is_global = y_is_global
-    compute_domain_data.tile_count = tile_count
+    compute_domain_data.setup_set(
+        xbegin = isc[pe],
+        xend = iec[pe],
+        ybegin = jsc[pe],
+        yend = jec[pe],
+        xsize = xsize,
+        ysize = ysize,
+        x_is_global = x_is_global,
+        y_is_global = y_is_global,
+        tile_count = tile_count,
+    )
     mpp_domains.set_compute_domain(
         domain_id=domain_id,
         domain_data=compute_domain_data,
@@ -108,15 +110,17 @@ def test_getset_domains():
 
     xsize = 6
     ysize = 6
-    data_domain_data.xbegin = isd[pe]
-    data_domain_data.xend = ied[pe]
-    data_domain_data.ybegin=jsd[pe]
-    data_domain_data.yend=jed[pe]
-    data_domain_data.xsize=xsize
-    data_domain_data.ysize=ysize
-    data_domain_data.x_is_global=x_is_global
-    data_domain_data.y_is_global=y_is_global
-    data_domain_data.tile_count=tile_count
+    data_domain_data.setup_set(
+        xbegin = isd[pe],
+        xend = ied[pe],
+        ybegin=jsd[pe],
+        yend=jed[pe],
+        xsize=xsize,
+        ysize=ysize,
+        x_is_global=x_is_global,
+        y_is_global=y_is_global,
+        tile_count=tile_count,
+    )
     mpp_domains.set_data_domain(
         domain_id=domain_id,
         domain_data=data_domain_data,

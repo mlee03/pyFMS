@@ -72,17 +72,17 @@ class pyDomainData:
         y_is_global: Optional[bool]=None,
         tile_count: Optional[int]=None,
     ):
-        self.xbegin=xbegin,
-        self.xend=xend,
-        self.ybegin=ybegin,
-        self.yend=yend,
-        self.xsize=xsize,
-        self.xmax_size=xmax_size,
-        self.ysize=ysize,
-        self.ymax_size=ymax_size,
-        self.x_is_global=x_is_global,
-        self.y_is_global=y_is_global,
-        self.tile_count=tile_count,
+        self.xbegin=xbegin
+        self.xend=xend
+        self.ybegin=ybegin
+        self.yend=yend
+        self.xsize=xsize
+        self.xmax_size=xmax_size
+        self.ysize=ysize
+        self.ymax_size=ymax_size
+        self.x_is_global=x_is_global
+        self.y_is_global=y_is_global
+        self.tile_count=tile_count
 
     @property
     def xbegin(self):
