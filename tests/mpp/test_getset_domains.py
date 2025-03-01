@@ -1,7 +1,7 @@
 import numpy as np
 
 from pyfms.mpp.pyfms_mpp import pyFMS_mpp
-from pyfms.mpp.pyfms_mpp_domains import pyFMS_mpp_domains, pyDomain
+from pyfms.mpp.pyfms_mpp_domains import pyDomain, pyFMS_mpp_domains
 from pyfms.pyfms_fms import pyFMS
 
 
@@ -121,29 +121,41 @@ def test_getset_domains():
 
     # get domain
 
-    out_compute_domain = domain.compute_domain
+    # out_compute_domain = domain.compute_domain
 
-    assert out_compute_domain.xbegin.value == isc[pe]
-    assert out_compute_domain.xend.value == iec[pe]
-    assert out_compute_domain.ybegin.value == jsc[pe]
-    assert out_compute_domain.yend.value == jec[pe]
-    assert out_compute_domain.xsize.value == 2
-    assert out_compute_domain.ysize.value == 2
-    assert out_compute_domain.xmax_size.value == 2
-    assert out_compute_domain.ymax_size.value == 2
-    assert out_compute_domain.x_is_global.value is False
-    assert out_compute_domain.y_is_global.value is False
+    assert domain.compute_domain.xbegin.value == isc[pe]
+    assert domain.compute_domain.xend.value == iec[pe]
+    assert domain.compute_domain.ybegin.value == jsc[pe]
+    assert domain.compute_domain.yend.value == jec[pe]
+    assert domain.compute_domain.xsize.value == 2
+    assert domain.compute_domain.ysize.value == 2
+    assert domain.compute_domain.xmax_size.value == 2
+    assert domain.compute_domain.ymax_size.value == 2
+    assert domain.compute_domain.x_is_global.value is False
+    assert domain.compute_domain.y_is_global.value is False
 
-    out_data_domain = domain.data_domain
+    # out_data_domain = domain.data_domain
 
-    assert out_data_domain.xbegin.value == isd[pe]
-    assert out_data_domain.xend.value == ied[pe]
-    assert out_data_domain.ybegin.value == jsd[pe]
-    assert out_data_domain.yend.value == jed[pe]
-    assert out_data_domain.xsize.value == 6
-    assert out_data_domain.ysize.value == 6
-    assert out_data_domain.xmax_size.value == 6
-    assert out_data_domain.ymax_size.value == 6
+    assert domain.data_domain.xbegin.value == isd[pe]
+    assert domain.data_domain.xend.value == ied[pe]
+    assert domain.data_domain.ybegin.value == jsd[pe]
+    assert domain.data_domain.yend.value == jed[pe]
+    assert domain.data_domain.xsize.value == 6
+    assert domain.data_domain.ysize.value == 6
+    assert domain.data_domain.xmax_size.value == 6
+    assert domain.data_domain.ymax_size.value == 6
+
+    # xbcd2 = out_compute_domain.xbegin.value
+    # xbdd = out_data_domain.xbegin.value
+    # xbcd = domain.compute_domain.xbegin.value
+    # xbdd = domain.data_domain.xbegin.value
+    # xbcd2 = domain.compute_domain.xbegin.value
+    # xbdd2 = domain.data_domain.xbegin.value
+    # print(f"id of xbcdf = {id(xbcd)},id of xbdd = {id(xbdd)}")
+    # print(f"id of xbcd = {id(xbcd)},id of xbcd2 = {id(xbcd2)}")
+    # print(f"xbcd = {xbcd}, xbdd = {xbdd}, xbcd2 = {xbcd2}, xbdd2 = {xbdd2}")
+    # print(f"xbcd = {xbcd}, xbcd2 = {xbcd2}")
+    # print(f"id of domain.compute_domain = {id(domain.compute_domain)}, id of out_compute_domain = {id(out_compute_domain)}")
 
     pyfms.pyfms_end()
 
