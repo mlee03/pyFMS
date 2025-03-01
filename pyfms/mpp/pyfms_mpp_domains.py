@@ -1,12 +1,10 @@
-import ctypes as ct
+import ctypes
 import dataclasses
 from typing import Optional
 
 import numpy as np
 from numpy.typing import NDArray
 
-from pyfms.mpp.pyfms_mpp import pyFMS_mpp
-from pyfms.mpp.pyfms_pydomain import pyDomainData
 from pyfms.pyfms_data_handling import (
     set_Cchar,
     set_multipointer,
@@ -15,10 +13,24 @@ from pyfms.pyfms_data_handling import (
     setscalar_Cint32,
 )
 
-
 @dataclasses.dataclass
-class pyFMS_mpp_domains(pyFMS_mpp):
-    clibFMS: ct.CDLL = None
+class subDomainData:
+    xbegin = ctypes.c_int(0)
+    xend = ctypes.c_int(0)
+    ybegin = ctypes.c_int(0)
+    yend = ctypes.c_int(0)
+    xsize = ctypes.c_int(0)
+    xmax_size = ctypes.c_int(0)
+    ysize = ctypes.c_int(0)
+    ymax_size = ctypes.c_int(0)
+    x_is_global = ctypes.c_bool(False)
+    y_is_global = ctypes.c_bool(False)
+    tile_count = ctypes.c_int(0)
+
+
+class pyFMS_mpp_domains:
+    def __init__(self, clibFMS: ctypes.CDLL = None):
+        self.clibFMS = clibFMS
 
     """
     Subroutine: define_domains
@@ -167,16 +179,17 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     Arguments passed to this method will define the layout to be used
 
-    Returns: In the Fortran source, the passed layout argument is updated.
-    The passed NumPy Array for layout will be updated automatically.
+    Returns: A NDArray containing the layout
     """
 
     def define_layout(
         self,
         global_indices: NDArray,
         ndivs: int,
-        layout: NDArray,
-    ):
+    ) -> NDArray:
+
+        layout = np.empty(shape=2, dtype=np.int32, order="C")
+
         _cfms_define_layout = self.clibFMS.cFMS_define_layout
 
         global_indices_p, global_indices_t = setarray_Cint32(global_indices)
@@ -187,6 +200,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         _cfms_define_layout.restype = None
 
         _cfms_define_layout(global_indices_p, ndivs_c, layout_p)
+
+        return layout
 
     """
     Subroutine: define_nest_domains
@@ -288,7 +303,7 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
 
         _cfms_domain_is_initialized.argtypes = [domain_id_t]
-        _cfms_domain_is_initialized.restype = ct.c_bool
+        _cfms_domain_is_initialized.restype = ctypes.c_bool
 
         return _cfms_domain_is_initialized(domain_id_c)
 
@@ -308,13 +323,15 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def get_compute_domain(
         self,
-        domain_data: pyDomainData = None,
         domain_id: Optional[int] = None,
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ):
+    ) -> "subDomainData":
+
         _cfms_get_compute_domain = self.clibFMS.cFMS_get_compute_domain
+
+        domain_data = subDomainData()
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
@@ -369,6 +386,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
+        return domain_data
+
     """
     Subroutine: get_data_domain
 
@@ -385,13 +404,14 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def get_data_domain(
         self,
-        domain_data: pyDomainData,
         domain_id: Optional[int] = None,
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ):
+    ) -> "subDomainData":
         _cfms_get_data_domain = self.clibFMS.cFMS_get_data_domain
+
+        domain_data = subDomainData()
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
@@ -446,6 +466,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             shalo_c,
         )
 
+        return domain_data
+
     """
     Subroutine: get_domain_name
 
@@ -470,17 +492,20 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
         _cfms_get_domain_name(domain_name_c, domain_id_c)
 
-        return domain_id_c.value.decode("utf-8")
+        return domain_name_c.value.decode("utf-8")
 
     """
     Subroutine: get_layout
 
     Updates layout NumPy array to contain layout data
 
-    Returns: Passed layout NumPy array will be automatically updated
+    Returns: NDArray with layout info
     """
 
-    def get_layout(self, layout: NDArray, domain_id: Optional[int] = None):
+    def get_layout(self, domain_id: Optional[int] = None) -> NDArray:
+
+        layout = np.empty(shape=2, dtype=np.int32, order="C")
+
         _cfms_get_layout = self.clibFMS.cFMS_get_layout
 
         layout_p, layout_t = setarray_Cint32(layout)
@@ -491,15 +516,19 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
         _cfms_get_layout(layout_p, domain_id_c)
 
+        return layout
+
     """
     Subroutine: get_domain_pelist
 
-    Updates layout NumPy array to contain pelist
-
-    Returns: Passed layout NumPy array will be automatically updated
+    Returns: NDArray containing pelist
     """
 
-    def get_domain_pelist(self, pelist: NDArray, domain_id: Optional[int]):
+    def get_domain_pelist(self, domain_id: Optional[int]) -> NDArray:
+
+        npes = ctypes.c_int.in_dll(self.clibFMS, "cFMS_pelist_npes")
+        pelist = np.empty(shape=npes.value, dtype=np.int32, order="C")
+
         _cfms_get_domain_pelist = self.clibFMS.cFMS_get_domain_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
@@ -509,6 +538,8 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         _cfms_get_domain_pelist.restype = None
 
         _cfms_get_domain_pelist(pelist_p, domain_id_c)
+
+        return pelist
 
     """
     Subroutine: set_compute_domain
@@ -529,7 +560,15 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def set_compute_domain(
         self,
-        domain_data: pyDomainData,
+        xbegin: Optional[int] = None,
+        xend: Optional[int] = None,
+        ybegin: Optional[int] = None,
+        yend: Optional[int] = None,
+        xsize: Optional[int] = None,
+        ysize: Optional[int] = None,
+        x_is_global: Optional[bool] = None,
+        y_is_global: Optional[bool] = None,
+        tile_count: Optional[int] = None,
         domain_id: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
@@ -537,15 +576,15 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         _cfms_set_compute_domain = self.clibFMS.cFMS_set_compute_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
-        xend_c, xend_t = setscalar_Cint32(domain_data.xend)
-        ybegin_c, ybegin_t = setscalar_Cint32(domain_data.ybegin)
-        yend_c, yend_t = setscalar_Cint32(domain_data.yend)
-        xsize_c, xsize_t = setscalar_Cint32(domain_data.xsize)
-        ysize_c, ysize_t = setscalar_Cint32(domain_data.ysize)
-        x_is_global_c, x_is_global_t = setscalar_Cbool(domain_data.x_is_global)
-        y_is_global_c, y_is_global_t = setscalar_Cbool(domain_data.y_is_global)
-        tile_count_c, tile_count_t = setscalar_Cint32(domain_data.tile_count)
+        xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
+        xend_c, xend_t = setscalar_Cint32(xend)
+        ybegin_c, ybegin_t = setscalar_Cint32(ybegin)
+        yend_c, yend_t = setscalar_Cint32(yend)
+        xsize_c, xsize_t = setscalar_Cint32(xsize)
+        ysize_c, ysize_t = setscalar_Cint32(ysize)
+        x_is_global_c, x_is_global_t = setscalar_Cbool(x_is_global)
+        y_is_global_c, y_is_global_t = setscalar_Cbool(y_is_global)
+        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
 
@@ -629,7 +668,15 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def set_data_domain(
         self,
-        domain_data: pyDomainData,
+        xbegin: Optional[int] = None,
+        xend: Optional[int] = None,
+        ybegin: Optional[int] = None,
+        yend: Optional[int] = None,
+        xsize: Optional[int] = None,
+        ysize: Optional[int] = None,
+        x_is_global: Optional[bool] = None,
+        y_is_global: Optional[bool] = None,
+        tile_count: Optional[int] = None,
         domain_id: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
@@ -637,15 +684,15 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         _cfms_set_data_domain = self.clibFMS.cFMS_set_data_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
-        xend_c, xend_t = setscalar_Cint32(domain_data.xend)
-        ybegin_c, ybegin_t = setscalar_Cint32(domain_data.ybegin)
-        yend_c, yend_t = setscalar_Cint32(domain_data.yend)
-        xsize_c, xsize_t = setscalar_Cint32(domain_data.xsize)
-        ysize_c, ysize_t = setscalar_Cint32(domain_data.ysize)
-        x_is_global_c, x_is_global_t = setscalar_Cbool(domain_data.x_is_global)
-        y_is_global_c, y_is_global_t = setscalar_Cbool(domain_data.y_is_global)
-        tile_count_c, tile_count_t = setscalar_Cint32(domain_data.tile_count)
+        xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
+        xend_c, xend_t = setscalar_Cint32(xend)
+        ybegin_c, ybegin_t = setscalar_Cint32(ybegin)
+        yend_c, yend_t = setscalar_Cint32(yend)
+        xsize_c, xsize_t = setscalar_Cint32(xsize)
+        ysize_c, ysize_t = setscalar_Cint32(ysize)
+        x_is_global_c, x_is_global_t = setscalar_Cbool(x_is_global)
+        y_is_global_c, y_is_global_t = setscalar_Cbool(y_is_global)
+        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
 
@@ -699,7 +746,13 @@ class pyFMS_mpp_domains(pyFMS_mpp):
 
     def set_global_domain(
         self,
-        domain_data: pyDomainData,
+        xbegin: Optional[int] = None,
+        xend: Optional[int] = None,
+        ybegin: Optional[int] = None,
+        yend: Optional[int] = None,
+        xsize: Optional[int] = None,
+        ysize: Optional[int] = None,
+        tile_count: Optional[int] = None,
         domain_id: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
@@ -707,13 +760,13 @@ class pyFMS_mpp_domains(pyFMS_mpp):
         _cfms_set_global_domain = self.clibFMS.cFMS_set_global_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
-        xend_c, xend_t = setscalar_Cint32(domain_data.xend)
-        ybegin_c, ybegin_t = setscalar_Cint32(domain_data.ybegin)
-        yend_c, yend_t = setscalar_Cint32(domain_data.yend)
-        xsize_c, xsize_t = setscalar_Cint32(domain_data.xsize)
-        ysize_c, ysize_t = setscalar_Cint32(domain_data.ysize)
-        tile_count_c, tile_count_t = setscalar_Cint32(domain_data.tile_count)
+        xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
+        xend_c, xend_t = setscalar_Cint32(xend)
+        ybegin_c, ybegin_t = setscalar_Cint32(ybegin)
+        yend_c, yend_t = setscalar_Cint32(yend)
+        xsize_c, xsize_t = setscalar_Cint32(xsize)
+        ysize_c, ysize_t = setscalar_Cint32(ysize)
+        tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
 
@@ -743,3 +796,165 @@ class pyFMS_mpp_domains(pyFMS_mpp):
             whalo_c,
             shalo_c,
         )
+
+
+@dataclasses.dataclass
+class pyDomain:
+    global_indices: NDArray
+    layout: NDArray
+    mpp_domains_obj: pyFMS_mpp_domains
+    domain_id: Optional[int] = None
+    pelist: Optional[NDArray] = None
+    xflags: Optional[int] = None
+    yflags: Optional[int] = None
+    xhalo: Optional[int] = None
+    yhalo: Optional[int] = None
+    xextent: Optional[NDArray] = None
+    yextent: Optional[NDArray] = None
+    maskmap: Optional[NDArray[np.bool_]] = None
+    name: Optional[str] = None
+    symmetry: Optional[bool] = None
+    memory_size: Optional[NDArray] = None
+    whalo: Optional[int] = None
+    ehalo: Optional[int] = None
+    shalo: Optional[int] = None
+    nhalo: Optional[int] = None
+    is_mosaic: Optional[bool] = None
+    tile_count: Optional[int] = None
+    tile_id: Optional[int] = None
+    complete: Optional[bool] = None
+    x_cyclic_offset: Optional[int] = None
+    y_cyclic_offset: Optional[int] = None
+
+    def __post_init__(self):
+        self.mpp_domains_obj.define_domains(
+            global_indices=self.global_indices,
+            layout=self.layout,
+            domain_id=self.domain_id,
+            pelist=self.pelist,
+            xflags=self.xflags,
+            yflags=self.yflags,
+            xhalo=self.xhalo,
+            yhalo=self.yhalo,
+            xextent=self.xextent,
+            yextent=self.yextent,
+            maskmap=self.maskmap,
+            name=self.name,
+            symmetry=self.symmetry,
+            memory_size=self.memory_size,
+            whalo=self.whalo,
+            ehalo=self.ehalo,
+            shalo=self.shalo,
+            nhalo=self.nhalo,
+            is_mosaic=self.is_mosaic,
+            tile_count=self.tile_count,
+            tile_id=self.tile_id,
+            complete=self.complete,
+            x_cyclic_offset=self.x_cyclic_offset,
+            y_cyclic_offset=self.y_cyclic_offset,
+        )
+
+    def set_compute_domain(
+        self,
+        xbegin: Optional[int] = None,
+        xend: Optional[int] = None,
+        ybegin: Optional[int] = None,
+        yend: Optional[int] = None,
+        xsize: Optional[int] = None,
+        ysize: Optional[int] = None,
+        x_is_global: Optional[bool] = None,
+        y_is_global: Optional[bool] = None,
+        tile_count: Optional[int] = None,
+        domain_id: Optional[int] = None,
+        whalo: Optional[int] = None,
+        shalo: Optional[int] = None,
+    ):
+        self.mpp_domains_obj.set_compute_domain(
+            xbegin=xbegin,
+            xend=xend,
+            ybegin=ybegin,
+            yend=yend,
+            xsize=xsize,
+            ysize=ysize,
+            x_is_global=x_is_global,
+            y_is_global=y_is_global,
+            tile_count=tile_count,
+            domain_id=domain_id,
+            whalo=whalo,
+            shalo=shalo,
+        )
+
+    def set_data_domain(
+        self,
+        xbegin: Optional[int] = None,
+        xend: Optional[int] = None,
+        ybegin: Optional[int] = None,
+        yend: Optional[int] = None,
+        xsize: Optional[int] = None,
+        ysize: Optional[int] = None,
+        x_is_global: Optional[bool] = None,
+        y_is_global: Optional[bool] = None,
+        tile_count: Optional[int] = None,
+        domain_id: Optional[int] = None,
+        whalo: Optional[int] = None,
+        shalo: Optional[int] = None,
+    ):
+        self.mpp_domains_obj.set_data_domain(
+            xbegin=xbegin,
+            xend=xend,
+            ybegin=ybegin,
+            yend=yend,
+            xsize=xsize,
+            ysize=ysize,
+            x_is_global=x_is_global,
+            y_is_global=y_is_global,
+            tile_count=tile_count,
+            domain_id=domain_id,
+            whalo=whalo,
+            shalo=shalo,
+        )
+
+    def set_global_domain(
+        self,
+        xbegin: Optional[int] = None,
+        xend: Optional[int] = None,
+        ybegin: Optional[int] = None,
+        yend: Optional[int] = None,
+        xsize: Optional[int] = None,
+        ysize: Optional[int] = None,
+        tile_count: Optional[int] = None,
+        domain_id: Optional[int] = None,
+        whalo: Optional[int] = None,
+        shalo: Optional[int] = None,
+    ):
+        self.mpp_domains_obj.set_global_domain(
+            xbegin=xbegin,
+            xend=xend,
+            ybegin=ybegin,
+            yend=yend,
+            xsize=xsize,
+            ysize=ysize,
+            tile_count=tile_count,
+            domain_id=domain_id,
+            whalo=whalo,
+            shalo=shalo,
+        )
+
+    @property
+    def compute_domain(self):
+        return self.mpp_domains_obj.get_compute_domain(
+            domain_id=self.domain_id,
+            whalo=self.whalo,
+            shalo=self.shalo,
+        )
+    
+    @property
+    def data_domain(self):
+        return self.mpp_domains_obj.get_data_domain(
+            domain_id=self.domain_id,
+            whalo=self.whalo,
+            shalo=self.shalo,
+        )
+
+
+

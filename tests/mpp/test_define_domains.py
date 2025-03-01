@@ -1,6 +1,6 @@
 import numpy as np
 
-from pyfms import pyFMS, pyFMS_mpp, pyFMS_mpp_domains
+from pyfms import pyFMS, pyFMS_mpp, pyFMS_mpp_domains, pyDomain
 
 
 def test_define_domains():
@@ -56,9 +56,8 @@ def test_define_domains():
     # get global pelist
 
     npes = mpp.npes()
-    global_pelist = np.empty(shape=npes, dtype=np.int32, order="C")
     pyfms.set_pelist_npes(npes_in=npes)
-    mpp.get_current_pelist(pelist=global_pelist)
+    global_pelist = mpp.get_current_pelist()
 
     # set coarse domain as tile=0
 
@@ -78,16 +77,37 @@ def test_define_domains():
         yextent = np.zeros(shape=2, dtype=np.int32, order="C")
         is_mosaic = False
 
-        layout = np.empty(shape=2, dtype=np.int32, order="C")
         ndivs = coarse_npes
 
-        mpp_domains.define_layout(
-            global_indices=coarse_global_indices, ndivs=ndivs, layout=layout
+        layout = mpp_domains.define_layout(
+            global_indices=coarse_global_indices,
+            ndivs=ndivs,
         )
 
-        mpp_domains.define_domains(
+        # mpp_domains.define_domains(
+        #     global_indices=coarse_global_indices,
+        #     layout=layout,
+        #     domain_id=domain_id,
+        #     pelist=coarse_pelist,
+        #     xflags=coarse_xflags,
+        #     yflags=coarse_yflags,
+        #     xextent=xextent,
+        #     yextent=yextent,
+        #     maskmap=maskmap,
+        #     name=name,
+        #     symmetry=symmetry,
+        #     whalo=coarse_whalo,
+        #     ehalo=coarse_ehalo,
+        #     shalo=coarse_shalo,
+        #     nhalo=coarse_nhalo,
+        #     is_mosaic=is_mosaic,
+        #     tile_id=coarse_tile_id,
+        # )
+
+        domain = pyDomain(
             global_indices=coarse_global_indices,
             layout=layout,
+            mpp_domains_obj=mpp_domains,
             domain_id=domain_id,
             pelist=coarse_pelist,
             xflags=coarse_xflags,
@@ -120,16 +140,31 @@ def test_define_domains():
         mpp.set_current_pelist(pelist=fine_pelist)
 
         name = "test fine domain"
-        layout = np.empty(shape=2, dtype=np.int32, order="C")
         ndivs = FINE_NPES
 
-        mpp_domains.define_layout(
-            global_indices=fine_global_indices, ndivs=ndivs, layout=layout
+        layout = mpp_domains.define_layout(
+            global_indices=fine_global_indices,
+            ndivs=ndivs,
         )
 
-        mpp_domains.define_domains(
+        # mpp_domains.define_domains(
+        #     global_indices=fine_global_indices,
+        #     layout=layout,
+        #     domain_id=domain_id,
+        #     pelist=fine_pelist,
+        #     name=name,
+        #     symmetry=symmetry,
+        #     whalo=fine_whalo,
+        #     ehalo=fine_ehalo,
+        #     shalo=fine_shalo,
+        #     nhalo=fine_nhalo,
+        #     is_mosaic=is_mosaic,
+        #     tile_id=fine_tile_id,
+        # )
+        domain = pyDomain(
             global_indices=fine_global_indices,
             layout=layout,
+            mpp_domains_obj=mpp_domains,
             domain_id=domain_id,
             pelist=fine_pelist,
             name=name,
@@ -187,7 +222,7 @@ def test_define_domains():
 
     pyfms.pyfms_end()
 
-    mpp.pyfms_error(errortype=1)
+    # mpp.pyfms_error(errortype=1)
 
 
 if __name__ == "__main__":
