@@ -13,6 +13,7 @@ from pyfms.pyfms_data_handling import (
     setscalar_Cint32,
 )
 
+
 @dataclasses.dataclass
 class subDomainData:
     xbegin = ctypes.c_int(0)
@@ -947,7 +948,7 @@ class pyDomain:
             whalo=self.whalo,
             shalo=self.shalo,
         )
-    
+
     @property
     def data_domain(self):
         return self.mpp_domains_obj.get_data_domain(
@@ -955,6 +956,3 @@ class pyDomain:
             whalo=self.whalo,
             shalo=self.shalo,
         )
-
-
-
