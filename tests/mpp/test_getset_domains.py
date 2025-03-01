@@ -1,11 +1,8 @@
 import numpy as np
 
-from pyfms import (
-    pyFMS, 
-    pyFMS_mpp, 
-    pyFMS_mpp_domains, 
-)
-from pyfms.mpp.pyfms_pydomain import pyDomainData
+from pyfms.mpp.pyfms_mpp import pyFMS_mpp
+from pyfms.mpp.pyfms_mpp_domains import pyFMS_mpp_domains, pyDomain
+from pyfms.pyfms_fms import pyFMS
 
 
 def test_getset_domains():
@@ -32,17 +29,15 @@ def test_getset_domains():
     pyfms = pyFMS(clibFMS_path="./cFMS/libcFMS/.libs/libcFMS.so")
     mpp = pyFMS_mpp(clibFMS=pyfms.clibFMS)
     mpp_domains = pyFMS_mpp_domains(clibFMS=pyfms.clibFMS)
-    compute_domain_data = pyDomainData()
-    data_domain_data = pyDomainData()
 
     # set domain
 
-    layout = np.empty(shape=2, dtype=np.int32, order="C")
-    mpp_domains.define_layout(global_indices=global_indices, ndivs=ndiv, layout=layout)
+    layout = mpp_domains.define_layout(global_indices=global_indices, ndivs=ndiv)
 
-    mpp_domains.define_domains(
+    domain = pyDomain(
         global_indices=global_indices,
         layout=layout,
+        mpp_domains_obj=mpp_domains,
         domain_id=domain_id,
         name=name,
         whalo=whalo,
@@ -90,29 +85,29 @@ def test_getset_domains():
 
     xsize = 2
     ysize = 2
-    compute_domain_data.setup_set(
-        xbegin = isc[pe],
-        xend = iec[pe],
-        ybegin = jsc[pe],
-        yend = jec[pe],
-        xsize = xsize,
-        ysize = ysize,
-        x_is_global = x_is_global,
-        y_is_global = y_is_global,
-        tile_count = tile_count,
-    )
-    mpp_domains.set_compute_domain(
+
+    domain.set_compute_domain(
         domain_id=domain_id,
-        domain_data=compute_domain_data,
+        xbegin=isc[pe],
+        xend=iec[pe],
+        ybegin=jsc[pe],
+        yend=jec[pe],
+        xsize=xsize,
+        ysize=ysize,
+        x_is_global=x_is_global,
+        y_is_global=y_is_global,
+        tile_count=tile_count,
         whalo=whalo,
         shalo=shalo,
     )
 
     xsize = 6
     ysize = 6
-    data_domain_data.setup_set(
-        xbegin = isd[pe],
-        xend = ied[pe],
+
+    domain.set_data_domain(
+        domain_id=domain_id,
+        xbegin=isd[pe],
+        xend=ied[pe],
         ybegin=jsd[pe],
         yend=jed[pe],
         xsize=xsize,
@@ -120,77 +115,35 @@ def test_getset_domains():
         x_is_global=x_is_global,
         y_is_global=y_is_global,
         tile_count=tile_count,
-    )
-    mpp_domains.set_data_domain(
-        domain_id=domain_id,
-        domain_data=data_domain_data,
         whalo=whalo,
         shalo=shalo,
     )
 
     # get domain
 
-    blank_compute_domain = pyDomainData()
-    blank_compute_domain.setup_get(
-        xbegin=True,
-        xend=True,
-        ybegin=True,
-        yend=True,
-        xsize=True,
-        ysize=True,
-        xmax_size=True,
-        ymax_size=True,
-        x_is_global=True,
-        y_is_global=True,
-    )
+    out_compute_domain = domain.compute_domain
 
-    mpp_domains.get_compute_domain(
-        domain_id=domain_id,
-        domain_data=blank_compute_domain,
-        position=None,
-        whalo=whalo,
-        shalo=shalo,
-    )
+    assert out_compute_domain.xbegin.value == isc[pe]
+    assert out_compute_domain.xend.value == iec[pe]
+    assert out_compute_domain.ybegin.value == jsc[pe]
+    assert out_compute_domain.yend.value == jec[pe]
+    assert out_compute_domain.xsize.value == 2
+    assert out_compute_domain.ysize.value == 2
+    assert out_compute_domain.xmax_size.value == 2
+    assert out_compute_domain.ymax_size.value == 2
+    assert out_compute_domain.x_is_global.value is False
+    assert out_compute_domain.y_is_global.value is False
 
-    assert blank_compute_domain.xbegin.value == isc[pe]
-    assert blank_compute_domain.xend.value == iec[pe]
-    assert blank_compute_domain.ybegin.value == jsc[pe]
-    assert blank_compute_domain.yend.value == jec[pe]
-    assert blank_compute_domain.xsize.value == 2
-    assert blank_compute_domain.ysize.value == 2
-    assert blank_compute_domain.xmax_size.value == 2
-    assert blank_compute_domain.ymax_size.value == 2
-    assert blank_compute_domain.x_is_global.value is False
-    assert blank_compute_domain.y_is_global.value is False
+    out_data_domain = domain.data_domain
 
-    blank_data_domain = pyDomainData()
-    blank_data_domain.setup_get(
-        xbegin=True,
-        xend=True,
-        ybegin=True,
-        yend=True,
-        xsize=True,
-        ysize=True,
-        xmax_size=True,
-        ymax_size=True,
-    )
-
-    mpp_domains.get_data_domain(
-        domain_id=domain_id,
-        domain_data=blank_data_domain,
-        position=None,
-        whalo=whalo,
-        shalo=shalo,
-    )
-
-    assert blank_data_domain.xbegin.value == isd[pe]
-    assert blank_data_domain.xend.value == ied[pe]
-    assert blank_data_domain.ybegin.value == jsd[pe]
-    assert blank_data_domain.yend.value == jed[pe]
-    assert blank_data_domain.xsize.value == 6
-    assert blank_data_domain.ysize.value == 6
-    assert blank_data_domain.xmax_size.value == 6
-    assert blank_data_domain.ymax_size.value == 6
+    assert out_data_domain.xbegin.value == isd[pe]
+    assert out_data_domain.xend.value == ied[pe]
+    assert out_data_domain.ybegin.value == jsd[pe]
+    assert out_data_domain.yend.value == jed[pe]
+    assert out_data_domain.xsize.value == 6
+    assert out_data_domain.ysize.value == 6
+    assert out_data_domain.xmax_size.value == 6
+    assert out_data_domain.ymax_size.value == 6
 
     pyfms.pyfms_end()
 

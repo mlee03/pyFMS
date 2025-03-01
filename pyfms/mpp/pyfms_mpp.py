@@ -1,7 +1,8 @@
-import ctypes as ct
+import ctypes
 import dataclasses
 from typing import Optional
 
+import numpy as np
 from numpy.typing import NDArray
 
 from pyfms.pyfms_data_handling import (
@@ -14,7 +15,7 @@ from pyfms.pyfms_data_handling import (
 
 @dataclasses.dataclass
 class pyFMS_mpp:
-    clibFMS: ct.CDLL = None
+    clibFMS: ctypes.CDLL = None
 
     """
     Subroutine: declare_pelist
@@ -88,18 +89,18 @@ class pyFMS_mpp:
     The size of the passed pelist must match the current number
     of npes; pelist(npes)
 
-    Returns: In the Fortran source, pelist, name, and commID will be updated
-    The passed NumPy array for the pelist argument will be updated, to update
-    the values of the passed name and commID, the passed objects should also
-    be set to the result of this method.
+    Returns: NDArray containing pelist
     """
 
     def get_current_pelist(
         self,
-        pelist: NDArray,
         name: Optional[str] = None,
         commID: Optional[int] = None,
-    ) -> int:
+    ) -> NDArray:
+
+        npes = ctypes.c_int.in_dll(self.clibFMS, "cFMS_pelist_npes")
+        pelist = np.empty(shape=npes.value, dtype=np.int32, order="C")
+
         _cfms_get_current_pelist = self.clibFMS.cFMS_get_current_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
@@ -111,9 +112,6 @@ class pyFMS_mpp:
 
         _cfms_get_current_pelist(pelist_p, name_c, commID_c)
 
-        if commID is not None:
-            commID = commID_c.value
-
         # TODO: allow for return of name after cFMS fix
 
         # if name is not None:
@@ -121,7 +119,7 @@ class pyFMS_mpp:
 
         # return commID, name
 
-        return commID
+        return pelist
 
     """
     Function: npes
@@ -132,7 +130,7 @@ class pyFMS_mpp:
     def npes(self) -> int:
         _cfms_npes = self.clibFMS.cFMS_npes
 
-        _cfms_npes.restype = ct.c_int32
+        _cfms_npes.restype = ctypes.c_int32
 
         return _cfms_npes()
 
@@ -145,7 +143,7 @@ class pyFMS_mpp:
     def pe(self) -> int:
         _cfms_pe = self.clibFMS.cFMS_pe
 
-        _cfms_pe.restype = ct.c_int32
+        _cfms_pe.restype = ctypes.c_int32
 
         return _cfms_pe()
 
