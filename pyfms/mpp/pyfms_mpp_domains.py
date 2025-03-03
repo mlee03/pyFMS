@@ -15,7 +15,22 @@ from pyfms.pyfms_data_handling import (
 
 
 @dataclasses.dataclass
-class subDomainData:
+class pyComputeDomain:
+    xbegin = ctypes.c_int(0)
+    xend = ctypes.c_int(0)
+    ybegin = ctypes.c_int(0)
+    yend = ctypes.c_int(0)
+    xsize = ctypes.c_int(0)
+    xmax_size = ctypes.c_int(0)
+    ysize = ctypes.c_int(0)
+    ymax_size = ctypes.c_int(0)
+    x_is_global = ctypes.c_bool(False)
+    y_is_global = ctypes.c_bool(False)
+    tile_count = ctypes.c_int(0)
+
+
+@dataclasses.dataclass
+class pyDataDomain:
     xbegin = ctypes.c_int(0)
     xend = ctypes.c_int(0)
     ybegin = ctypes.c_int(0)
@@ -328,11 +343,11 @@ class pyFMS_mpp_domains:
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ) -> "subDomainData":
+    ) -> "pyComputeDomain":
 
         _cfms_get_compute_domain = self.clibFMS.cFMS_get_compute_domain
 
-        domain_data = subDomainData()
+        domain_data = pyComputeDomain()
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
@@ -409,10 +424,10 @@ class pyFMS_mpp_domains:
         position: Optional[int] = None,
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
-    ) -> "subDomainData":
+    ) -> "pyDataDomain":
         _cfms_get_data_domain = self.clibFMS.cFMS_get_data_domain
 
-        domain_data = subDomainData()
+        domain_data = pyDataDomain()
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
@@ -801,9 +816,9 @@ class pyFMS_mpp_domains:
 
 @dataclasses.dataclass
 class pyDomain:
+    mpp_domains_obj: pyFMS_mpp_domains
     global_indices: NDArray
     layout: NDArray
-    mpp_domains_obj: pyFMS_mpp_domains
     domain_id: Optional[int] = None
     pelist: Optional[NDArray] = None
     xflags: Optional[int] = None
@@ -955,4 +970,45 @@ class pyDomain:
             domain_id=self.domain_id,
             whalo=self.whalo,
             shalo=self.shalo,
+        )
+
+
+@dataclasses.dataclass
+class pyNestDomain:
+    mpp_domains_obj: pyFMS_mpp_domains
+    num_nest: int
+    ntiles: int
+    nest_level: NDArray
+    tile_fine: NDArray
+    tile_coarse: NDArray
+    istart_coarse: NDArray
+    icount_coarse: NDArray
+    jstart_coarse: NDArray
+    jcount_coarse: NDArray
+    npes_nest_tile: NDArray
+    x_refine: NDArray
+    y_refine: NDArray
+    nest_domain_id: Optional[int] = None
+    domain_id: Optional[int] = None
+    extra_halo: Optional[int] = None
+    name: Optional[str] = None
+
+    def __post_init__(self):
+        self.mpp_domains_obj.define_nest_domains(
+            num_nest=self.num_nest,
+            ntiles=self.ntiles,
+            nest_level=self.nest_level,
+            tile_fine=self.tile_fine,
+            tile_coarse=self.tile_coarse,
+            istart_coarse=self.istart_coarse,
+            icount_coarse=self.icount_coarse,
+            jstart_coarse=self.jstart_coarse,
+            jcount_coarse=self.jcount_coarse,
+            npes_nest_tile=self.npes_nest_tile,
+            x_refine=self.x_refine,
+            y_refine=self.y_refine,
+            nest_domain_id=self.nest_domain_id,
+            domain_id=self.domain_id,
+            extra_halo=self.extra_halo,
+            name=self.name,
         )

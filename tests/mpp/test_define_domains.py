@@ -1,6 +1,6 @@
 import numpy as np
 
-from pyfms import pyDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
+from pyfms import pyDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains, pyNestDomain
 
 
 def test_define_domains():
@@ -84,26 +84,6 @@ def test_define_domains():
             ndivs=ndivs,
         )
 
-        # mpp_domains.define_domains(
-        #     global_indices=coarse_global_indices,
-        #     layout=layout,
-        #     domain_id=domain_id,
-        #     pelist=coarse_pelist,
-        #     xflags=coarse_xflags,
-        #     yflags=coarse_yflags,
-        #     xextent=xextent,
-        #     yextent=yextent,
-        #     maskmap=maskmap,
-        #     name=name,
-        #     symmetry=symmetry,
-        #     whalo=coarse_whalo,
-        #     ehalo=coarse_ehalo,
-        #     shalo=coarse_shalo,
-        #     nhalo=coarse_nhalo,
-        #     is_mosaic=is_mosaic,
-        #     tile_id=coarse_tile_id,
-        # )
-
         domain = pyDomain(
             global_indices=coarse_global_indices,
             layout=layout,
@@ -147,20 +127,6 @@ def test_define_domains():
             ndivs=ndivs,
         )
 
-        # mpp_domains.define_domains(
-        #     global_indices=fine_global_indices,
-        #     layout=layout,
-        #     domain_id=domain_id,
-        #     pelist=fine_pelist,
-        #     name=name,
-        #     symmetry=symmetry,
-        #     whalo=fine_whalo,
-        #     ehalo=fine_ehalo,
-        #     shalo=fine_shalo,
-        #     nhalo=fine_nhalo,
-        #     is_mosaic=is_mosaic,
-        #     tile_id=fine_tile_id,
-        # )
         domain = pyDomain(
             global_indices=fine_global_indices,
             layout=layout,
@@ -199,7 +165,8 @@ def test_define_domains():
     nest_domain_id = nest_domain_id
     domain_id = domain_id
 
-    mpp_domains.define_nest_domains(
+    nest_domain = pyNestDomain(
+        mpp_domains_obj=mpp_domains,
         num_nest=num_nest,
         ntiles=ntiles,
         nest_level=nest_level,
