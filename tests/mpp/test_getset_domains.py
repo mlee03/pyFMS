@@ -121,7 +121,14 @@ def test_getset_domains():
 
     # get domain
 
-    # out_compute_domain = domain.compute_domain
+    assert domain.data_domain.xbegin.value == isd[pe]
+    assert domain.data_domain.xend.value == ied[pe]
+    assert domain.data_domain.ybegin.value == jsd[pe]
+    assert domain.data_domain.yend.value == jed[pe]
+    assert domain.data_domain.xsize.value == 6
+    assert domain.data_domain.ysize.value == 6
+    assert domain.data_domain.xmax_size.value == 6
+    assert domain.data_domain.ymax_size.value == 6
 
     assert domain.compute_domain.xbegin.value == isc[pe]
     assert domain.compute_domain.xend.value == iec[pe]
@@ -133,29 +140,6 @@ def test_getset_domains():
     assert domain.compute_domain.ymax_size.value == 2
     assert domain.compute_domain.x_is_global.value is False
     assert domain.compute_domain.y_is_global.value is False
-
-    # out_data_domain = domain.data_domain
-
-    assert domain.data_domain.xbegin.value == isd[pe]
-    assert domain.data_domain.xend.value == ied[pe]
-    assert domain.data_domain.ybegin.value == jsd[pe]
-    assert domain.data_domain.yend.value == jed[pe]
-    assert domain.data_domain.xsize.value == 6
-    assert domain.data_domain.ysize.value == 6
-    assert domain.data_domain.xmax_size.value == 6
-    assert domain.data_domain.ymax_size.value == 6
-
-    # xbcd2 = out_compute_domain.xbegin.value
-    # xbdd = out_data_domain.xbegin.value
-    # xbcd = domain.compute_domain.xbegin.value
-    # xbdd = domain.data_domain.xbegin.value
-    # xbcd2 = domain.compute_domain.xbegin.value
-    # xbdd2 = domain.data_domain.xbegin.value
-    # print(f"id of xbcdf = {id(xbcd)},id of xbdd = {id(xbdd)}")
-    # print(f"id of xbcd = {id(xbcd)},id of xbcd2 = {id(xbcd2)}")
-    # print(f"xbcd = {xbcd}, xbdd = {xbdd}, xbcd2 = {xbcd2}, xbdd2 = {xbdd2}")
-    # print(f"xbcd = {xbcd}, xbcd2 = {xbcd2}")
-    # print(f"id of domain.compute_domain = {id(domain.compute_domain)}, id of out_compute_domain = {id(out_compute_domain)}")
 
     pyfms.pyfms_end()
 
