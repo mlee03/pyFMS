@@ -1,8 +1,7 @@
 from .mpp.pyfms_mpp import pyFMS_mpp
 from .mpp.pyfms_mpp_domains import (
-    pyComputeDomain,
-    pyDataDomain,
     pyDomain,
+    pyDomainData,
     pyFMS_mpp_domains,
     pyNestDomain,
 )
