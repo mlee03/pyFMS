@@ -1,5 +1,4 @@
 import ctypes
-import dataclasses
 from typing import Optional
 
 import numpy as np
@@ -13,9 +12,10 @@ from pyfms.pyfms_data_handling import (
 )
 
 
-@dataclasses.dataclass
 class pyFMS_mpp:
-    clibFMS: ctypes.CDLL = None
+
+    def __init__(self, clibFMS: ctypes.CDLL = None):
+        self.clibFMS = clibFMS
 
     """
     Subroutine: declare_pelist
