@@ -345,8 +345,6 @@ class pyFMS_mpp_domains:
 
         _cfms_get_compute_domain = self.clibFMS.cFMS_get_compute_domain
 
-        # domain_data = pyDomainData()
-
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
         xend_c, xend_t = setscalar_Cint32(domain_data.xend)
@@ -423,8 +421,6 @@ class pyFMS_mpp_domains:
         shalo: Optional[int] = None,
     ):
         _cfms_get_data_domain = self.clibFMS.cFMS_get_data_domain
-
-        # domain_data = pyDomainData()
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
