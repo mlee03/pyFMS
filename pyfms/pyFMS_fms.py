@@ -1,28 +1,23 @@
 #!/usr/bin/env python3
 
-import ctypes as ct
+import ctypes
 import dataclasses
 import os
 from pyfms.horiz_interp import HorizInterp
 from typing import Optional
 
 from pyfms.pyFMS_data_handling import set_Cchar, setscalar_Cint32
-from pyfms.pyfms_utils.grid_utils import GridUtils
-
 
 @dataclasses.dataclass
 class pyFMS:
 
-    clibFMS_path: str = None
-    clibFMS: ct.CDLL = None
+    clibFMS_path: str = "./cFMS/libcFMS/.libs/libcFMS.so"
+    clibFMS: ctypes.CDLL = None
     alt_input_nml_path: str = None
     localcomm: int = None
     ndomain: int = None
     nnest_domain: int = None
 
-    #horiz_interp : Optional[HorizInterp] = None
-    #grid_utils : Optional[GridUtils] = None
-    
     def __post_init__(self):
 
         if self.clibFMS_path is None:
@@ -34,14 +29,15 @@ class pyFMS:
             raise ValueError(f"Library {self.clibFMS_path} does not exist")
 
         if self.clibFMS is None:
-            self.clibFMS = ct.cdll.LoadLibrary(self.clibFMS_path)
+            self.clibFMS = ctypes.cdll.LoadLibrary(self.clibFMS_path)
 
         self.pyfms_init(
             self.localcomm, self.alt_input_nml_path, self.ndomain, self.nnest_domain
         )
         
-        
-        """
+    """
+    Subroutine: pyfms_end
+
     Calls the termination routines for all modules in the MPP package.
     Termination routine for the fms module. It also calls destructor routines
     for the mpp, mpp_domains, and mpp_io modules. If this routine is called
@@ -56,6 +52,8 @@ class pyFMS:
         _cfms_end()
 
     """
+    Subroutine: pyfms_init
+
     Initializes the FMS module and also calls the initialization routines for
     all modules in the MPP package. Will be called automatically if the user
     does not call it.
@@ -96,11 +94,13 @@ class pyFMS:
         )
 
     """
+    Subroutine: pyfms_set_pelist_npes
+
     This method is used to set a npes variable of the cFMS module it wraps
     """
 
-    def pyfms_set_pelist_npes(self, npes_in: int):
-        _cfms_set_npes = self.clibFMS.cFMS_set_npes
+    def set_pelist_npes(self, npes_in: int):
+        _cfms_set_npes = self.clibFMS.cFMS_set_pelist_npes
 
         npes_in_c, npes_in_t = setscalar_Cint32(npes_in)
 
