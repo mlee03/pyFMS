@@ -1,7 +1,9 @@
-from .pyFMS_error import pyfms_error
-from .pyFMS_field_manager import FieldError, FieldTable
+from .mpp.pyFMS_domain_obj import Domain, NestDomain
+from .mpp.pyFMS_mpp import pyFMS_mpp
+from .mpp.pyFMS_mpp_domains import pyFMS_mpp_domains
+from .pyFMS_field_manager import FieldTable
 from .pyFMS_fms import pyFMS
-from .horiz_interp import HorizInterp as horiz_interp
+from .horiz_interp import HorizInterp 
 from .pyfms_utils.grid_utils import GridUtils
 
 
