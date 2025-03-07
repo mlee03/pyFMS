@@ -1,16 +1,13 @@
 import pytest
-import xarray as xr
 import numpy as np
 import os
 import pyfms
 
-cfms_path = os.path.dirname(__file__)+"/../../cFMS/cFMSGNU/lib/libcFMS.so"
 
 def test_create_xgrid():
-
     
-    cfms = pyfms.pyFMS(clibFMS_path=cfms_path, ndomain=1, nnest_domain=1).clibFMS
-    create_xgrid = pyfms.HorizInterp.create_xgrid_2dx2d_order1
+    cfms = pyfms.pyFMS().clibFMS
+    create_xgrid = pyfms.HorizInterp(cfms=cfms).create_xgrid_2dx2d_order1
     
     refine = 1
     lon_init = 0.
@@ -42,16 +39,16 @@ def test_create_xgrid():
     )
     mask_src = np.ones((nlon_src+1)*(nlat_src+1), dtype=np.float64)
     
-    nxgrid, i_src, j_src, i_tgt, j_tgt, xarea = create_xgrid(cfms=cfms,
-                                                             nlon_src=nlon_src,
-                                                             nlat_src=nlat_src,
-                                                             nlon_tgt=nlon_tgt,
-                                                             nlat_tgt=nlat_tgt,
-                                                             lon_src=lon_src,
-                                                             lat_src=lat_src,
-                                                             lon_tgt=lon_tgt,
-                                                             lat_tgt=lat_tgt,
-                                                             mask_src=mask_src)
+    xgrid = create_xgrid(nlon_src=nlon_src,
+                         nlat_src=nlat_src,
+                         nlon_tgt=nlon_tgt,
+                         nlat_tgt=nlat_tgt,
+                         lon_src=lon_src,
+                         lat_src=lat_src,
+                         lon_tgt=lon_tgt,
+                         lat_tgt=lat_tgt,
+                         mask_src=mask_src)
+    
     #answer checking
     area = pyfms.GridUtils.get_grid_area(cfms=cfms,
                                          nlon=nlon_src,
@@ -59,6 +56,8 @@ def test_create_xgrid():
                                          lon=lon_src,
                                          lat=lat_src)
 
-    assert(np.array_equal(i_src, i_tgt))
-    assert(np.array_equal(j_src, j_tgt))
-    assert(np.array_equal(xarea, area))
+    assert(xgrid["nxgrid"] == nlon_src*nlat_src)
+    assert(np.array_equal(xgrid["i_src"], xgrid["i_tgt"]))
+    assert(np.array_equal(xgrid["j_src"], xgrid["j_tgt"]))
+    assert(np.array_equal(xgrid["xarea"], area))
+

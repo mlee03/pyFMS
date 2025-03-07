@@ -41,8 +41,3 @@ class GridUtils():
         _get_grid_area(ctypes.byref(nlon_c), ctypes.byref(nlat_c), lon, lat, area)
 
         return area
-                       
-    @staticmethod
-    def get_maxxgrid():
-        #replace with MAXXVAL from FMS
-        return 10**6
