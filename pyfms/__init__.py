@@ -5,5 +5,3 @@ from .pyFMS_field_manager import FieldTable
 from .pyFMS_fms import pyFMS
 from .horiz_interp import HorizInterp 
 from .pyfms_utils.grid_utils import GridUtils
-
-
