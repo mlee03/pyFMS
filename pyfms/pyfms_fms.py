@@ -1,24 +1,29 @@
 #!/usr/bin/env python3
 
 import ctypes
-import dataclasses
 import os
 from pyfms.horiz_interp import HorizInterp
 from typing import Optional
 
-from pyfms.pyFMS_data_handling import set_Cchar, setscalar_Cint32
+from pyfms.pyfms_data_handling import set_Cchar, setscalar_Cint32
 
-@dataclasses.dataclass
 class pyFMS:
 
-    clibFMS_path: str = "./cFMS/libcFMS/.libs/libcFMS.so"
-    clibFMS: ctypes.CDLL = None
-    alt_input_nml_path: str = None
-    localcomm: int = None
-    ndomain: int = 1
-    nnest_domain: int = 1
-
-    def __post_init__(self):
+    def __init__(
+        self,
+        clibFMS_path: str = "./cFMS/libcFMS/.libs/libcFMS.so",
+        clibFMS: ctypes.CDLL = None,
+        alt_input_nml_path: str = None,
+        localcomm: int = None,
+        ndomain: int = None,
+        nnest_domain: int = None,
+    ):
+        self.clibFMS_path = clibFMS_path
+        self.clibFMS = clibFMS
+        self.alt_input_nml_path = alt_input_nml_path
+        self.localcomm = localcomm
+        self.ndomain = ndomain
+        self.nnest_domain = nnest_domain
 
         if self.clibFMS_path is None:
             raise ValueError(
