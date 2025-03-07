@@ -2,13 +2,19 @@ import dataclasses
 import ctypes
 import numpy as np
 import numpy.typing as npt
+from typing import Optional
 from pyfms.pyfms_utils.grid_utils import GridUtils
 
-@dataclasses.dataclass
-class HorizInterp():
+class HorizInterp:
 
-    @staticmethod
-    def create_xgrid_2dx2d_order1(cfms: ctypes.CDLL,
+    def __init__(self, cfms: ctypes.CDLL):
+        self.cfms = cfms
+    
+    def get_maxxgrid(self) -> np.int32:
+        self.cfms.get_maxxgrid.restype = np.int32
+        return self.cfms.get_maxxgrid()    
+
+    def create_xgrid_2dx2d_order1(self,
                                   nlon_src: int,
                                   nlat_src: int,
                                   nlon_tgt: int,
@@ -17,20 +23,15 @@ class HorizInterp():
                                   lat_src: npt.NDArray[np.float64],
                                   lon_tgt: npt.NDArray[np.float64],
                                   lat_tgt: npt.NDArray[np.float64],
-                                  mask_src: npt.NDArray[np.float64]) \
-                                  -> tuple[npt.NDArray[np.int32],
-                                           npt.NDArray[np.int32],
-                                           npt.NDArray[np.int32],
-                                           npt.NDArray[np.int32],
-                                           npt.NDArray[np.float64]]:
-
+                                  mask_src: npt.NDArray[np.float64]) -> dict:
+    
         ngrid_src = nlon_src*nlat_src
         ngrid_tgt = nlon_tgt*nlat_tgt
 
         ngrid_src_p1 = (nlon_src+1) * (nlat_src+1)
         ngrid_tgt_p1 = (nlon_tgt+1) * (nlat_tgt+1)
         
-        maxxgrid = GridUtils.get_maxxgrid()
+        maxxgrid = self.get_maxxgrid()
         
         nlon_src_t = ctypes.c_int
         nlat_src_t = ctypes.c_int
@@ -48,13 +49,13 @@ class HorizInterp():
         j_tgt_ndp = np.ctypeslib.ndpointer(dtype=np.int32, shape=(maxxgrid), flags='C_CONTIGUOUS')
         xarea_ndp = np.ctypeslib.ndpointer(dtype=np.float64, shape=(maxxgrid), flags='C_CONTIGUOUS')
         
-        i_src_c = np.zeros(maxxgrid, dtype=np.int32)
-        j_src_c = np.zeros(maxxgrid, dtype=np.int32)
-        i_tgt_c = np.zeros(maxxgrid, dtype=np.int32)
-        j_tgt_c = np.zeros(maxxgrid, dtype=np.int32)
-        xarea_c = np.zeros(maxxgrid, dtype=np.float64)
+        i_src = np.zeros(maxxgrid, dtype=np.int32)
+        j_src = np.zeros(maxxgrid, dtype=np.int32)
+        i_tgt = np.zeros(maxxgrid, dtype=np.int32)
+        j_tgt = np.zeros(maxxgrid, dtype=np.int32)
+        xarea = np.zeros(maxxgrid, dtype=np.float64)
 
-        _create_xgrid = cfms.cFMS_create_xgrid_2dx2d_order1
+        _create_xgrid = self.cfms.cFMS_create_xgrid_2dx2d_order1
         
         _create_xgrid.restype = ctypes.c_int        
         _create_xgrid.argtypes = [ctypes.POINTER(nlon_src_t),
@@ -89,12 +90,15 @@ class HorizInterp():
                                lat_tgt,
                                mask_src,
                                maxxgrid_c,
-                               i_src_c,
-                               j_src_c,
-                               i_tgt_c,
-                               j_tgt_c,
-                               xarea_c)
+                               i_src,
+                               j_src,
+                               i_tgt,
+                               j_tgt,
+                               xarea)
 
-        return nxgrid, i_src_c[:nxgrid], j_src_c[:nxgrid], i_tgt_c[:nxgrid], j_tgt_c[:nxgrid], xarea_c[:nxgrid]
-
-    
+        return {"nxgrid": nxgrid,
+                "i_src": i_src[:nxgrid],
+                "j_src": j_src[:nxgrid],
+                "i_tgt": i_tgt[:nxgrid],
+                "j_tgt": j_tgt[:nxgrid],
+                "xarea": xarea[:nxgrid]}

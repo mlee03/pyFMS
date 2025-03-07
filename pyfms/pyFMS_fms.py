@@ -15,8 +15,8 @@ class pyFMS:
     clibFMS: ctypes.CDLL = None
     alt_input_nml_path: str = None
     localcomm: int = None
-    ndomain: int = None
-    nnest_domain: int = None
+    ndomain: int = 1
+    nnest_domain: int = 1
 
     def __post_init__(self):
 
