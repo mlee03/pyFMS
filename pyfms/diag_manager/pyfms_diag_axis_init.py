@@ -7,9 +7,10 @@ from pyfms.pyfms_data_handling import (
     set_Cchar,
     setarray_Cdouble,
     setarray_Cfloat,
-    setscalar_Cint32,
     setscalar_Cbool,
+    setscalar_Cint32,
 )
+
 
 class pyFMS_diag_axis_init:
 
@@ -51,7 +52,7 @@ class pyFMS_diag_axis_init:
         req_c, req_t = set_Cchar(req)
         tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
         domain_position_c, domain_position_t = setscalar_Cint32(domain_position)
-        not_xy_c, not_xy_t = setscalar_Cbool[not_xy]
+        not_xy_c, not_xy_t = setscalar_Cbool(not_xy)
 
         _cfms_diag_axis_init_cdouble.argtypes = [
             name_t,

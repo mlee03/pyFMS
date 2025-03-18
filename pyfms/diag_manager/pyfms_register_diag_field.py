@@ -14,6 +14,7 @@ from pyfms.pyfms_data_handling import (
     setscalar_Cint32,
 )
 
+
 class pyFMS_register_diag_field:
 
     def __init__(self, clibFMS: ctypes.CDLL = None):
@@ -489,7 +490,7 @@ class pyFMS_register_diag_field:
             realm_c,
             multiple_send_data_c,
         )
-    
+
     def register_diag_field_scalar_cfloat(
         self,
         module_name: str,

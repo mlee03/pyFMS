@@ -5,10 +5,11 @@ from numpy.typing import NDArray
 
 from pyfms.pyfms_data_handling import (
     set_Cchar,
-    setarray_Cint32,
     set_multipointer,
+    setarray_Cint32,
     setscalar_Cint32,
 )
+
 
 class pyFMS_send_data:
 
@@ -33,7 +34,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=2)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_2d_cint.argtypes = [
@@ -50,7 +51,7 @@ class pyFMS_send_data:
             field_p,
             err_msg_c,
         )
-    
+
     def diag_send_data_2d_cdouble(
         self,
         diag_field_id: int,
@@ -65,7 +66,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=2)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_2d_cdouble.argtypes = [
@@ -82,7 +83,7 @@ class pyFMS_send_data:
             field_p,
             err_msg_c,
         )
-    
+
     def diag_send_data_2d_cfloat(
         self,
         diag_field_id: int,
@@ -97,7 +98,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=2)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_2d_cfloat.argtypes = [
@@ -114,7 +115,7 @@ class pyFMS_send_data:
             field_p,
             err_msg_c,
         )
-    
+
     """
     3d send data wrappers
     """
@@ -133,7 +134,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=3)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_3d_cint.argtypes = [
@@ -150,7 +151,7 @@ class pyFMS_send_data:
             field_p,
             err_msg_c,
         )
-    
+
     def diag_send_data_3d_cdouble(
         self,
         diag_field_id: int,
@@ -165,7 +166,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=3)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_3d_cdouble.argtypes = [
@@ -182,7 +183,7 @@ class pyFMS_send_data:
             field_p,
             err_msg_c,
         )
-    
+
     def diag_send_data_3d_cfloat(
         self,
         diag_field_id: int,
@@ -197,7 +198,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=3)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_3d_cfloat.argtypes = [
@@ -233,7 +234,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=4)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_4d_cint.argtypes = [
@@ -250,7 +251,7 @@ class pyFMS_send_data:
             field_p,
             err_msg_c,
         )
-    
+
     def diag_send_data_4d_cdouble(
         self,
         diag_field_id: int,
@@ -265,7 +266,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=4)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_4d_cdouble.argtypes = [
@@ -282,7 +283,7 @@ class pyFMS_send_data:
             field_p,
             err_msg_c,
         )
-    
+
     def diag_send_data_4d_cfloat(
         self,
         diag_field_id: int,
@@ -297,7 +298,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=4)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_4d_cfloat.argtypes = [
@@ -333,7 +334,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=5)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_5d_cint.argtypes = [
@@ -350,7 +351,7 @@ class pyFMS_send_data:
             field_p,
             err_msg_c,
         )
-    
+
     def diag_send_data_5d_cdouble(
         self,
         diag_field_id: int,
@@ -365,7 +366,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=5)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_5d_cdouble.argtypes = [
@@ -382,7 +383,7 @@ class pyFMS_send_data:
             field_p,
             err_msg_c,
         )
-    
+
     def diag_send_data_5d_cfloat(
         self,
         diag_field_id: int,
@@ -397,7 +398,7 @@ class pyFMS_send_data:
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
-        field_p, field_t = set_multipointer(field)
+        field_p, field_t = set_multipointer(arg=field, num_ptr=5)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         _cfms_diag_send_data_5d_cfloat.argtypes = [

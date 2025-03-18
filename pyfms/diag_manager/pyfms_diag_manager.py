@@ -23,8 +23,10 @@ class pyFMS_diag_manager:
         diag_model_subset: Optional[int] = None,
         time_init: Optional[NDArray] = None,
         calendar_type: Optional[int] = None,
+        err_msg: Optional[str] = None,
     ) -> str:
-        err_msg = ""
+        if err_msg is not None:
+            err_msg = err_msg[:128]
 
         _cfms_diag_init = self.clibFMS.cFMS_diag_init
 
