@@ -50,8 +50,11 @@ class pyFMS_diag_manager:
     def diag_send_complete(
         self,
         diag_field_id: int,
+        err_msg: Optional[str] = None,
     ) -> str:
-        err_msg = ""
+
+        if err_msg is not None:
+            err_msg = err_msg[:128]
 
         _cfms_diag_send_complete = self.clibFMS.CFMS_diag_send_complete
 
@@ -74,8 +77,11 @@ class pyFMS_diag_manager:
         minute: int,
         second: Optional[int] = None,
         tick: Optional[int] = None,
+        err_msg: Optional[str] = None,
     ) -> str:
-        err_msg = ""
+
+        if err_msg is not None:
+            err_msg = err_msg[:128]
 
         _cfms_diag_set_field_init_time = self.clibFMS.cFMS_diag_set_field_init_time
 
@@ -110,11 +116,13 @@ class pyFMS_diag_manager:
         self,
         diag_field_id: int,
         dseconds: int,
-        ddays: Optional[int],
-        dticks: Optional[int],
+        ddays: Optional[int] = None,
+        dticks: Optional[int] = None,
+        err_msg: Optional[str] = None,
     ) -> str:
 
-        err_msg = ""
+        if err_msg is not None:
+            err_msg = err_msg[:128]
 
         _cfms_diag_set_field_timestep = self.clibFMS.cFMS_diag_set_field_timestep
 
@@ -154,16 +162,17 @@ class pyFMS_diag_manager:
 
     def diag_set_time_end(
         self,
-        year: Optional[int],
-        month: Optional[int],
-        day: Optional[int],
-        hour: Optional[int],
-        minute: Optional[int],
-        second: Optional[int],
-        tick: Optional[int],
-        err_msg: Optional[str],
+        year: Optional[int] = None,
+        month: Optional[int] = None,
+        day: Optional[int] = None,
+        hour: Optional[int] = None,
+        minute: Optional[int] = None,
+        second: Optional[int] = None,
+        tick: Optional[int] = None,
+        err_msg: Optional[str] = None,
     ):
-        err_msg = err_msg[:128]
+        if err_msg is not None:
+            err_msg = err_msg[:128]
 
         _cfms_set_time_end = self.clibFMS.diag_set_time_end
 
