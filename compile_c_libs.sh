@@ -7,7 +7,7 @@ cd $curr_dir/FMS
 autoreconf -iv
 export FCFLAGS="$FCFLAGS -fPIC"
 export CFLAGS="$CFLAGS -fPIC"
-./configure --enable-portable-kinds --prefix=$install_fms
+./configure --enable-portable-kinds --with-yaml --prefix=$install_fms
 make install
 
 cd ..
@@ -18,5 +18,5 @@ export CFLAGS="$CFLAGS -I$install_fms/include -fPIC"
 export LDFLAGS="$LDFLAGS -lFMS -L$install_fms/lib"
 
 autoreconf -iv
-./configure --with-yaml --prefix=$curr_dir/cLIBFMS
-make
+./configure --prefix=$curr_dir/cLIBFMS
+make install
