@@ -5,14 +5,18 @@ from mpi4py import MPI
 from pyfms import pyFMS
 
 
+cfms_path = os.path.dirname(__file__) + "/../cFMS/cLIBFMS/lib/libcFMS.so"
+
+
 def test_pyfms_init():
-    assert os.path.exists("./cFMS/libcFMS/.libs/libcFMS.so")
+
+    assert os.path.exists(cfms_path)
 
     fcomm = MPI.COMM_WORLD.py2f()
 
     pyfmsobj = pyFMS(
         localcomm=fcomm,
-        clibFMS_path="./cFMS/libcFMS/.libs/libcFMS.so",
+        cFMS_path=cfms_path,
     )
 
     assert isinstance(pyfmsobj, pyFMS)

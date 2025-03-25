@@ -4,7 +4,7 @@ from typing import Optional
 import numpy as np
 from numpy.typing import NDArray
 
-from pyfms.pyfms_data_handling import (
+from ..pyfms_utils.data_handling import (
     set_Cchar,
     set_multipointer,
     setarray_Cint32,
@@ -42,8 +42,8 @@ class pyDomainData:
 
 
 class pyFMS_mpp_domains:
-    def __init__(self, clibFMS: ctypes.CDLL = None):
-        self.clibFMS = clibFMS
+    def __init__(self, cFMS: ctypes.CDLL = None):
+        self.cFMS = cFMS
 
     """
     Subroutine: define_domains
@@ -85,7 +85,7 @@ class pyFMS_mpp_domains:
         y_cyclic_offset: Optional[int] = None,
     ):
 
-        _cfms_define_domains = self.clibFMS.cFMS_define_domains
+        _cfms_define_domains = self.cFMS.cFMS_define_domains
 
         global_indices_p, global_indices_t = setarray_Cint32(global_indices)
         layout_p, layout_t = setarray_Cint32(layout)
@@ -177,7 +177,7 @@ class pyFMS_mpp_domains:
     """
 
     def define_io_domain(self, io_layout: NDArray, domain_id: Optional[int] = None):
-        _cfms_define_io_domain = self.clibFMS.cFMS_define_io_domain
+        _cfms_define_io_domain = self.cFMS.cFMS_define_io_domain
 
         io_layout_p, io_layout_t = setarray_Cint32(io_layout)
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -203,7 +203,7 @@ class pyFMS_mpp_domains:
 
         layout = np.empty(shape=2, dtype=np.int32, order="C")
 
-        _cfms_define_layout = self.clibFMS.cFMS_define_layout
+        _cfms_define_layout = self.cFMS.cFMS_define_layout
 
         global_indices_p, global_indices_t = setarray_Cint32(global_indices)
         ndivs_c, ndivs_t = setscalar_Cint32(ndivs)
@@ -243,7 +243,7 @@ class pyFMS_mpp_domains:
         extra_halo: Optional[int] = None,
         name: Optional[str] = None,
     ):
-        _cfms_define_nest_domain = self.clibFMS.cFMS_define_nest_domains
+        _cfms_define_nest_domain = self.cFMS.cFMS_define_nest_domains
 
         num_nest_p, num_nest_t = setscalar_Cint32(num_nest)
         ntiles_c, ntiles_t = setscalar_Cint32(ntiles)
@@ -311,7 +311,7 @@ class pyFMS_mpp_domains:
     """
 
     def domain_is_initialized(self, domain_id: Optional[int] = None) -> bool:
-        _cfms_domain_is_initialized = self.clibFMS.cFMS_domain_is_initialized
+        _cfms_domain_is_initialized = self.cFMS.cFMS_domain_is_initialized
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
 
@@ -343,7 +343,7 @@ class pyFMS_mpp_domains:
         shalo: Optional[int] = None,
     ):
 
-        _cfms_get_compute_domain = self.clibFMS.cFMS_get_compute_domain
+        _cfms_get_compute_domain = self.cFMS.cFMS_get_compute_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
@@ -420,7 +420,7 @@ class pyFMS_mpp_domains:
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
     ):
-        _cfms_get_data_domain = self.clibFMS.cFMS_get_data_domain
+        _cfms_get_data_domain = self.cFMS.cFMS_get_data_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(domain_data.xbegin)
@@ -487,7 +487,7 @@ class pyFMS_mpp_domains:
     """
 
     def get_domain_name(self, domain_id: Optional[int] = None) -> str:
-        _cfms_get_domain_name = self.clibFMS.cFMS_get_domain_name
+        _cfms_get_domain_name = self.cFMS.cFMS_get_domain_name
 
         domain_name = ""
 
@@ -513,7 +513,7 @@ class pyFMS_mpp_domains:
 
         layout = np.empty(shape=2, dtype=np.int32, order="C")
 
-        _cfms_get_layout = self.clibFMS.cFMS_get_layout
+        _cfms_get_layout = self.cFMS.cFMS_get_layout
 
         layout_p, layout_t = setarray_Cint32(layout)
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -533,10 +533,10 @@ class pyFMS_mpp_domains:
 
     def get_domain_pelist(self, domain_id: Optional[int]) -> NDArray:
 
-        npes = ctypes.c_int.in_dll(self.clibFMS, "cFMS_pelist_npes")
+        npes = ctypes.c_int.in_dll(self.cFMS, "cFMS_pelist_npes")
         pelist = np.empty(shape=npes.value, dtype=np.int32, order="C")
 
-        _cfms_get_domain_pelist = self.clibFMS.cFMS_get_domain_pelist
+        _cfms_get_domain_pelist = self.cFMS.cFMS_get_domain_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -580,7 +580,7 @@ class pyFMS_mpp_domains:
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
     ):
-        _cfms_set_compute_domain = self.clibFMS.cFMS_set_compute_domain
+        _cfms_set_compute_domain = self.cFMS.cFMS_set_compute_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
@@ -634,7 +634,7 @@ class pyFMS_mpp_domains:
     """
 
     def set_current_domain(self, domain_id: Optional[int] = None):
-        _cfms_set_current_domain = self.clibFMS.cFMS_set_current_domain
+        _cfms_set_current_domain = self.cFMS.cFMS_set_current_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
 
@@ -651,7 +651,7 @@ class pyFMS_mpp_domains:
     """
 
     def set_current_nest_domain(self, nest_domain_id: Optional[int] = None):
-        _cfms_set_current_nest_domain = self.clibFMS.cFMS_set_current_nest_domain
+        _cfms_set_current_nest_domain = self.cFMS.cFMS_set_current_nest_domain
 
         nest_domain_id_c, nest_domain_id_t = setscalar_Cint32(nest_domain_id)
 
@@ -688,7 +688,7 @@ class pyFMS_mpp_domains:
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
     ):
-        _cfms_set_data_domain = self.clibFMS.cFMS_set_data_domain
+        _cfms_set_data_domain = self.cFMS.cFMS_set_data_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
@@ -764,7 +764,7 @@ class pyFMS_mpp_domains:
         whalo: Optional[int] = None,
         shalo: Optional[int] = None,
     ):
-        _cfms_set_global_domain = self.clibFMS.cFMS_set_global_domain
+        _cfms_set_global_domain = self.cFMS.cFMS_set_global_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         xbegin_c, xbegin_t = setscalar_Cint32(xbegin)
