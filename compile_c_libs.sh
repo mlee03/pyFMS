@@ -1,17 +1,12 @@
 #!/bin/bash
 
 curr_dir=$PWD/cFMS
-install_fms=$curr_dir/FMS/LIBFMS
-
-netcdf_f_includes=$(nf-config --includedir)
-netcdf_c_includes=$(nc-config --includedir)
-netcdf_lib="`nf-config --flibs` `nc-config --libdir`"
+install_fms=$curr_dir/FMS/gnuFMS
 
 cd $curr_dir/FMS
 autoreconf -iv
-export FCFLAGS="-g -fPIC -I$netcdf_f_includes" 
-export CFLAGS="-fPIC -I$netcdf_c_includes"
-export LDFLATS="-L$netcdf_lib"
+export FCFLAGS="$FCFLAGS -fPIC"
+export CFLAGS="$CFLAGS -fPIC"
 ./configure --enable-portable-kinds --prefix=$install_fms
 make install
 
