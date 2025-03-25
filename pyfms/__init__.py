@@ -7,3 +7,6 @@ from .py_mpp.py_mpp_domains import (
 )
 from .py_field_manager.py_field_manager import FieldTable
 from .pyfms import pyFMS
+from .pyfms import pyFMS
+from .pyfms_utils.grid_utils import GridUtils
+
