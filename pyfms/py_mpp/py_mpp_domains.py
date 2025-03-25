@@ -806,7 +806,6 @@ class pyFMS_mpp_domains:
 
 
 class pyDomain:
-
     def __init__(
         self,
         mpp_domains_obj: pyFMS_mpp_domains,
@@ -1004,7 +1003,6 @@ class pyDomain:
 
 
 class pyNestDomain:
-
     def __init__(
         self,
         mpp_domains_obj: pyFMS_mpp_domains,

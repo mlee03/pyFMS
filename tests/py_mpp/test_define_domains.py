@@ -193,4 +193,3 @@ def test_define_domains():
 
 if __name__ == "__main__":
     test_define_domains()
-
