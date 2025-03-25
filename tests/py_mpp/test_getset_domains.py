@@ -1,8 +1,6 @@
 import numpy as np
 
-from pyfms.mpp.pyfms_mpp import pyFMS_mpp
-from pyfms.mpp.pyfms_mpp_domains import pyDomain, pyFMS_mpp_domains
-from pyfms.pyfms_fms import pyFMS
+from pyfms import pyDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
 
 def test_getset_domains():
@@ -26,9 +24,9 @@ def test_getset_domains():
     nhalo = 2
     name = "test domain"
 
-    pyfms = pyFMS(clibFMS_path="./cFMS/libcFMS/.libs/libcFMS.so")
-    mpp = pyFMS_mpp(clibFMS=pyfms.clibFMS)
-    mpp_domains = pyFMS_mpp_domains(clibFMS=pyfms.clibFMS)
+    pyfms = pyFMS(cFMS_path="./cFMS/libcFMS/.libs/libcFMS.so")
+    mpp = pyFMS_mpp(cFMS=pyfms.cFMS)
+    mpp_domains = pyFMS_mpp_domains(cFMS=pyfms.cFMS)
 
     # set domain
 
