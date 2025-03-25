@@ -1,8 +1,12 @@
 import os
+
 import numpy as np
+
 import pyfms
 
+
 cfms_path = os.path.dirname(__file__) + "/../../cFMS/cLIBFMS/lib/libcFMS.so"
+
 
 def test_create_xgrid():
 
