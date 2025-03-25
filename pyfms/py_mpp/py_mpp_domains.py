@@ -400,12 +400,12 @@ class pyFMS_mpp_domains:
 
     def get_compute_domain2(
         self,
-        domain_id: Optional[int] = None,
-        position: Optional[int] = None,
-        tile_count: Optional[int] = None,
-        whalo: Optional[int] = None,
-        shalo: Optional[int] = None,
-    ) -> dict():
+        domain_id: int | None,
+        position: int | None,
+        tile_count: int | None,
+        whalo: int | None,
+        shalo: int | None,
+    ):
 
         _cfms_get_compute_domain = self.cFMS.cFMS_get_compute_domain
 
@@ -428,26 +428,21 @@ class pyFMS_mpp_domains:
         whalo_t = ctypes.c_int
         shalo_t = ctypes.c_int
 
-        xbegin = xbegin_t(default_i)
-        xend = xend_t(default_i)
-        ybegin = ybegin_t(default_i)
-        yend = yend_t(default_i)
-        xsize = xsize_t(default_i)
-        xmax_size = xmax_size_t(default_i)
-        ysize = ysize_t(default_i)
-        ymax_size = ymax_size_t(default_i)
-        x_is_global = x_is_global_t(default_b)
-        y_is_global = y_is_global_t(default_b)
-        if domain_id is not None:
-            domain_id = domain_id_t(domain_id)
-        if tile_count is not None:
-            tile_count = tile_count_t(tile_count)
-        if position is not None:
-            position = position_t(position)
-        if whalo is not None:
-            whalo = whalo_t(whalo)
-        if shalo is not None:
-            shalo = shalo_t(shalo)
+        xbegin_c = xbegin_t(default_i)
+        xend_c = xend_t(default_i)
+        ybegin_c = ybegin_t(default_i)
+        yend_c = yend_t(default_i)
+        xsize_c = xsize_t(default_i)
+        xmax_size_c = xmax_size_t(default_i)
+        ysize_c = ysize_t(default_i)
+        ymax_size_c = ymax_size_t(default_i)
+        x_is_global_c = x_is_global_t(default_b)
+        y_is_global_c = y_is_global_t(default_b)
+        domain_id_c = domain_id_t(domain_id) if domain_id is not None else None
+        tile_count_c = tile_count_t(tile_count) if tile_count is not None else None
+        position_c = position_t(position) if tile_count is not None else None
+        whalo_c = whalo_t(whalo) if whalo is not None else None
+        shalo_c = shalo_t(shalo) if shalo is not None else None
 
         _cfms_get_compute_domain.argtypes = [
             ctypes.POINTER(domain_id_t),
@@ -470,35 +465,35 @@ class pyFMS_mpp_domains:
         _cfms_get_compute_domain.restype = None
 
         _cfms_get_compute_domain(
-            domain_id,
-            xbegin,
-            xend,
-            ybegin,
-            yend,
-            xsize,
-            xmax_size,
-            ysize,
-            ymax_size,
-            x_is_global,
-            y_is_global,
-            tile_count,
-            position,
-            whalo,
-            shalo,
+            domain_id_c,
+            xbegin_c,
+            xend_c,
+            ybegin_c,
+            yend_c,
+            xsize_c,
+            xmax_size_c,
+            ysize_c,
+            ymax_size_c,
+            x_is_global_c,
+            y_is_global_c,
+            tile_count_c,
+            position_c,
+            whalo_c,
+            shalo_c,
         )
 
         return dict(
-            domain_id=domain_id.value,
-            xbegin=xbegin.value,
-            ybegin=ybegin.value,
-            xend=xend.value,
-            yend=yend.value,
-            xsize=xsize.value,
-            ysize=ysize.value,
-            xmax_size=xmax_size.value,
-            ymax_size=ymax_size.value,
-            x_is_global=x_is_global.value,
-            y_is_global=y_is_global.value,
+            domain_id=domain_id_c.value,
+            xbegin=xbegin_c.value,
+            ybegin=ybegin_c.value,
+            xend=xend_c.value,
+            yend=yend_c.value,
+            xsize=xsize_c.value,
+            ysize=ysize_c.value,
+            xmax_size=xmax_size_c.value,
+            ymax_size=ymax_size_c.value,
+            x_is_global=x_is_global_c.value,
+            y_is_global=y_is_global_c.value,
         )
 
     """
