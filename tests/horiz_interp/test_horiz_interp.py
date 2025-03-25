@@ -1,11 +1,12 @@
+import os
 import numpy as np
-
 import pyfms
 
+cfms_path = os.path.dirname(__file__) + "/../../cFMS/cLIBFMS/lib/libcFMS.so"
 
 def test_create_xgrid():
 
-    cfms = pyfms.pyFMS().cFMS
+    cfms = pyfms.pyFMS(cFMS_path=cfms_path).cFMS
     create_xgrid = pyfms.HorizInterp(cfms=cfms).create_xgrid_2dx2d_order1
 
     refine = 1
