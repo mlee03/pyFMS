@@ -1,7 +1,7 @@
 #!/bin/bash
 
 curr_dir=$PWD/cFMS
-install_fms=$curr_dir/FMS/gnuFMS
+install_fms=$curr_dir/FMS/LIBFMS
 
 cd $curr_dir/FMS
 autoreconf -iv
@@ -18,5 +18,5 @@ export CFLAGS="$CFLAGS -I$install_fms/include -fPIC"
 export LDFLAGS="$LDFLAGS -lFMS -L$install_fms/lib"
 
 autoreconf -iv
-./configure --with-yaml --prefix=$curr_dir/cgnuFMS
+./configure --with-yaml --prefix=$curr_dir/cLIBFMS
 make
