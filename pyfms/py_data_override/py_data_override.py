@@ -9,12 +9,12 @@ class pyDataOverride:
 
     def data_override_init(
         self,
-        atm_domain_id: int | None,
-        ocn_domain_id: int | None,
-        ice_domain_id: int | None,
-        land_domain_id: int | None,
-        land_domainUG_id: int | None,
-        mode: int | None,
+        atm_domain_id: int | None = None,
+        ocn_domain_id: int | None = None,
+        ice_domain_id: int | None = None,
+        land_domain_id: int | None = None,
+        land_domainUG_id: int | None = None,
+        mode: int | None = None,
     ):
 
         _data_override_init = self.cfms.cFMS_data_override_init
