@@ -9,6 +9,7 @@ from .py_field_manager.py_field_manager import FieldTable
 from .pyfms import pyFMS
 from .pyfms import pyFMS
 from .pyfms_utils.grid_utils import GridUtils
-
 from .py_data_override.py_data_override import pyDataOverride
+from .py_horiz_interp.py_horiz_interp import HorizInterp
+
 

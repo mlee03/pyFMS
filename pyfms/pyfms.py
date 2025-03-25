@@ -8,7 +8,6 @@ from .pyfms_utils.data_handling import set_Cchar, setscalar_Cint32
 
 
 class pyFMS:
-
     def __init__(
         self,
         cFMS_path: Optional[str] = os.path.dirname(__file__) + "/../cFMS/cLIBFMS/lib/libcFMS.so",
