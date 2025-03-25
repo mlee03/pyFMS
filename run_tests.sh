@@ -1,8 +1,5 @@
 #!/bin/bash
 
-set -x
-
-
 pytest tests/test_build.py
 if [ $? -ne 0 ] ; then
     echo "test_build error" ;
