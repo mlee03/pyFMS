@@ -10,13 +10,14 @@ from .pyfms_utils.data_handling import set_Cchar, setscalar_Cint32
 class pyFMS:
     def __init__(
         self,
-        cFMS_path: Optional[str] = os.path.dirname(__file__) + "/../cFMS/cLIBFMS/lib/libcFMS.so",
+        cFMS_path: Optional[str] = os.path.dirname(__file__)
+        + "/../cFMS/cLIBFMS/lib/libcFMS.so",
         cFMS: ctypes.CDLL = None,
         alt_input_nml_path: str = None,
         localcomm: int = None,
         ndomain: int = None,
         nnest_domain: int = None,
-        calendar_type: int = None
+        calendar_type: int = None,
     ):
         self.cFMS_path = cFMS_path
         self.cFMS = cFMS
@@ -38,7 +39,11 @@ class pyFMS:
             self.cFMS = ctypes.cdll.LoadLibrary(self.cFMS_path)
 
         self.pyfms_init(
-            self.localcomm, self.alt_input_nml_path, self.ndomain, self.nnest_domain, self.calendar_type
+            self.localcomm,
+            self.alt_input_nml_path,
+            self.ndomain,
+            self.nnest_domain,
+            self.calendar_type,
         )
 
     """
@@ -76,7 +81,7 @@ class pyFMS:
         alt_input_nml_path: Optional[str] = None,
         ndomain: Optional[int] = None,
         nnest_domain: Optional[int] = None,
-        calendar_type: Optional[int] = None
+        calendar_type: Optional[int] = None,
     ):
         _cfms_init = self.cFMS.cFMS_init
 
@@ -91,7 +96,7 @@ class pyFMS:
             alt_input_nml_path_t,
             ndomain_t,
             nnest_domain_t,
-            calendar_type_t
+            calendar_type_t,
         ]
         _cfms_init.restype = None
 
@@ -100,7 +105,7 @@ class pyFMS:
             alt_input_nml_path_c,
             ndomain_c,
             nnest_domain_c,
-            calendar_type_c
+            calendar_type_c,
         )
 
     """

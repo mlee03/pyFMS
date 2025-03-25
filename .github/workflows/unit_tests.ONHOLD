@@ -1,5 +1,5 @@
 name: "pyfms unit tests"
-on: [pull_request, push]
+on: [push, pull_request]
 
 # cancel running jobs if theres a newer push
 concurrency:
