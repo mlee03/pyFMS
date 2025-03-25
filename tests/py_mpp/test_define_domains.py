@@ -44,12 +44,11 @@ def test_define_domains():
     fine_nhalo = 2
 
     pyfms = pyFMS(
-        clibFMS_path="./cFMS/libcFMS/.libs/libcFMS.so",
         ndomain=ndomain,
         nnest_domain=nnest_domain,
     )
-    mpp = pyFMS_mpp(clibFMS=pyfms.clibFMS)
-    mpp_domains = pyFMS_mpp_domains(clibFMS=pyfms.clibFMS)
+    mpp = pyFMS_mpp(cFMS=pyfms.cFMS)
+    mpp_domains = pyFMS_mpp_domains(cFMS=pyfms.cFMS)
 
     assert isinstance(pyfms, pyFMS)
 
