@@ -1,8 +1,6 @@
 import numpy as np
 
-from pyfms import pyFMS_mpp
-from pyfms import pyDomain, pyFMS_mpp_domains
-from pyfms import pyFMS
+from pyfms import pyDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
 
 def test_getset_domains():
