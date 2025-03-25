@@ -400,11 +400,11 @@ class pyFMS_mpp_domains:
 
     def get_compute_domain2(
         self,
-        domain_id: int | None,
-        position: int | None,
-        tile_count: int | None,
-        whalo: int | None,
-        shalo: int | None,
+        domain_id: int | None = None,
+        position: int | None = None,
+        tile_count: int | None = None,
+        whalo: int | None = None,
+        shalo: int | None = None,
     ):
 
         _cfms_get_compute_domain = self.cFMS.cFMS_get_compute_domain
