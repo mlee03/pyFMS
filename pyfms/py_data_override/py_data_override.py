@@ -1,7 +1,4 @@
 import ctypes
-from typing import Optional
-
-import numpy as np
 
 
 class pyDataOverride:
@@ -11,12 +8,12 @@ class pyDataOverride:
 
     def data_override_init(
         self,
-        atm_domain_id: Optional[int] = None,
-        ocn_domain_id: Optional[int] = None,
-        ice_domain_id: Optional[int] = None,
-        land_domain_id: Optional[int] = None,
-        land_domainUG_id: Optional[int] = None,
-        mode: Optional[int] = None,
+        atm_domain_id: int | None,
+        ocn_domain_id: int | None,
+        ice_domain_id: int | None,
+        land_domain_id: int | None,
+        land_domainUG_id: int | None,
+        mode: int | None,
     ):
 
         _data_override_init = self.cfms.cFMS_data_override_init
@@ -28,18 +25,24 @@ class pyDataOverride:
         land_domainUG_id_t = ctypes.c_int
         mode_t = ctypes.c_int
 
-        if atm_domain_id is not None:
-            atm_domain_id = atm_domain_id_t(atm_domain_id)
-        if ocn_domain_id is not None:
-            ocn_domain_id = ocn_domain_id_t(ocn_domain_id)
-        if ice_domain_id is not None:
-            ice_domain_id = ice_domain_id_t(ice_domain_id)
-        if land_domain_id is not None:
-            land_domain_id = land_domain_id_t(land_domain_id)
-        if land_domainUG_id is not None:
-            land_domainUG_id = land_domainUG_id_t(land_domainUG_id)
-        if mode is not None:
-            mode = mode_t(mode)
+        atm_domain_id_c = (
+            atm_domain_id_t(atm_domain_id) if atm_domain_id is not None else None
+        )
+        ocn_domain_id_c = (
+            ocn_domain_id_t(ocn_domain_id) if ocn_domain_id is not None else None
+        )
+        ice_domain_id_c = (
+            ice_domain_id_t(ice_domain_id) if ice_domain_id is not None else None
+        )
+        land_domain_id_c = (
+            land_domain_id_t(land_domain_id) if land_domain_id is not None else None
+        )
+        land_domainUG_id_c = (
+            land_domainUG_id_t(land_domainUG_id)
+            if land_domainUG_id is not None
+            else None
+        )
+        mode_c = mode_t(mode) if mode is not None else None
 
         _data_override_init.restype = None
         _data_override_init.argtypes = [
@@ -52,10 +55,10 @@ class pyDataOverride:
         ]
 
         _data_override_init(
-            atm_domain_id,
-            ocn_domain_id,
-            ice_domain_id,
-            land_domain_id,
-            land_domainUG_id,
-            mode,
+            atm_domain_id_c,
+            ocn_domain_id_c,
+            ice_domain_id_c,
+            land_domain_id_c,
+            land_domainUG_id_c,
+            mode_c,
         )

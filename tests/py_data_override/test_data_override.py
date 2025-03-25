@@ -1,8 +1,4 @@
-import ctypes
-from typing import Type
-
 import numpy as np
-import pytest
 
 from pyfms import pyDataOverride, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
