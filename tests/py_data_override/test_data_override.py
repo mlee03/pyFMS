@@ -38,5 +38,3 @@ def test_data_override():
 
     pyfms.pyfms_end()
 
-
-test_data_override()
