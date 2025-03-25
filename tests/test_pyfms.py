@@ -4,7 +4,7 @@ import os
 from mpi4py import MPI
 from pyfms import pyFMS
 
-cfms_path=os.path.dirname(__file__) + "/../cFMS/cLIBFMS/lib/libcFMS.so"
+cfms_path="./cFMS/cLIBFMS/lib/libcFMS.so"
 
 def test_pyfms_init():
 
