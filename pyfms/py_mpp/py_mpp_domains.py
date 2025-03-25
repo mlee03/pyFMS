@@ -398,6 +398,101 @@ class pyFMS_mpp_domains:
             shalo_c,
         )
 
+
+    def get_compute_domain2(self, 
+                            domain_id: Optional[int] = None,
+                            position: Optional[int] = None,
+                            tile_count: Optional[int] = None,
+                            whalo: Optional[int] = None,
+                            shalo: Optional[int] = None) -> dict():
+
+        _cfms_get_compute_domain = self.cFMS.cFMS_get_compute_domain
+
+        default_i = 0
+        default_b = False
+        
+        domain_id_t = ctypes.c_int
+        xbegin_t = ctypes.c_int
+        xend_t = ctypes.c_int
+        ybegin_t = ctypes.c_int
+        yend_t = ctypes.c_int
+        xsize_t = ctypes.c_int
+        xmax_size_t = ctypes.c_int
+        ysize_t = ctypes.c_int
+        ymax_size_t = ctypes.c_int
+        x_is_global_t = ctypes.c_bool
+        y_is_global_t = ctypes.c_bool
+        tile_count_t = ctypes.c_int
+        position_t = ctypes.c_int
+        whalo_t = ctypes.c_int
+        shalo_t = ctypes.c_int
+
+        xbegin = xbegin_t(default_i)
+        xend = xend_t(default_i)
+        ybegin = ybegin_t(default_i)
+        yend = yend_t(default_i)
+        xsize = xsize_t(default_i)
+        xmax_size = xmax_size_t(default_i)
+        ysize = ysize_t(default_i)
+        ymax_size = ymax_size_t(default_i)
+        x_is_global = x_is_global_t(default_b)
+        y_is_global = y_is_global_t(default_b)
+        if domain_id is not None: domain_id = domain_id_t(domain_id)
+        if tile_count is not None: tile_count = tile_count_t(tile_count)
+        if position is not None: position = position_t(position)
+        if whalo is not None: whalo = whalo_t(whalo)
+        if shalo is not None: shalo = shalo_t(shalo)
+
+        
+        _cfms_get_compute_domain.argtypes = [ctypes.POINTER(domain_id_t),
+                                             ctypes.POINTER(xbegin_t),
+                                             ctypes.POINTER(xend_t),
+                                             ctypes.POINTER(ybegin_t),
+                                             ctypes.POINTER(yend_t),
+                                             ctypes.POINTER(xsize_t),
+                                             ctypes.POINTER(xmax_size_t),
+                                             ctypes.POINTER(ysize_t),
+                                             ctypes.POINTER(ymax_size_t),
+                                             ctypes.POINTER(x_is_global_t),
+                                             ctypes.POINTER(y_is_global_t),
+                                             ctypes.POINTER(tile_count_t),
+                                             ctypes.POINTER(position_t),
+                                             ctypes.POINTER(whalo_t),
+                                             ctypes.POINTER(shalo_t)]
+        
+        _cfms_get_compute_domain.restype = None
+
+        _cfms_get_compute_domain(domain_id,
+                                 xbegin,
+                                 xend,
+                                 ybegin,
+                                 yend,
+                                 xsize,
+                                 xmax_size,
+                                 ysize,
+                                 ymax_size,
+                                 x_is_global,
+                                 y_is_global,
+                                 tile_count,
+                                 position,
+                                 whalo,
+                                 shalo,
+        )
+
+        return dict(domain_id=domain_id.value,
+                    xbegin=xbegin.value,
+                    ybegin=ybegin.value,
+                    xend=xend.value,
+                    yend=yend.value,
+                    xsize=xsize.value,
+                    ysize=ysize.value,
+                    xmax_size=xmax_size.value,
+                    ymax_size=ymax_size.value,
+                    x_is_global=x_is_global.value,
+                    y_is_global=y_is_global.value)
+                    
+
+    
     """
     Subroutine: get_data_domain
 
