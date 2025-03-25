@@ -10,3 +10,5 @@ from .pyfms import pyFMS
 from .pyfms import pyFMS
 from .pyfms_utils.grid_utils import GridUtils
 
+from .py_horiz_interp.py_horiz_interp import HorizInterp
+
