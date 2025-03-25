@@ -5,7 +5,7 @@ import pyfms
 
 def test_create_xgrid():
 
-    cfms = pyfms.pyFMS().clibFMS
+    cfms = pyfms.pyFMS().cFMS
     create_xgrid = pyfms.HorizInterp(cfms=cfms).create_xgrid_2dx2d_order1
 
     refine = 1
