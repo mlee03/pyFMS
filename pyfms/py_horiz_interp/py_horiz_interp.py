@@ -4,7 +4,7 @@ import numpy as np
 import numpy.typing as npt
 
 
-class HorizInterp:
+class pyHorizInterp:
     def __init__(self, cfms: ctypes.CDLL):
         self.cfms = cfms
 
