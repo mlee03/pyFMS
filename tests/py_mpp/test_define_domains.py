@@ -70,7 +70,10 @@ def test_define_domains():
         pyfms.set_pelist_npes(coarse_npes)
         mpp.set_current_pelist(coarse_pelist)
         name = "test coarse domain"
-        maskmap = np.full(shape=(2, 4), fill_value=True, dtype=np.bool_, order="C")
+        maskmap = np.full(
+            shape=(2, 4), fill_value=True, dtype=np.bool_, order="C"
+        ).flatten()
+        maskmap_shape = np.array([2, 4], dtype=np.int32, order="C")
 
         xextent = np.zeros(shape=2, dtype=np.int32, order="C")
         yextent = np.zeros(shape=2, dtype=np.int32, order="C")
@@ -94,6 +97,7 @@ def test_define_domains():
             xextent=xextent,
             yextent=yextent,
             maskmap=maskmap,
+            maskmap_shape=maskmap_shape,
             name=name,
             symmetry=symmetry,
             whalo=coarse_whalo,
