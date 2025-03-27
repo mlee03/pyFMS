@@ -20,7 +20,7 @@ def test_write_input_files():
           fieldname_in_model: runoff_2d
           override_file:
           - fieldname_in_file: runoff
-            file_name: ./INPUT/array_3d.nc
+            file_name: ./INPUT/array_2d.nc
             interp_method: bilinear
           factor: 1.0
         - grid_name: OCN
@@ -112,8 +112,8 @@ def test_write_2d_file():
         attrs={"units": "days since 0001-01-01 00:00:00", "calendar": "noleap"},
     )
 
-    data = np.array([[100*(itime+1)]*nx*ny for itime in range(ntime-1)], dtype=np.float64).reshape((ntime-1,ny,nx))    
-    data_x = xr.DataArray(data, dims=["time", "y", "x"])
+    runoff_data = np.array([[100*(itime+1)]*nx*ny for itime in range(ntime-1)], dtype=np.float64).reshape((ntime-1,ny,nx))    
+    runoff = xr.DataArray(runoff_data, dims=["time", "y", "x"])
     
-    xr.Dataset(data_vars=dict(x=x, y=y, time=time, data=data_x)).to_netcdf("./INPUT/array_2d.nc", unlimited_dims="time" )
+    xr.Dataset(data_vars=dict(x=x, y=y, time=time, runoff=runoff)).to_netcdf("./INPUT/array_2d.nc", unlimited_dims="time" )
     
