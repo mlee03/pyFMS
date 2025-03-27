@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 from pyfms import pyDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains, pyNestDomain
@@ -43,7 +44,12 @@ def test_define_domains():
     fine_shalo = 2
     fine_nhalo = 2
 
+    cfms_path = "./cFMS/libcFMS/.libs/libcFMS.so"
+
+    assert os.path.exists(cfms_path)
+
     pyfms = pyFMS(
+        cFMS_path=cfms_path,
         ndomain=ndomain,
         nnest_domain=nnest_domain,
     )
@@ -52,13 +58,13 @@ def test_define_domains():
 
     assert isinstance(pyfms, pyFMS)
 
-    # get global pelist
+    """get global pelist"""
 
     npes = mpp.npes()
     pyfms.set_pelist_npes(npes_in=npes)
     global_pelist = mpp.get_current_pelist()
 
-    # set coarse domain as tile=0
+    """set coarse domain as tile=0"""
 
     for i in range(coarse_npes):
         coarse_pelist[i] = global_pelist[i]
@@ -70,10 +76,7 @@ def test_define_domains():
         pyfms.set_pelist_npes(coarse_npes)
         mpp.set_current_pelist(coarse_pelist)
         name = "test coarse domain"
-        maskmap = np.full(
-            shape=(2, 4), fill_value=True, dtype=np.bool_, order="C"
-        ).flatten()
-        maskmap_shape = np.array([2, 4], dtype=np.int32, order="C")
+        maskmap = np.full(shape=8, fill_value=True, order="C")
 
         xextent = np.zeros(shape=2, dtype=np.int32, order="C")
         yextent = np.zeros(shape=2, dtype=np.int32, order="C")
@@ -86,10 +89,9 @@ def test_define_domains():
             ndivs=ndivs,
         )
 
-        domain = pyDomain(
+        mpp_domains.define_domains(
             global_indices=coarse_global_indices,
             layout=layout,
-            mpp_domains_obj=mpp_domains,
             domain_id=domain_id,
             pelist=coarse_pelist,
             xflags=coarse_xflags,
@@ -97,7 +99,6 @@ def test_define_domains():
             xextent=xextent,
             yextent=yextent,
             maskmap=maskmap,
-            maskmap_shape=maskmap_shape,
             name=name,
             symmetry=symmetry,
             whalo=coarse_whalo,
@@ -110,7 +111,7 @@ def test_define_domains():
 
     mpp.set_current_pelist()
 
-    # set fine domain as tile=1
+    """set fine domain as tile=1"""
 
     name_fine = "test fine pelist"
     for i in range(fine_npes):
@@ -130,10 +131,9 @@ def test_define_domains():
             ndivs=ndivs,
         )
 
-        domain = pyDomain(
+        mpp_domains.define_domains(
             global_indices=fine_global_indices,
             layout=layout,
-            mpp_domains_obj=mpp_domains,
             domain_id=domain_id,
             pelist=fine_pelist,
             name=name,
@@ -150,7 +150,7 @@ def test_define_domains():
 
     assert mpp_domains.domain_is_initialized(domain_id)
 
-    # set nest domain
+    """set nest domain"""
 
     name = "test nest domain"
     num_nest = 1
@@ -168,8 +168,7 @@ def test_define_domains():
     nest_domain_id = nest_domain_id
     domain_id = domain_id
 
-    nest_domain = pyNestDomain(
-        mpp_domains_obj=mpp_domains,
+    mpp_domains.define_nest_domains(
         num_nest=num_nest,
         ntiles=ntiles,
         nest_level=nest_level,

@@ -116,7 +116,10 @@ class pyFMS_diag_manager:
             year_c, month_c, day_c, hour_c, minute_c, second_c, tick_c, err_msg_c
         )
 
-        return err_msg_c.value.decode("utf-8")
+        if err_msg is not None:
+            return err_msg_c.value.decode("utf-8")
+        else:
+            return err_msg
 
     def diag_set_field_timestep(
         self,
@@ -180,7 +183,7 @@ class pyFMS_diag_manager:
         if err_msg is not None:
             err_msg = err_msg[:128]
 
-        _cfms_set_time_end = self.clibFMS.diag_set_time_end
+        _cfms_set_time_end = self.clibFMS.cFMS_diag_set_time_end
 
         year_c, year_t = setscalar_Cint32(year)
         month_c, month_t = setscalar_Cint32(month)
