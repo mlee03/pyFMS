@@ -2,6 +2,7 @@ import numpy as np
 
 from pyfms import pyDataOverride, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
+
 def test_data_override():
 
     pyfms = pyFMS()
@@ -35,17 +36,22 @@ def test_data_override():
 
     do = pyDataOverride(pyfms.cFMS)
     do.data_override_init(ocn_domain_id=ocn_domain_id)
-    do.data_override_set_time(year=1, month=1, day=3, hour=0, minute=0, second=0, tick=0)
+    do.data_override_set_time(
+        year=1, month=1, day=3, hour=0, minute=0, second=0, tick=0
+    )
 
     data = do.data_override_scalar(
         gridname="OCN", fieldname="runoff_scalar", data_type=np.float64
     )
     assert data == 2.0
-    
-    data = do.data_override_2d(gridname="OCN", fieldname="runoff_2d", data_shape=(xsize,ysize), data_type=np.float64)
 
-    assert np.all(data==200.)
+    data = do.data_override_2d(
+        gridname="OCN",
+        fieldname="runoff_2d",
+        data_shape=(xsize, ysize),
+        data_type=np.float64,
+    )
+
+    assert np.all(data == 200.0)
 
     pyfms.pyfms_end()
-
-    
