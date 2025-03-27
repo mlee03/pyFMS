@@ -47,6 +47,7 @@ use_data_table_yaml = .True.
     input_nml_file.write(input_nml)
     input_nml_file.close()
 
+
 def test_write_grid_files():
 
     try:
@@ -112,8 +113,11 @@ def test_write_2d_file():
         attrs={"units": "days since 0001-01-01 00:00:00", "calendar": "noleap"},
     )
 
-    runoff_data = np.array([[100*(itime+1)]*nx*ny for itime in range(ntime-1)], dtype=np.float64).reshape((ntime-1,ny,nx))    
+    runoff_data = np.array(
+        [[100 * (itime + 1)] * nx * ny for itime in range(ntime - 1)], dtype=np.float64
+    ).reshape((ntime - 1, ny, nx))
     runoff = xr.DataArray(runoff_data, dims=["time", "y", "x"])
-    
-    xr.Dataset(data_vars=dict(x=x, y=y, time=time, runoff=runoff)).to_netcdf("./INPUT/array_2d.nc", unlimited_dims="time" )
-    
+
+    xr.Dataset(data_vars=dict(x=x, y=y, time=time, runoff=runoff)).to_netcdf(
+        "./INPUT/array_2d.nc", unlimited_dims="time"
+    )
