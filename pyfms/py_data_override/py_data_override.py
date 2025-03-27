@@ -147,19 +147,25 @@ class pyDataOverride:
         _data_override_scalar(gridname_c, fieldname_c, data_c, override_c, data_index_c)
 
         # TODO:  add check for override
-        return data_c.value
+        return data_c.value       
 
-    def data_override_2d_float(self,
-                               gridname: str,
-                               fieldname: str,
-                               data_shape: list[int],
-                               data_type: Any, 
-                               is_in: int | None = None,
-                               ie_in: int | None = None,
-                               js_in: int | None = None,
-                               je_in: int | None = None) -> npt.NDArray:
-        
-        _data_override_2d_cfloat = self.cfms.cFMS_data_override_2d_cfloat
+    def data_override_2d(self,
+                         gridname: str,
+                         fieldname: str,
+                         data_shape: list[int],
+                         data_type: Any,
+                         is_in: int | None = None,
+                         ie_in: int | None = None,
+                         js_in: int | None = None,
+                         je_in: int | None = None) -> npt.NDArray:
+
+
+        if data_type is np.float32 :
+            _data_override_2d = self.cfms.cFMS_data_override_2d_cfloat
+        elif data_type is np.float64:
+            _data_override_2d = self.cfms.cFMS_data_override_2d_cdouble
+        else:
+            raise RunTimeError("Data_override, datatype not supported")
         
         ndata = np.prod(data_shape)
         
@@ -176,7 +182,7 @@ class pyDataOverride:
         gridname_c = gridname_t(gridname.encode("utf-8"))
         fieldname_c = fieldname_t(fieldname.encode("utf-8"))
         data_shape_c = np.array(data_shape, dtype=np.int32)
-        data = np.ascontiguousarray(np.zeros(data_shape, dtype=np.float32, order="C"))
+        data = np.ascontiguousarray(np.zeros(data_shape, dtype=data_type, order="C"))
         override = override_t(False)
         is_in_c = is_in_t(is_in) if is_in is not None else None
         js_in_c = js_in_t(js_in) if js_in is not None else None
@@ -184,111 +190,25 @@ class pyDataOverride:
         je_in_c = je_in_t(je_in) if je_in is not None else None
 
         
-        _data_override_2d_cdouble.restype = None
-        _data_override_2d_cdouble.argtypes = [gridname_t,
-                                             fieldname_t,
-                                             data_shape_t,
-                                             data_t,
-                                             ctypes.POINTER(override_t),
-                                             ctypes.POINTER(is_in_t),
-                                             ctypes.POINTER(ie_in_t),
-                                             ctypes.POINTER(js_in_t),
-                                             ctypes.POINTER(je_in_t)]
-        _data_override_2d_cdouble(gridname_c,
-                                 fieldname_c,
-                                 data_shape_c,
-                                 data,
-                                 override,
-                                 is_in_c,
-                                 js_in_c,
-                                 ie_in_c,
-                                 je_in_c)
-
-        #TODO add check for override
+        _data_override_2d.restype = None
+        _data_override_2d.argtypes = [gridname_t,
+                                      fieldname_t,
+                                      data_shape_t,
+                                      data_t,
+                                      ctypes.POINTER(override_t),
+                                      ctypes.POINTER(is_in_t),
+                                      ctypes.POINTER(ie_in_t),
+                                      ctypes.POINTER(js_in_t),
+                                      ctypes.POINTER(je_in_t)]
+        _data_override_2d(gridname_c,
+                          fieldname_c,
+                          data_shape_c,
+                          data,
+                          override,
+                          is_in_c,
+                          js_in_c,
+                          ie_in_c,
+                          je_in_c)
+        
         return data
-    
-    
-    def data_override_2d_double(self,
-                                gridname: str,
-                                fieldname: str,
-                                data_shape: list[int],
-                                is_in: int | None = None,
-                                ie_in: int | None = None,
-                                js_in: int | None = None,
-                                je_in: int | None = None) -> npt.NDArray:
         
-        _data_override_2d_cdouble = self.cfms.cFMS_data_override_2d_cdouble
-        
-        ndata = np.prod(data_shape)
-        
-        gridname_t = ctypes.c_char_p
-        fieldname_t = ctypes.c_char_p
-        data_shape_t = np.ctypeslib.ndpointer(dtype=np.int32, ndim=(1), shape=(2))
-        data_t = np.ctypeslib.ndpointer(dtype=np.float64, ndim=(2), shape=data_shape)
-        override_t = ctypes.c_bool        
-        is_in_t = ctypes.c_int
-        ie_in_t = ctypes.c_int
-        js_in_t = ctypes.c_int
-        je_in_t = ctypes.c_int
-        
-        gridname_c = gridname_t(gridname.encode("utf-8"))
-        fieldname_c = fieldname_t(fieldname.encode("utf-8"))
-        data_shape_c = np.array(data_shape, dtype=np.int32)
-        data = np.ascontiguousarray(np.zeros(data_shape, dtype=np.float64, order="C"))
-        override = override_t(False)
-        is_in_c = is_in_t(is_in) if is_in is not None else None
-        js_in_c = js_in_t(js_in) if js_in is not None else None
-        ie_in_c = ie_in_t(ie_in) if ie_in is not None else None
-        je_in_c = je_in_t(je_in) if je_in is not None else None
-
-        
-        _data_override_2d_cdouble.restype = None
-        _data_override_2d_cdouble.argtypes = [gridname_t,
-                                             fieldname_t,
-                                             data_shape_t,
-                                             data_t,
-                                             ctypes.POINTER(override_t),
-                                             ctypes.POINTER(is_in_t),
-                                             ctypes.POINTER(ie_in_t),
-                                             ctypes.POINTER(js_in_t),
-                                             ctypes.POINTER(je_in_t)]
-        _data_override_2d_cdouble(gridname_c,
-                                 fieldname_c,
-                                 data_shape_c,
-                                 data,
-                                 override,
-                                 is_in_c,
-                                 js_in_c,
-                                 ie_in_c,
-                                 je_in_c)
-
-        #TODO add check for override
-        return data
-
-    def data_override_2d(self,
-                         gridname: str,
-                         fieldname: str,
-                         data_shape: list[int],
-                         data_type: Any,
-                         is_in: int | None = None,
-                         ie_in: int | None = None,
-                         js_in: int | None = None,
-                         je_in: int | None = None) -> npt.NDArray:
-
-        if data_type is np.float32 :
-            return self.data_override_2d_float(gridname=gridname,
-                                               fieldname=fieldname,
-                                               data_shape=data_shape,
-                                               is_in=is_in,
-                                               ie_in=ie_in,
-                                               js_in=js_in,
-                                               je_in=je_in) 
-        
-        if data_type is np.float64 :
-            return self.data_override_2d_double(gridname=gridname,
-                                                fieldname=fieldname,
-                                                data_shape=data_shape,
-                                                is_in=is_in,
-                                                ie_in=ie_in,
-                                                js_in=js_in,
-                                                je_in=je_in)
