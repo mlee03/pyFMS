@@ -51,7 +51,6 @@ def test_data_override():
         data_shape=(xsize, ysize),
         data_type=np.float64,
     )
-
     assert np.all(data == 200.0)
 
     pyfms.pyfms_end()
