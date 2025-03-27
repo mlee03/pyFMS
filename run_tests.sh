@@ -30,8 +30,10 @@ if [ $? -ne 0 ] ; then
     exit 1
 fi
 
-mpirun -n 6 python -m pytest tests/py_data_override
+pytest tests/py_data_override/test_generate_files.py
+mpirun -n 6 python -m pytest tests/py_data_override/test_data_override.py
 if [ $? -ne 0 ] ; then
     echo "test_data_override error" ;
     exit 1
 fi
+rm -rf INPUT input.nml data_table.yaml *logfile* *warnfile*
