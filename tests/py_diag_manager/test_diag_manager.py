@@ -68,7 +68,9 @@ diag_files:
             var2[ij] = i * 10.0 + j * 1.0
             ij += 1
 
-    pyfms = pyFMS(calendar_type=calendar_type)
+    cfms_path = "./cFMS/libcFMS/.libs/libcFMS.so"
+
+    pyfms = pyFMS(cFMS_path=cfms_path, calendar_type=calendar_type)
     mpp_domains = pyFMS_mpp_domains(cFMS=pyfms.cFMS)
 
     global_indices = np.array([0, NX - 1, 0, NY - 1], dtype=np.int32, order="C")
@@ -92,10 +94,9 @@ diag_files:
     diag_model_subset = 2
     err_msg = "None"
 
-    diag_manager = pyFMS_diag_manager(clibFMS=pyfms.clibFMS)
+    diag_manager = pyFMS_diag_manager(clibFMS=pyfms.cFMS)
     diag_manager.diag_init(
         diag_model_subset=diag_model_subset,
-        calendar_type=calendar_type,
         err_msg=err_msg,
     )
 
