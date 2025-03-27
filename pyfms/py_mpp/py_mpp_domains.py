@@ -70,7 +70,6 @@ class pyFMS_mpp_domains:
         xextent: Optional[NDArray] = None,
         yextent: Optional[NDArray] = None,
         maskmap: Optional[NDArray[np.bool_]] = None,
-        maskmap_shape: Optional[NDArray] = None,
         name: Optional[str] = None,
         symmetry: Optional[bool] = None,
         memory_size: Optional[NDArray] = None,
@@ -99,7 +98,6 @@ class pyFMS_mpp_domains:
         xextent_p, xextent_t = setarray_Cint32(xextent)
         yextent_p, yextent_t = setarray_Cint32(yextent)
         maskmap_p, maskmap_t = setarray_Cbool(maskmap)
-        maskmap_shape_p, maskmap_shape_t = setarray_Cint32(maskmap_shape)
         name_c, name_t = set_Cchar(name)
         symmetry_c, symmetry_t = setscalar_Cbool(symmetry)
         memory_size_p, memory_size_t = setarray_Cint32(memory_size)
@@ -126,7 +124,6 @@ class pyFMS_mpp_domains:
             xextent_t,
             yextent_t,
             maskmap_t,
-            maskmap_shape_t,
             name_t,
             symmetry_t,
             memory_size_t,
@@ -156,7 +153,6 @@ class pyFMS_mpp_domains:
             xextent_p,
             yextent_p,
             maskmap_p,
-            maskmap_shape_p,
             name_c,
             symmetry_c,
             memory_size_p,
