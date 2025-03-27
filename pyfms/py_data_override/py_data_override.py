@@ -1,4 +1,7 @@
 import ctypes
+from typing import Any
+
+import numpy as np
 
 
 class pyDataOverride:
@@ -62,3 +65,85 @@ class pyDataOverride:
             land_domainUG_id_c,
             mode_c,
         )
+
+    def data_override_set_time(
+        self,
+        year: int | None = None,
+        month: int | None = None,
+        day: int | None = None,
+        hour: int | None = None,
+        minute: int | None = None,
+        second: int | None = None,
+        tick: int | None = None,
+    ):
+
+        _data_override_set_time = self.cfms.cFMS_data_override_set_time
+
+        year_t = ctypes.c_int
+        month_t = ctypes.c_int
+        day_t = ctypes.c_int
+        hour_t = ctypes.c_int
+        minute_t = ctypes.c_int
+        second_t = ctypes.c_int
+        tick_t = ctypes.c_int
+        err_msg_t = ctypes.c_char_p
+
+        year_c = year_t(year) if year is not None else None
+        month_c = month_t(month) if month is not None else None
+        day_c = day_t(day) if day is not None else None
+        hour_c = hour_t(hour) if hour is not None else None
+        minute_c = minute_t(minute) if minute is not None else None
+        second_c = second_t(second) if second is not None else None
+        tick_c = tick_t(tick) if tick is not None else None
+        err_msg_c = err_msg_t("NONE".encode("utf-8"))
+
+        _data_override_set_time.restype = None
+        _data_override_set_time.argtypes = [
+            ctypes.POINTER(year_t),
+            ctypes.POINTER(month_t),
+            ctypes.POINTER(day_t),
+            ctypes.POINTER(hour_t),
+            ctypes.POINTER(minute_t),
+            ctypes.POINTER(second_t),
+            ctypes.POINTER(tick_t),
+            ctypes.POINTER(err_msg_t),
+        ]
+
+        _data_override_set_time(
+            year_c, month_c, day_c, hour_c, minute_c, second_c, tick_c, err_msg_c
+        )
+
+    def data_override_scalar(
+        self,
+        gridname: str,
+        fieldname: str,
+        data_type: Any,
+        data_index: int | None = None,
+    ) -> np.float32 | np.float64:
+
+        _data_override_scalar = self.cfms.cFMS_data_override_0d_cdouble
+        gridname_t = ctypes.c_char_p
+        fieldname_t = ctypes.c_char_p
+        data_t = ctypes.c_float if data_type is np.float32 else ctypes.c_double
+        override_t = ctypes.c_bool
+        data_index_t = ctypes.c_int
+
+        gridname_c = gridname_t(gridname.encode("utf-8"))
+        fieldname_c = fieldname_t(fieldname.encode("utf-8"))
+        data_c = data_t(-99.99)
+        override_c = ctypes.c_bool(False)
+        data_index_c = data_index_t(data_index) if data_index is not None else None
+
+        _data_override_scalar.restype = None
+        _data_override_scalar.argtypes = [
+            gridname_t,
+            fieldname_t,
+            ctypes.POINTER(data_t),
+            ctypes.POINTER(override_t),
+            ctypes.POINTER(data_index_t),
+        ]
+
+        _data_override_scalar(gridname_c, fieldname_c, data_c, override_c, data_index_c)
+
+        # TODO:  add check for override
+        return data_c.value

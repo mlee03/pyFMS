@@ -37,4 +37,11 @@ def test_data_override():
     do = pyDataOverride(pyfms.cFMS)
     do.data_override_init(ocn_domain_id=ocn_domain_id)
 
+    do.data_override_set_time(
+        year=1, month=1, day=2, hour=0, minute=0, second=0, tick=0
+    )
+    data = do.data_override_scalar(
+        gridname="OCN", fieldname="runoff_scalar", data_type=np.float64
+    )
     pyfms.pyfms_end()
+    assert data == 1.0
