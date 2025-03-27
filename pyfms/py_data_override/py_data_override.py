@@ -149,7 +149,7 @@ class pyDataOverride:
         # TODO:  add check for override
         return data_c.value
 
-    def data_override_2d(
+    def data_override(
         self,
         gridname: str,
         fieldname: str,
@@ -161,19 +161,30 @@ class pyDataOverride:
         je_in: int | None = None,
     ) -> npt.NDArray:
 
+        nshape = len(data_shape)
+
         if data_type is np.float32:
-            _data_override_2d = self.cfms.cFMS_data_override_2d_cfloat
+            if nshape == 2:
+                _data_override = self.cfms.cFMS_data_override_2d_cfloat
+            if nshape == 3:
+                _data_override = self.cfms.cFMS_data_override_3d_cfloat
         elif data_type is np.float64:
-            _data_override_2d = self.cfms.cFMS_data_override_2d_cdouble
+            if nshape == 2:
+                _data_override = self.cfms.cFMS_data_override_2d_cdouble
+            if nshape == 3:
+                _data_override = self.cfms.cFMS_data_override_3d_cdouble
         else:
+            # add cFMS_end
             raise RuntimeError("Data_override, datatype not supported")
 
         ndata = np.prod(data_shape)
 
         gridname_t = ctypes.c_char_p
         fieldname_t = ctypes.c_char_p
-        data_shape_t = np.ctypeslib.ndpointer(dtype=np.int32, ndim=(1), shape=(2))
-        data_t = np.ctypeslib.ndpointer(dtype=data_type, ndim=(2), shape=data_shape)
+        data_shape_t = np.ctypeslib.ndpointer(dtype=np.int32, ndim=(1), shape=(nshape))
+        data_t = np.ctypeslib.ndpointer(
+            dtype=data_type, ndim=(nshape), shape=data_shape
+        )
         override_t = ctypes.c_bool
         is_in_t = ctypes.c_int
         ie_in_t = ctypes.c_int
@@ -190,8 +201,8 @@ class pyDataOverride:
         ie_in_c = ie_in_t(ie_in) if ie_in is not None else None
         je_in_c = je_in_t(je_in) if je_in is not None else None
 
-        _data_override_2d.restype = None
-        _data_override_2d.argtypes = [
+        _data_override.restype = None
+        _data_override.argtypes = [
             gridname_t,
             fieldname_t,
             data_shape_t,
@@ -202,7 +213,7 @@ class pyDataOverride:
             ctypes.POINTER(js_in_t),
             ctypes.POINTER(je_in_t),
         ]
-        _data_override_2d(
+        _data_override(
             gridname_c,
             fieldname_c,
             data_shape_c,

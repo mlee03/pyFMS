@@ -12,6 +12,7 @@ def test_data_override():
     ocn_domain_id = 0
     nx = 360
     ny = 180
+    nz = 5
     ehalo = 2
     whalo = 2
     shalo = 2
@@ -45,12 +46,23 @@ def test_data_override():
     )
     assert data == 2.0
 
-    data = do.data_override_2d(
+    data = do.data_override(
         gridname="OCN",
         fieldname="runoff_2d",
         data_shape=(xsize, ysize),
         data_type=np.float64,
     )
     assert np.all(data == 200.0)
+
+    data = do.data_override(
+        gridname="OCN",
+        fieldname="runoff_3d",
+        data_shape=(xsize, ysize, nz),
+        data_type=np.float64,
+    )
+    answers = np.array([200 + z + 1 for z in range(nz)] * xsize * ysize).reshape(
+        xsize, ysize, nz
+    )
+    assert np.all(data == answers)
 
     pyfms.pyfms_end()

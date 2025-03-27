@@ -121,3 +121,30 @@ def test_write_2d_file():
     xr.Dataset(data_vars=dict(x=x, y=y, time=time, runoff=runoff)).to_netcdf(
         "./INPUT/array_2d.nc", unlimited_dims="time"
     )
+
+
+def test_write_3d_file():
+
+    nx, ny, nz, ntime = 361, 179, 5, 11
+    x = xr.DataArray(np.arange(0, 361, 1, dtype=np.float64), dims=["x"])
+    y = xr.DataArray(np.arange(-89, 90, 1, dtype=np.float64), dims=["y"])
+    z = xr.DataArray(np.arange(1, nz + 1, 1, dtype=np.float64), dims=["z"])
+
+    time = xr.DataArray(
+        data=np.arange(1, ntime, 1.0, dtype=np.float64),
+        dims=["time"],
+        attrs={"units": "days since 0001-01-01 00:00:00", "calendar": "noleap"},
+    )
+
+    runoff_list = [
+        [[100 * (itime + 1) + z + 1] * nx * ny for z in range(nz)]
+        for itime in range(ntime - 1)
+    ]
+    runoff_data = np.array(runoff_list, dtype=np.float64).reshape(
+        (ntime - 1, nz, ny, nx)
+    )
+    runoff = xr.DataArray(runoff_data, dims=["time", "z", "y", "x"])
+
+    xr.Dataset(data_vars=dict(x=x, y=y, z=z, time=time, runoff=runoff)).to_netcdf(
+        "./INPUT/array_3d.nc", unlimited_dims="time"
+    )
