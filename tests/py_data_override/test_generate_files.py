@@ -5,7 +5,7 @@ import xarray as xr
 import yaml
 
 
-def write_input_files():
+def test_write_input_files():
     data_table = yaml.load(
         """
         data_table:
