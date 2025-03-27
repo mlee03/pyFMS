@@ -5,7 +5,7 @@ import xarray as xr
 import yaml
 
 
-def write_input_files():
+def test_write_input_files():
     data_table = yaml.load(
         """
         data_table:
@@ -46,7 +46,6 @@ use_data_table_yaml = .True.
     input_nml_file = open("input.nml", "w")
     input_nml_file.write(input_nml)
     input_nml_file.close()
-
 
 def test_write_grid_files():
 
@@ -89,7 +88,7 @@ def test_write_grid_files():
 
 def test_write_scalar_file():
 
-    runoff = xr.DataArray(np.arange(1.0, 11.0, 1.0, dtype=np.float64), dims=["time"])
+    runoff = xr.DataArray(np.arange(1, 11, 1, dtype=np.float64), dims=["time"])
     time = xr.DataArray(
         data=np.arange(1.0, 11.0, 1.0, dtype=np.float64),
         dims=["time"],
@@ -99,3 +98,22 @@ def test_write_scalar_file():
     xr.Dataset(data_vars=dict(time=time, runoff=runoff)).to_netcdf(
         "./INPUT/scalar.nc", unlimited_dims="time"
     )
+
+
+def test_write_2d_file():
+
+    nx, ny, ntime = 361, 179, 11
+    x = xr.DataArray(np.arange(0, 361, 1, dtype=np.float64), dims=["x"])
+    y = xr.DataArray(np.arange(-89, 90, 1, dtype=np.float64), dims=["y"])
+
+    time = xr.DataArray(
+        data=np.arange(1, ntime, 1.0, dtype=np.float64),
+        dims=["time"],
+        attrs={"units": "days since 0001-01-01 00:00:00", "calendar": "noleap"},
+    )
+
+    data = np.array([[100*(itime+1)]*nx*ny for itime in range(ntime-1)], dtype=np.float64).reshape((ntime-1,ny,nx))    
+    data_x = xr.DataArray(data, dims=["time", "y", "x"])
+    
+    xr.Dataset(data_vars=dict(x=x, y=y, time=time, data=data_x)).to_netcdf("./INPUT/array_2d.nc", unlimited_dims="time" )
+    
