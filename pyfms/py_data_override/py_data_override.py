@@ -2,6 +2,7 @@ import ctypes
 from typing import Any
 
 import numpy as np
+import numpy.typing as npt
 
 
 class pyDataOverride:
@@ -9,14 +10,14 @@ class pyDataOverride:
     def __init__(self, cFMS: ctypes.CDLL = None):
         self.cfms = cFMS
 
-    def data_override_init(
+    def init(
         self,
-        atm_domain_id: int | None = None,
-        ocn_domain_id: int | None = None,
-        ice_domain_id: int | None = None,
-        land_domain_id: int | None = None,
-        land_domainUG_id: int | None = None,
-        mode: int | None = None,
+        atm_domain_id: int = None,
+        ocn_domain_id: int = None,
+        ice_domain_id: int = None,
+        land_domain_id: int = None,
+        land_domainUG_id: int = None,
+        mode: int = None,
     ):
 
         _data_override_init = self.cfms.cFMS_data_override_init
@@ -66,15 +67,15 @@ class pyDataOverride:
             mode_c,
         )
 
-    def data_override_set_time(
+    def set_time(
         self,
-        year: int | None = None,
-        month: int | None = None,
-        day: int | None = None,
-        hour: int | None = None,
-        minute: int | None = None,
-        second: int | None = None,
-        tick: int | None = None,
+        year: int = None,
+        month: int = None,
+        day: int = None,
+        hour: int = None,
+        minute: int = None,
+        second: int = None,
+        tick: int = None,
     ):
 
         _data_override_set_time = self.cfms.cFMS_data_override_set_time
@@ -113,12 +114,12 @@ class pyDataOverride:
             year_c, month_c, day_c, hour_c, minute_c, second_c, tick_c, err_msg_c
         )
 
-    def data_override_scalar(
+    def override_scalar(
         self,
         gridname: str,
         fieldname: str,
         data_type: Any,
-        data_index: int | None = None,
+        data_index: int = None,
     ) -> np.float32 | np.float64:
 
         _data_override_scalar = self.cfms.cFMS_data_override_0d_cdouble
@@ -147,3 +148,81 @@ class pyDataOverride:
 
         # TODO:  add check for override
         return data_c.value
+
+    def override(
+        self,
+        gridname: str,
+        fieldname: str,
+        data_shape: list[int],
+        data_type: Any,
+        is_in: int = None,
+        ie_in: int = None,
+        js_in: int = None,
+        je_in: int = None,
+    ) -> npt.NDArray:
+
+        nshape = len(data_shape)
+
+        if data_type is np.float32:
+            if nshape == 2:
+                _data_override = self.cfms.cFMS_data_override_2d_cfloat
+            if nshape == 3:
+                _data_override = self.cfms.cFMS_data_override_3d_cfloat
+        elif data_type is np.float64:
+            if nshape == 2:
+                _data_override = self.cfms.cFMS_data_override_2d_cdouble
+            if nshape == 3:
+                _data_override = self.cfms.cFMS_data_override_3d_cdouble
+        else:
+            # add cFMS_end
+            raise RuntimeError("Data_override, datatype not supported")
+
+        ndata = np.prod(data_shape)
+
+        gridname_t = ctypes.c_char_p
+        fieldname_t = ctypes.c_char_p
+        data_shape_t = np.ctypeslib.ndpointer(dtype=np.int32, ndim=(1), shape=(nshape))
+        data_t = np.ctypeslib.ndpointer(
+            dtype=data_type, ndim=(nshape), shape=data_shape
+        )
+        override_t = ctypes.c_bool
+        is_in_t = ctypes.c_int
+        ie_in_t = ctypes.c_int
+        js_in_t = ctypes.c_int
+        je_in_t = ctypes.c_int
+
+        gridname_c = gridname_t(gridname.encode("utf-8"))
+        fieldname_c = fieldname_t(fieldname.encode("utf-8"))
+        data_shape_c = np.array(data_shape, dtype=np.int32)
+        data = np.ascontiguousarray(np.zeros(data_shape, dtype=data_type, order="C"))
+        override = override_t(False)
+        is_in_c = is_in_t(is_in) if is_in is not None else None
+        js_in_c = js_in_t(js_in) if js_in is not None else None
+        ie_in_c = ie_in_t(ie_in) if ie_in is not None else None
+        je_in_c = je_in_t(je_in) if je_in is not None else None
+
+        _data_override.restype = None
+        _data_override.argtypes = [
+            gridname_t,
+            fieldname_t,
+            data_shape_t,
+            data_t,
+            ctypes.POINTER(override_t),
+            ctypes.POINTER(is_in_t),
+            ctypes.POINTER(ie_in_t),
+            ctypes.POINTER(js_in_t),
+            ctypes.POINTER(je_in_t),
+        ]
+        _data_override(
+            gridname_c,
+            fieldname_c,
+            data_shape_c,
+            data,
+            override,
+            is_in_c,
+            js_in_c,
+            ie_in_c,
+            je_in_c,
+        )
+
+        return data
