@@ -1,7 +1,8 @@
 import os
+import shutil
+
 import numpy as np
 import pytest
-import shutil
 
 from pyfms import pyDataOverride, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
