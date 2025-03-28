@@ -18,6 +18,8 @@ from pyfms.pyfms_utils.data_handling import (
 
 class pyFMS_diag_manager:
 
+    DIAG_ALL = 2
+
     def __init__(self, clibFMS: ctypes.CDLL = None):
         self.clibFMS = clibFMS
 
@@ -52,7 +54,10 @@ class pyFMS_diag_manager:
 
         _cfms_diag_init(diag_model_subset_c, time_init_p, err_msg_c)
 
-        return err_msg_c.value.decode("utf-8")
+        if err_msg is not None:
+            return err_msg_c.value.decode("utf-8")
+        else:
+            return err_msg
 
     def diag_send_complete(
         self,

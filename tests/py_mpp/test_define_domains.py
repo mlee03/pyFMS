@@ -30,7 +30,7 @@ def test_define_domains():
     domain_id = 1
     nest_domain_id = 1
 
-    coarse_global_indices = np.array([0, NX - 1, 0, NY - 1], dtype=np.int32, order="C")
+    coarse_global_indices = [0, NX - 1, 0, NY - 1]
     coarse_npes = COARSE_NPES
     coarse_pelist = np.empty(shape=COARSE_NPES, dtype=np.int32, order="C")
     coarse_tile_id = 0
@@ -43,9 +43,7 @@ def test_define_domains():
     is_mosaic = False
     symmetry = False
 
-    fine_global_indices = np.array(
-        [0, NX_FINE - 1, 0, NY_FINE - 1], dtype=np.int32, order="C"
-    )
+    fine_global_indices = [0, NX_FINE - 1, 0, NY_FINE - 1]
     fine_npes = FINE_NPES
     fine_pelist = np.empty(shape=FINE_NPES, dtype=np.int32, order="C")
     fine_tile_id = 1
@@ -86,7 +84,7 @@ def test_define_domains():
         pyfms.set_pelist_npes(coarse_npes)
         mpp.set_current_pelist(coarse_pelist)
         name = "test coarse domain"
-        maskmap = np.full(shape=8, fill_value=True, order="C")
+        maskmap = np.full(shape=(2, 4), fill_value=True, dtype=np.bool_, order="F")
 
         xextent = np.zeros(shape=2, dtype=np.int32, order="C")
         yextent = np.zeros(shape=2, dtype=np.int32, order="C")
