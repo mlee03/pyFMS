@@ -1,7 +1,7 @@
 import os
-
 import numpy as np
 import pytest
+import shutil
 
 from pyfms import pyDataOverride, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
@@ -53,9 +53,9 @@ def test_data_override():
 
 @pytest.mark.remove
 def test_remove_files():
-    os.removedir("INPUT")
+    shutil.rmtree("INPUT")
     os.remove("input.nml")
     os.remove("data_table.yaml")
     assert not os.path.exists("INPUT")
-    assert not os.isfile("input.nml")
-    assert not os.isfile("data_table.yaml")
+    assert not os.path.isfile("input.nml")
+    assert not os.path.isfile("data_table.yaml")

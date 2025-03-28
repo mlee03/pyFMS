@@ -6,7 +6,7 @@ function create_input() {
 }
 
 function remove_input() {
-    pytest -m "remove" tests/test_pyfms.py
+    pytest -m "remove" $1
     if [ $? -ne 0 ] ; then exit 1 ; fi
 }
 
