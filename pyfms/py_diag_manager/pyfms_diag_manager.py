@@ -1,5 +1,4 @@
 import ctypes
-from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
@@ -16,28 +15,26 @@ from pyfms.pyfms_utils.data_handling import (
 )
 
 
-class pyFMS_diag_manager:
+class DiagManager:
 
     DIAG_ALL = 2
 
     def __init__(self, clibFMS: ctypes.CDLL = None):
         self.clibFMS = clibFMS
 
-    def diag_end(self):
+    def end(self):
         _cfms_diag_end = self.clibFMS.cFMS_diag_end
 
         _cfms_diag_end.restype = None
 
         _cfms_diag_end()
 
-    def diag_init(
+    def init(
         self,
         diag_model_subset: int = None,
         time_init: NDArray = None,
-        err_msg: str = None,
     ) -> str:
-        if err_msg is not None:
-            err_msg = err_msg[:128]
+        err_msg = ""
 
         _cfms_diag_init = self.clibFMS.cFMS_diag_init
 
@@ -54,12 +51,9 @@ class pyFMS_diag_manager:
 
         _cfms_diag_init(diag_model_subset_c, time_init_p, err_msg_c)
 
-        if err_msg is not None:
-            return err_msg_c.value.decode("utf-8")
-        else:
-            return err_msg
+        return err_msg_c.value.decode("utf-8")
 
-    def diag_send_complete(
+    def send_complete(
         self,
         diag_field_id: int,
         err_msg: str = None,
@@ -83,7 +77,7 @@ class pyFMS_diag_manager:
         else:
             return err_msg
 
-    def diag_set_field_init_time(
+    def set_field_init_time(
         self,
         year: int,
         month: int,
@@ -92,11 +86,9 @@ class pyFMS_diag_manager:
         minute: int,
         second: int = None,
         tick: int = None,
-        err_msg: str = None,
     ) -> str:
 
-        if err_msg is not None:
-            err_msg = err_msg[:128]
+        err_msg = ""
 
         _cfms_diag_set_field_init_time = self.clibFMS.cFMS_diag_set_field_init_time
 
@@ -125,12 +117,9 @@ class pyFMS_diag_manager:
             year_c, month_c, day_c, hour_c, minute_c, second_c, tick_c, err_msg_c
         )
 
-        if err_msg is not None:
-            return err_msg_c.value.decode("utf-8")
-        else:
-            return err_msg
+        return err_msg_c.value.decode("utf-8")
 
-    def diag_set_field_timestep(
+    def set_field_timestep(
         self,
         diag_field_id: int,
         dseconds: int,
@@ -168,7 +157,7 @@ class pyFMS_diag_manager:
         else:
             return err_msg
 
-    def diag_advance_field_time(
+    def advance_field_time(
         self,
         diag_field_id: int,
     ):
@@ -181,7 +170,7 @@ class pyFMS_diag_manager:
 
         _cfms_diag_advance_field_time(diag_field_id_c)
 
-    def diag_set_time_end(
+    def set_time_end(
         self,
         year: int = None,
         month: int = None,
@@ -229,7 +218,7 @@ class pyFMS_diag_manager:
             err_msg_c,
         )
 
-    def diag_axis_init(
+    def axis_init(
         self,
         name: str,
         axis_data: NDArray,
@@ -307,11 +296,10 @@ class pyFMS_diag_manager:
             not_xy_c,
         )
 
-    def register_diag_field_array(
+    def register_field_array(
         self,
         module_name: str,
         field_name: str,
-        datatype: Any,
         axes: NDArray = None,
         long_name: str = None,
         units: str = None,
@@ -362,19 +350,19 @@ class pyFMS_diag_manager:
         realm_c, realm_t = set_Cchar(realm)
         multiple_send_data_c, multiple_send_data_t = setscalar_Cbool(multiple_send_data)
 
-        if datatype == np.int32:
+        if range.dtype == np.int32:
             _cfms_register_diag_field_array_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cint
             )
             range_p, range_t = setarray_Cint32(range)
             missing_value_c, missing_value_t = setscalar_Cint32(missing_value)
-        elif datatype == np.float64:
+        elif range.dtype == np.float64:
             _cfms_register_diag_field_array_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cdouble
             )
             range_p, range_t = setarray_Cdouble(range)
             missing_value_c, missing_value_t = setscalar_Cdouble(missing_value)
-        elif datatype == np.float32:
+        elif range.dtype == np.float32:
             _cfms_register_diag_field_array_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cfloat
             )
@@ -426,11 +414,10 @@ class pyFMS_diag_manager:
             multiple_send_data_c,
         )
 
-    def register_diag_field_scalar(
+    def register_field_scalar(
         self,
         module_name: str,
         field_name: str,
-        datatype: Any,
         long_name: str = None,
         units: str = None,
         standard_name: str = None,
@@ -469,19 +456,19 @@ class pyFMS_diag_manager:
         realm_c, realm_t = set_Cchar(realm)
         multiple_send_data_c, multiple_send_data_t = setscalar_Cbool(multiple_send_data)
 
-        if datatype == np.int32:
+        if range.dtype == np.int32:
             _cfms_register_diag_field_scalar_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cint
             )
             range_p, range_t = setarray_Cint32(range)
             missing_value_c, missing_value_t = setscalar_Cint32(missing_value)
-        elif datatype == np.float64:
+        elif range.dtype == np.float64:
             _cfms_register_diag_field_scalar_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cdouble
             )
             range_p, range_t = setarray_Cdouble(range)
             missing_value_c, missing_value_t = setscalar_Cdouble(missing_value)
-        elif datatype == np.float32:
+        elif range.dtype == np.float32:
             _cfms_register_diag_field_scalar_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cfloat
             )
@@ -523,7 +510,7 @@ class pyFMS_diag_manager:
             multiple_send_data_c,
         )
 
-    def diag_send_data(
+    def send_data(
         self,
         diag_field_id: int,
         field_shape: NDArray,
