@@ -1,14 +1,19 @@
 import os
+import shutil
+
 import numpy as np
 import pytest
+
 import pyfms
+
 
 @pytest.mark.parallel
 def test_data_override():
 
-    pyfms = pyfms.pyFMS()
-    mpp = pyfms.pyFMS_mpp(cFMS=pyfms.cFMS)
-    mpp_domains = pyfms.pyFMS_mpp_domains(cFMS=pyfms.cFMS)
+    pyfmsobj = pyfms.pyFMS()
+    cfms = pyfmsobj.cFMS
+    mpp = pyfms.pyFMS_mpp(cFMS=cfms)
+    mpp_domains = pyfms.pyFMS_mpp_domains(cFMS=cfms)
 
     ocn_domain_id = 0
     nx = 360
@@ -36,11 +41,9 @@ def test_data_override():
     xsize = compute_dict["xsize"]
     ysize = compute_dict["ysize"]
 
-    data_override = pyfms.pyDataOverride(pyfms.cFMS)
+    data_override = pyfms.pyDataOverride(cfms)
     data_override.init(ocn_domain_id=ocn_domain_id)
-    data_override.set_time(
-        year=1, month=1, day=3, hour=0, minute=0, second=0, tick=0
-    )
+    data_override.set_time(year=1, month=1, day=3, hour=0, minute=0, second=0, tick=0)
 
     data = data_override.override_scalar(
         gridname="OCN", fieldname="runoff_scalar", data_type=np.float64
@@ -55,7 +58,7 @@ def test_data_override():
     )
     assert np.all(data == 200.0)
 
-    data = data_override.data_override(
+    data = data_override.override(
         gridname="OCN",
         fieldname="runoff_3d",
         data_shape=(xsize, ysize, nz),
@@ -66,15 +69,14 @@ def test_data_override():
     )
     assert np.all(data == answers)
 
-    pyfms.pyfms_end()
-    assert data == 1.0
+    pyfmsobj.pyfms_end()
 
 
 @pytest.mark.remove
 def test_remove_files():
-    os.removedir("INPUT")
+    shutil.rmtree("INPUT")
     os.remove("input.nml")
     os.remove("data_table.yaml")
     assert not os.path.exists("INPUT")
-    assert not os.isfile("input.nml")
-    assert not os.isfile("data_table.yaml")
+    assert not os.path.isfile("input.nml")
+    assert not os.path.isfile("data_table.yaml")
