@@ -28,7 +28,7 @@ def test_getset_domains():
     """
     domain_id = 0
     ndiv = 4
-    global_indices = np.array([0, 3, 0, 3], dtype=np.int32, order="C")
+    global_indices = [0, 3, 0, 3]
     whalo = 2
     ehalo = 2
     shalo = 2

@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 
 from pyfms import pyFMS, pyFMS_diag_manager, pyFMS_mpp_domains
@@ -11,49 +9,14 @@ def test_send_data():
     NY = 8
     NZ = 2
 
-    input_file = "input.nml"
-    diag_table = "diag_table.yaml"
-
-    input_text = """
-&diag_manager_nml
-    use_modern_diag = .true.
-/"""
-
-    diag_text = """
-title: test_diag_manager
-base_date: 2 1 1 1 1 1
-
-diag_files:
-- file_name: test_send_data
-  freq: 1 hours
-  time_units: hours
-  unlimdim: time
-  varlist:
-  - module: atm_mod
-    var_name: var_3d
-    reduction: average
-    kind: r4
-    output_name: var3_avg
-  - module: atm_mod
-    var_name: var_2d
-    reduction: average
-    kind: r4
-    output_name: var2_avg
-    """
-
-    with open(input_file, "w") as file1:
-        file1.write(input_text)
-    with open(diag_table, "w") as file2:
-        file2.write(diag_text)
-
     domain_id = 0
     calendar_type = 4
 
-    var2_shape = np.array([NX, NY], dtype=np.int32, order="C")
-    var2 = np.empty(shape=NX * NY, dtype=np.float32, order="C")
+    var2_shape = np.array([NX, NY], dtype=np.int32)
+    var2 = np.empty(shape=NX * NY, dtype=np.float32)
 
-    var3_shape = np.array([NX, NY, NZ], dtype=np.int32, order="C")
-    var3 = np.empty(shape=NX * NY * NZ, dtype=np.float32, order="C")
+    var3_shape = np.array([NX, NY, NZ], dtype=np.int32)
+    var3 = np.empty(shape=NX * NY * NZ, dtype=np.float32)
 
     ijk = 0
     for i in range(NX):
@@ -73,9 +36,9 @@ diag_files:
     pyfms = pyFMS(cFMS_path=cfms_path, calendar_type=calendar_type)
     mpp_domains = pyFMS_mpp_domains(cFMS=pyfms.cFMS)
 
-    global_indices = np.array([0, NX - 1, 0, NY - 1], dtype=np.int32, order="C")
-    layout = np.array([1, 1], dtype=np.int32, order="C")
-    io_layout = np.array([1, 1], dtype=np.int32, order="C")
+    global_indices = [0, (NX - 1), 0, (NY - 1)]
+    layout = [1, 1]
+    io_layout = [1, 1]
 
     mpp_domains.define_domains(
         domain_id=domain_id,
@@ -91,21 +54,15 @@ diag_files:
     diag manager init
     """
 
-    diag_model_subset = 2
-    err_msg = "None"
-
     diag_manager = pyFMS_diag_manager(clibFMS=pyfms.cFMS)
-    diag_manager.diag_init(
-        diag_model_subset=diag_model_subset,
-        err_msg=err_msg,
-    )
+    diag_manager.diag_init(diag_model_subset=diag_manager.DIAG_ALL)
 
     mpp_domains.set_current_domain(domain_id=domain_id)
 
     """
     diag axis init x
     """
-    x = np.empty(shape=NX, dtype=np.float64, order="C")
+    x = np.arange(NX, dtype=np.float64)
 
     for i in range(NX):
         x[i] = i
@@ -122,7 +79,7 @@ diag_files:
     """
     diag axis init y
     """
-    y = np.empty(shape=NY, dtype=np.float64, order="C")
+    y = np.arange(NY, dtype=np.float64)
 
     for j in range(NY):
         y[j] = j
@@ -140,7 +97,7 @@ diag_files:
     diag axis init z
     """
 
-    z = np.empty(shape=NZ, dtype=np.float64, order="C")
+    z = np.arange(NZ, dtype=np.float64)
 
     for k in range(NZ):
         z[k] = k
@@ -159,8 +116,8 @@ diag_files:
     register diag field var3
     """
 
-    axes_3d = np.array([id_x, id_y, id_z, 0, 0], dtype=np.int32, order="C")
-    range_3d = np.array([-1000.0, 1000.0], dtype=np.float32, order="C")
+    axes_3d = np.array([id_x, id_y, id_z, 0, 0], dtype=np.int32)
+    range_3d = np.array([-1000.0, 1000.0], dtype=np.float32)
 
     diag_manager.diag_set_field_init_time(
         year=2,
@@ -190,8 +147,8 @@ diag_files:
     register diag_field var 2
     """
 
-    axes_2d = np.array([id_x, id_y, 0, 0, 0], dtype=np.int32, order="C")
-    range_2d = np.array([-1000.0, 1000.0], dtype=np.float32, order="C")
+    axes_2d = np.array([id_x, id_y, 0, 0, 0], dtype=np.int32)
+    range_2d = np.array([-1000.0, 1000.0], dtype=np.float32)
 
     diag_manager.diag_set_field_init_time(
         year=2,
@@ -244,7 +201,8 @@ diag_files:
         field=var3,
     )
 
-    for itime in range(24):
+    ntime = 24
+    for itime in range(ntime):
         ijk = 0
         for i in range(NX):
             for j in range(NY):
@@ -259,11 +217,8 @@ diag_files:
         )
         diag_manager.diag_send_complete(diag_field_id=id_var3)
 
-        ij = 0
-        for i in range(NX):
-            for j in range(NY):
-                var2[ij] = -1.0 * var2[ij]
-                ij += 1
+        var2 = -var2
+
         diag_manager.diag_advance_field_time(diag_field_id=id_var2)
         diag_manager.diag_send_data(
             diag_field_id=id_var2,
@@ -275,9 +230,6 @@ diag_files:
     diag_manager.diag_end()
 
     pyfms.pyfms_end()
-
-    os.remove(input_file)
-    os.remove(diag_table)
 
 
 if __name__ == "__main__":
