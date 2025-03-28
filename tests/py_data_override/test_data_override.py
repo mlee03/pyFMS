@@ -1,8 +1,13 @@
+import os
+import shutil
+
 import numpy as np
+import pytest
 
 from pyfms import pyDataOverride, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
 
 
+@pytest.mark.parallel
 def test_data_override():
 
     pyfms = pyFMS()
@@ -45,3 +50,13 @@ def test_data_override():
     )
     pyfms.pyfms_end()
     assert data == 1.0
+
+
+@pytest.mark.remove
+def test_remove_files():
+    shutil.rmtree("INPUT")
+    os.remove("input.nml")
+    os.remove("data_table.yaml")
+    assert not os.path.exists("INPUT")
+    assert not os.path.isfile("input.nml")
+    assert not os.path.isfile("data_table.yaml")
