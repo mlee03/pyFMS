@@ -1,5 +1,7 @@
 import ctypes
 
+from typing import Any
+
 import numpy as np
 import numpy.typing as npt
 
@@ -129,9 +131,87 @@ class pyHorizInterp:
             "xarea": xarea[:nxgrid],
         }
 
-    def horiz_interp_init(self):
+    def horiz_interp_init(self, ninterp: int = None):
         _cfms_horiz_interp_init = self.cfms.cFMS_horiz_interp_init
 
+        ninterp_c, ninterp_t = ctypes.c_int(ninterp), ctypes.POINTER(ctypes.c_int)
+
+        _cfms_horiz_interp_init.argtypes = [ninterp_t]
         _cfms_horiz_interp_init.restype = None
 
-        _cfms_horiz_interp_init()
+        _cfms_horiz_interp_init(ctypes.byref(ninterp_c))
+
+    def set_current_interp(self, interp_id: int = None):
+        _cfms_set_current_interp = self.cfms.cFMS_set_current_interp
+
+        interp_id_c, interp_id_t = ctypes.c_int(interp_id), ctypes.POINTER(ctypes.c_int)
+
+        _cfms_set_current_interp.argtypes = [interp_id_t]
+        _cfms_set_current_interp.restype = None
+
+        _cfms_set_current_interp(ctypes.byref(interp_id_c))
+
+    def get_interp(
+            self,
+            datatype: Any,
+            interp_id: int = None,
+            nxgrid: int = None,
+            ilon_ptr: npt.NDArray = None,
+            ilon_shape: list[int] = None,
+            jlat_ptr: npt.NDArray = None,
+            jlat_shape: list[int] = None,
+            i_lon_ptr: npt.NDArray = None,
+            i_lon_shape: list[int] = None,
+            j_lat_ptr: npt.NDArray = None,
+            j_lat_shape: list[int] = None,
+            found_neighbors_ptr: npt.NDArray = None,
+            found_neighbors_shape: list[int] = None,
+            num_found_ptr: npt.NDArray = None,
+            num_found_shape: list[int] = None,
+            nlon_src: int = None,
+            nlat_src: int = None,
+            nlon_dst: int = None,
+            nlat_dst: int = None,
+            interp_method: int = None,
+            I_am_initialized: bool = None,
+            version: int = None,
+            i_src_ptr: npt.NDArray = None,
+            i_src_shape: list[int] = None,
+            j_src_ptr: npt.NDArray = None,
+            j_src_shape: list[int] = None,
+            i_dst_ptr: npt.NDArray = None,
+            i_dst_shape: int = None,
+            j_dst_ptr: npt.NDArray = None,
+            j_dst_shape: int = None,
+            faci_ptr: npt.NDArray = None,
+            faci_shape: npt.NDArray = None,
+            facj_ptr: npt.NDArray = None,
+            facj_shape: npt.NDArray = None,
+            area_src_ptr: npt.NDArray = None,
+            area_src_shape: npt.NDArray = None,
+            area_dst_ptr: npt.NDArray = None,
+            area_dst_shape: npt.NDArray = None,
+            wti_ptr: npt.NDArray = None,
+            wti_shape: npt.NDArray = None,
+            wtj_ptr: npt.NDArray = None,
+            wtj_shape: npt.NDArray = None,
+            src_dist_ptr: npt.NDArray = None,
+            src_dist_shape: npt.NDArray = None,
+            rat_x_ptr: npt.NDArray = None,
+            rat_x_shape: npt.NDArray = None,
+            rat_y_ptr: npt.NDArray = None,
+            rat_y_shape: npt.NDArray = None,
+            lon_in_ptr: npt.NDArray = None,
+            lon_in_shape: int = None,
+            lat_in_ptr: npt.NDArray = None,
+            lat_in_shape: int = None,    
+            area_frac_dst_ptr: npt.NDArray = None,
+            area_frac_dst_shape: int = None,
+            mask_in_ptr: npt.NDArray = None,
+            mask_in_shape: npt.NDArray = None,
+            max_src_dist: float = None,
+            is_allocated: bool = None,
+    ):
+        if datatype is np.float64:
+            _cfms_get_interp = self.cfms.cFMS_get_interp_cdouble
+            faci_t = np.ctypeslib.ndpointer(dtype=np.float64, ndim=)
