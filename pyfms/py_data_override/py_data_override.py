@@ -9,15 +9,13 @@ class pyDataOverride:
     def __init__(self, cFMS: ctypes.CDLL = None):
         self.cfms = cFMS
 
-    def data_override_init(
-        self,
-        atm_domain_id: int = None,
-        ocn_domain_id: int = None,
-        ice_domain_id: int = None,
-        land_domain_id: int = None,
-        land_domainUG_id: int = None,
-        mode: int = None,
-    ):
+    def init(self,
+             atm_domain_id: int = None,
+             ocn_domain_id: int = None,
+             ice_domain_id: int = None,
+             land_domain_id: int = None,
+             land_domainUG_id: int = None,
+             mode: int = None):
 
         _data_override_init = self.cfms.cFMS_data_override_init
 
@@ -66,16 +64,14 @@ class pyDataOverride:
             mode_c,
         )
 
-    def data_override_set_time(
-        self,
-        year: int = None,
-        month: int = None,
-        day: int = None,
-        hour: int = None,
-        minute: int = None,
-        second: int = None,
-        tick: int = None,
-    ):
+    def set_time(self,
+                 year: int = None,
+                 month: int = None,
+                 day: int = None,
+                 hour: int = None,
+                 minute: int = None,
+                 second: int = None,
+                 tick: int = None):
 
         _data_override_set_time = self.cfms.cFMS_data_override_set_time
 
@@ -113,7 +109,7 @@ class pyDataOverride:
             year_c, month_c, day_c, hour_c, minute_c, second_c, tick_c, err_msg_c
         )
 
-    def data_override_scalar(
+    def override_scalar(
         self,
         gridname: str,
         fieldname: str,
@@ -148,17 +144,15 @@ class pyDataOverride:
         # TODO:  add check for override
         return data_c.value
 
-    def data_override(
-        self,
-        gridname: str,
-        fieldname: str,
-        data_shape: list[int],
-        data_type: Any,
-        is_in: int = None,
-        ie_in: int = None,
-        js_in: int = None,
-        je_in: int = None,
-    ) -> npt.NDArray:
+    def override(self,
+                 gridname: str,
+                 fieldname: str,
+                 data_shape: list[int],
+                 data_type: Any,
+                 is_in: int = None,
+                 ie_in: int = None,
+                 js_in: int = None,
+                 je_in: int = None) -> npt.NDArray:
 
         nshape = len(data_shape)
 
