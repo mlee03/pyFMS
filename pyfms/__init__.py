@@ -10,4 +10,5 @@ from .py_mpp.py_mpp_domains import (
     pyNestDomain,
 )
 from .pyfms import pyFMS
+from .pyfms_utils import data_handling
 from .pyfms_utils.grid_utils import GridUtils
