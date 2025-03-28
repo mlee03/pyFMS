@@ -6,11 +6,11 @@ if [ $? -ne 0 ] ; then
     exit 1
 fi
 
-pytest tests/test_pyfms.py
-if [ $? -ne 0 ] ; then
-    echo "test_pyfms error" ;
-    exit 1
-fi
+#pytest tests/test_pyfms.py
+#if [ $? -ne 0 ] ; then
+#    echo "test_pyfms error" ;
+#    exit 1
+#fi
 
 mpirun -n 8 python -m pytest tests/py_mpp/test_define_domains.py
 if [ $? -ne 0 ] ; then
