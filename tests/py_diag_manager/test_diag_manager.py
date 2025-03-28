@@ -110,7 +110,7 @@ diag_files:
     for i in range(NX):
         x[i] = i
 
-    id_x = diag_manager.diag_axis_init_cdouble(
+    id_x = diag_manager.diag_axis_init(
         name="x",
         naxis_data=NX,
         axis_data=x,
@@ -134,7 +134,7 @@ diag_files:
     for j in range(NY):
         y[j] = j
 
-    id_y = diag_manager.diag_axis_init_cdouble(
+    id_y = diag_manager.diag_axis_init(
         name="y",
         naxis_data=NY,
         axis_data=y,
@@ -142,12 +142,6 @@ diag_files:
         cart_name="y",
         long_name="point_N",
         set_name="atm",
-        direction=0,
-        edges=0,
-        aux="",
-        req="",
-        tile_count=0,
-        domain_position=0,
     )
 
     """
@@ -159,7 +153,7 @@ diag_files:
     for k in range(NZ):
         z[k] = k
 
-    id_z = diag_manager.diag_axis_init_cdouble(
+    id_z = diag_manager.diag_axis_init(
         name="z",
         naxis_data=NZ,
         axis_data=z,
@@ -192,7 +186,7 @@ diag_files:
         second=1,
     )
 
-    id_var3 = diag_manager.register_diag_field_array_cfloat(
+    id_var3 = diag_manager.register_diag_field_array(
         module_name="atm_mod",
         field_name="var_3d",
         axes=axes_3d,
@@ -222,7 +216,7 @@ diag_files:
         second=1,
     )
 
-    id_var2 = diag_manager.register_diag_field_array_cfloat(
+    id_var2 = diag_manager.register_diag_field_array(
         module_name="atm_mod",
         field_name="var_2d",
         axes=axes_2d,
@@ -257,7 +251,7 @@ diag_files:
     send data
     """
 
-    diag_manager.diag_send_data_3d_cfloat(
+    diag_manager.diag_send_data(
         diag_field_id=id_var3,
         field_shape=var3_shape,
         field=var3,
@@ -271,7 +265,7 @@ diag_files:
                     var3[ijk] = -1.0 * var3[ijk]
                     ijk += 1
         diag_manager.diag_advance_field_time(diag_field_id=id_var3)
-        diag_manager.diag_send_data_3d_cfloat(
+        diag_manager.diag_send_data(
             diag_field_id=id_var3,
             field_shape=var3_shape,
             field=var3,
@@ -284,7 +278,7 @@ diag_files:
                 var2[ij] = -1.0 * var2[ij]
                 ij += 1
         diag_manager.diag_advance_field_time(diag_field_id=id_var2)
-        diag_manager.diag_send_data_2d_cfloat(
+        diag_manager.diag_send_data(
             diag_field_id=id_var2,
             field_shape=var2_shape,
             field=var2,
