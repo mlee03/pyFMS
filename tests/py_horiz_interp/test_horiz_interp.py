@@ -17,7 +17,7 @@ def test_create_input_nml():
 def test_create_xgrid():
 
     cfms = pyfms.pyFMS(cFMS_path=cfms_path).cFMS
-    create_xgrid = pyfms.HorizInterp(cfms=cfms).create_xgrid_2dx2d_order1
+    create_xgrid = pyfms.pyHorizInterp(cfms=cfms).create_xgrid_2dx2d_order1
 
     refine = 1
     lon_init = 0.0

@@ -112,18 +112,11 @@ diag_files:
 
     id_x = diag_manager.diag_axis_init(
         name="x",
-        naxis_data=NX,
         axis_data=x,
         units="point_E",
         cart_name="x",
         long_name="point_E",
         set_name="atm",
-        direction=0,
-        edges=0,
-        aux="",
-        req="",
-        tile_count=0,
-        domain_position=0,
     )
 
     """
@@ -136,7 +129,6 @@ diag_files:
 
     id_y = diag_manager.diag_axis_init(
         name="y",
-        naxis_data=NY,
         axis_data=y,
         units="point_N",
         cart_name="y",
@@ -155,18 +147,11 @@ diag_files:
 
     id_z = diag_manager.diag_axis_init(
         name="z",
-        naxis_data=NZ,
         axis_data=z,
         units="point_Z",
         cart_name="z",
         long_name="point_Z",
         set_name="atm",
-        direction=0,
-        edges=0,
-        aux="",
-        req="",
-        tile_count=0,
-        domain_position=0,
         not_xy=True,
     )
 
@@ -189,6 +174,7 @@ diag_files:
     id_var3 = diag_manager.register_diag_field_array(
         module_name="atm_mod",
         field_name="var_3d",
+        datatype=np.float32,
         axes=axes_3d,
         long_name="Var in a lon/lat domain",
         units="muntin",
@@ -219,6 +205,7 @@ diag_files:
     id_var2 = diag_manager.register_diag_field_array(
         module_name="atm_mod",
         field_name="var_2d",
+        datatype=np.float32,
         axes=axes_2d,
         long_name="Var in a lon/lat domain",
         units="muntin",
