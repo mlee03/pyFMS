@@ -1,6 +1,5 @@
 import ctypes
 from typing import Any
-
 import numpy as np
 import numpy.typing as npt
 
@@ -12,12 +11,12 @@ class pyDataOverride:
 
     def data_override_init(
         self,
-        atm_domain_id: int | None = None,
-        ocn_domain_id: int | None = None,
-        ice_domain_id: int | None = None,
-        land_domain_id: int | None = None,
-        land_domainUG_id: int | None = None,
-        mode: int | None = None,
+        atm_domain_id: int = None,
+        ocn_domain_id: int = None,
+        ice_domain_id: int = None,
+        land_domain_id: int = None,
+        land_domainUG_id: int = None,
+        mode: int = None,
     ):
 
         _data_override_init = self.cfms.cFMS_data_override_init
@@ -69,13 +68,13 @@ class pyDataOverride:
 
     def data_override_set_time(
         self,
-        year: int | None = None,
-        month: int | None = None,
-        day: int | None = None,
-        hour: int | None = None,
-        minute: int | None = None,
-        second: int | None = None,
-        tick: int | None = None,
+        year: int = None,
+        month: int = None,
+        day: int = None,
+        hour: int = None,
+        minute: int = None,
+        second: int = None,
+        tick: int = None,
     ):
 
         _data_override_set_time = self.cfms.cFMS_data_override_set_time
@@ -119,7 +118,7 @@ class pyDataOverride:
         gridname: str,
         fieldname: str,
         data_type: Any,
-        data_index: int | None = None,
+        data_index: int = None,
     ) -> np.float32 | np.float64:
 
         _data_override_scalar = self.cfms.cFMS_data_override_0d_cdouble
@@ -155,10 +154,10 @@ class pyDataOverride:
         fieldname: str,
         data_shape: list[int],
         data_type: Any,
-        is_in: int | None = None,
-        ie_in: int | None = None,
-        js_in: int | None = None,
-        je_in: int | None = None,
+        is_in: int = None,
+        ie_in: int = None,
+        js_in: int = None,
+        je_in: int = None,
     ) -> npt.NDArray:
 
         nshape = len(data_shape)
