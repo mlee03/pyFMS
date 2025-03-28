@@ -1,5 +1,5 @@
 import ctypes
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
@@ -30,9 +30,9 @@ class pyFMS_diag_manager:
 
     def diag_init(
         self,
-        diag_model_subset: Optional[int] = None,
-        time_init: Optional[NDArray] = None,
-        err_msg: Optional[str] = None,
+        diag_model_subset: int = None,
+        time_init: NDArray = None,
+        err_msg: str = None,
     ) -> str:
         if err_msg is not None:
             err_msg = err_msg[:128]
@@ -57,13 +57,13 @@ class pyFMS_diag_manager:
     def diag_send_complete(
         self,
         diag_field_id: int,
-        err_msg: Optional[str] = None,
+        err_msg: str = None,
     ) -> str:
 
         if err_msg is not None:
             err_msg = err_msg[:128]
 
-        _cfms_diag_send_complete = self.clibFMS.CFMS_diag_send_complete
+        _cfms_diag_send_complete = self.clibFMS.cFMS_diag_send_complete
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
@@ -73,7 +73,10 @@ class pyFMS_diag_manager:
 
         _cfms_diag_send_complete(diag_field_id_c, err_msg_c)
 
-        return err_msg_c.value.decode("utf-8")
+        if err_msg is not None:
+            return err_msg_c.value.decode("utf-8")
+        else:
+            return err_msg
 
     def diag_set_field_init_time(
         self,
@@ -82,9 +85,9 @@ class pyFMS_diag_manager:
         day: int,
         hour: int,
         minute: int,
-        second: Optional[int] = None,
-        tick: Optional[int] = None,
-        err_msg: Optional[str] = None,
+        second: int = None,
+        tick: int = None,
+        err_msg: str = None,
     ) -> str:
 
         if err_msg is not None:
@@ -126,9 +129,9 @@ class pyFMS_diag_manager:
         self,
         diag_field_id: int,
         dseconds: int,
-        ddays: Optional[int] = None,
-        dticks: Optional[int] = None,
-        err_msg: Optional[str] = None,
+        ddays: int = None,
+        dticks: int = None,
+        err_msg: str = None,
     ) -> str:
 
         if err_msg is not None:
@@ -155,7 +158,10 @@ class pyFMS_diag_manager:
             diag_field_id_c, dseconds_c, ddays_c, dticks_c, err_msg_c
         )
 
-        return err_msg_c.value.decode("utf-8")
+        if err_msg is not None:
+            return err_msg_c.value.decode("utf-8")
+        else:
+            return err_msg
 
     def diag_advance_field_time(
         self,
@@ -172,14 +178,14 @@ class pyFMS_diag_manager:
 
     def diag_set_time_end(
         self,
-        year: Optional[int] = None,
-        month: Optional[int] = None,
-        day: Optional[int] = None,
-        hour: Optional[int] = None,
-        minute: Optional[int] = None,
-        second: Optional[int] = None,
-        tick: Optional[int] = None,
-        err_msg: Optional[str] = None,
+        year: int = None,
+        month: int = None,
+        day: int = None,
+        hour: int = None,
+        minute: int = None,
+        second: int = None,
+        tick: int = None,
+        err_msg: str = None,
     ):
         if err_msg is not None:
             err_msg = err_msg[:128]
@@ -221,26 +227,25 @@ class pyFMS_diag_manager:
     def diag_axis_init(
         self,
         name: str,
-        naxis_data: int,
         axis_data: NDArray,
         units: str,
         cart_name: str,
-        long_name: Optional[str] = None,
-        set_name: Optional[str] = None,
-        direction: Optional[int] = None,
-        edges: Optional[int] = None,
-        aux: Optional[str] = None,
-        req: Optional[str] = None,
-        tile_count: Optional[int] = None,
-        domain_position: Optional[int] = None,
-        not_xy: Optional[bool] = None,
+        long_name: str = None,
+        set_name: str = None,
+        direction: int = None,
+        edges: int = None,
+        aux: str = None,
+        req: str = None,
+        tile_count: int = None,
+        domain_position: int = None,
+        not_xy: bool = None,
     ) -> int:
 
         long_name = long_name[:64]
         set_name = set_name[:64]
 
         name_c, name_t = set_Cchar(name)
-        naxis_data_c, naxis_data_t = setscalar_Cint32(naxis_data)
+        naxis_data_c, naxis_data_t = setscalar_Cint32(axis_data.size)
         units_c, units_t = set_Cchar(units)
         cart_name_c, cart_name_t = set_Cchar(cart_name)
         long_name_c, long_name_t = set_Cchar(long_name)
@@ -269,8 +274,8 @@ class pyFMS_diag_manager:
             units_t,
             cart_name_t,
             long_name_t,
-            set_name_t,
             direction_t,
+            set_name_t,
             edges_t,
             aux_t,
             req_t,
@@ -287,8 +292,8 @@ class pyFMS_diag_manager:
             units_c,
             cart_name_c,
             long_name_c,
-            set_name_c,
             direction_c,
+            set_name_c,
             edges_c,
             aux_c,
             req_c,
@@ -302,22 +307,22 @@ class pyFMS_diag_manager:
         module_name: str,
         field_name: str,
         datatype: Any,
-        axes: Optional[NDArray] = None,
-        long_name: Optional[str] = None,
-        units: Optional[str] = None,
-        missing_value: Optional[int] = None,
-        range: Optional[NDArray] = None,
-        mask_variant: Optional[bool] = None,
-        standard_name: Optional[str] = None,
-        verbose: Optional[bool] = None,
-        do_not_log: Optional[bool] = None,
-        err_msg: Optional[str] = None,
-        interp_method: Optional[str] = None,
-        tile_count: Optional[int] = None,
-        area: Optional[int] = None,
-        volume: Optional[int] = None,
-        realm: Optional[str] = None,
-        multiple_send_data: Optional[bool] = None,
+        axes: NDArray = None,
+        long_name: str = None,
+        units: str = None,
+        missing_value: int = None,
+        range: NDArray = None,
+        mask_variant: bool = None,
+        standard_name: str = None,
+        verbose: bool = None,
+        do_not_log: bool = None,
+        err_msg: str = None,
+        interp_method: str = None,
+        tile_count: int = None,
+        area: int = None,
+        volume: int = None,
+        realm: str = None,
+        multiple_send_data: bool = None,
     ) -> int:
 
         module_name = module_name[:64]
@@ -421,17 +426,17 @@ class pyFMS_diag_manager:
         module_name: str,
         field_name: str,
         datatype: Any,
-        long_name: Optional[str] = None,
-        units: Optional[str] = None,
-        standard_name: Optional[str] = None,
-        missing_value: Optional[int] = None,
-        range: Optional[NDArray] = None,
-        do_not_log: Optional[bool] = None,
-        err_msg: Optional[str] = None,
-        area: Optional[int] = None,
-        volume: Optional[int] = None,
-        realm: Optional[str] = None,
-        multiple_send_data: Optional[bool] = None,
+        long_name: str = None,
+        units: str = None,
+        standard_name: str = None,
+        missing_value: int = None,
+        range: NDArray = None,
+        do_not_log: bool = None,
+        err_msg: str = None,
+        area: int = None,
+        volume: int = None,
+        realm: str = None,
+        multiple_send_data: bool = None,
     ) -> int:
 
         module_name = module_name[:64]
@@ -518,10 +523,11 @@ class pyFMS_diag_manager:
         diag_field_id: int,
         field_shape: NDArray,
         field: NDArray,
-        err_msg: Optional[str] = None,
+        err_msg: str = None,
     ) -> bool:
 
-        err_msg = err_msg[:128]
+        if err_msg is not None:
+            err_msg = err_msg[:128]
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_p, field_shape_t = setarray_Cint32(field_shape)
