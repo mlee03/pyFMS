@@ -300,11 +300,12 @@ class DiagManager:
         self,
         module_name: str,
         field_name: str,
+        datatype,
         axes: NDArray = None,
         long_name: str = None,
         units: str = None,
         missing_value: int = None,
-        range: NDArray = None,
+        range_data: NDArray = None,
         mask_variant: bool = None,
         standard_name: str = None,
         verbose: bool = None,
@@ -350,26 +351,26 @@ class DiagManager:
         realm_c, realm_t = set_Cchar(realm)
         multiple_send_data_c, multiple_send_data_t = setscalar_Cbool(multiple_send_data)
 
-        if range.dtype == np.int32:
+        if datatype == np.int32:
             _cfms_register_diag_field_array_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cint
             )
-            range_p, range_t = setarray_Cint32(range)
+            range_data_p, range_data_t = setarray_Cint32(range_data)
             missing_value_c, missing_value_t = setscalar_Cint32(missing_value)
-        elif range.dtype == np.float64:
+        elif datatype == np.float64:
             _cfms_register_diag_field_array_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cdouble
             )
-            range_p, range_t = setarray_Cdouble(range)
+            range_data_p, range_data_t = setarray_Cdouble(range_data)
             missing_value_c, missing_value_t = setscalar_Cdouble(missing_value)
-        elif range.dtype == np.float32:
+        elif datatype == np.float32:
             _cfms_register_diag_field_array_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cfloat
             )
-            range_p, range_t = setarray_Cfloat(range)
+            range_data_p, range_data_t = setarray_Cfloat(range_data)
             missing_value_c, missing_value_t = setscalar_Cfloat(missing_value)
         else:
-            raise RuntimeError("register diag field array range datatype not supported")
+            raise RuntimeError("register diag field array range_data datatype not supported")
 
         _cfms_register_diag_field_array_.argtypes = [
             module_name_t,
@@ -378,7 +379,7 @@ class DiagManager:
             long_name_t,
             units_t,
             missing_value_t,
-            range_t,
+            range_data_t,
             mask_variant_t,
             standard_name_t,
             verbose_t,
@@ -400,7 +401,7 @@ class DiagManager:
             long_name_c,
             units_c,
             missing_value_c,
-            range_p,
+            range_data_p,
             mask_variant_c,
             standard_name_c,
             verbose_c,
@@ -418,11 +419,12 @@ class DiagManager:
         self,
         module_name: str,
         field_name: str,
+        datatype,
         long_name: str = None,
         units: str = None,
         standard_name: str = None,
         missing_value: int = None,
-        range: NDArray = None,
+        range_data: NDArray = None,
         do_not_log: bool = None,
         err_msg: str = None,
         area: int = None,
@@ -456,26 +458,26 @@ class DiagManager:
         realm_c, realm_t = set_Cchar(realm)
         multiple_send_data_c, multiple_send_data_t = setscalar_Cbool(multiple_send_data)
 
-        if range.dtype == np.int32:
+        if datatype == np.int32:
             _cfms_register_diag_field_scalar_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cint
             )
-            range_p, range_t = setarray_Cint32(range)
+            range_data_p, range_data_t = setarray_Cint32(range_data)
             missing_value_c, missing_value_t = setscalar_Cint32(missing_value)
-        elif range.dtype == np.float64:
+        elif datatype == np.float64:
             _cfms_register_diag_field_scalar_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cdouble
             )
-            range_p, range_t = setarray_Cdouble(range)
+            range_data_p, range_data_t = setarray_Cdouble(range_data)
             missing_value_c, missing_value_t = setscalar_Cdouble(missing_value)
-        elif range.dtype == np.float32:
+        elif datatype == np.float32:
             _cfms_register_diag_field_scalar_ = (
                 self.clibFMS.cFMS_register_diag_field_array_cfloat
             )
-            range_p, range_t = setarray_Cfloat(range)
+            range_data_p, range_data_t = setarray_Cfloat(range_data)
             missing_value_c, missing_value_t = setscalar_Cfloat(missing_value)
         else:
-            raise RuntimeError("register diag field array range datatype not supported")
+            raise RuntimeError("register diag field array range_data datatype not supported")
 
         _cfms_register_diag_field_scalar_.argtypes = [
             module_name_t,
@@ -484,7 +486,7 @@ class DiagManager:
             units_t,
             standard_name_t,
             missing_value_t,
-            range_t,
+            range_data_t,
             do_not_log_t,
             err_msg_t,
             area_t,
@@ -501,7 +503,7 @@ class DiagManager:
             units_c,
             standard_name_c,
             missing_value_c,
-            range_p,
+            range_data_p,
             do_not_log_c,
             err_msg_c,
             area_c,
@@ -513,7 +515,7 @@ class DiagManager:
     def send_data(
         self,
         diag_field_id: int,
-        field_shape: NDArray,
+        field_shape: list[int],
         field: NDArray,
         err_msg: str = None,
     ) -> bool:
@@ -522,7 +524,8 @@ class DiagManager:
             err_msg = err_msg[:128]
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
-        field_shape_p, field_shape_t = setarray_Cint32(field_shape)
+        field_shape_arr = np.array(field_shape, dtype=np.int32)
+        field_shape_p, field_shape_t = setarray_Cint32(field_shape_arr)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
         if field_shape.size == 2:
