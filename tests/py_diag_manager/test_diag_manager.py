@@ -1,5 +1,7 @@
 import numpy as np
 
+import pdb
+
 from pyfms import DiagManager, pyFMS, pyFMS_mpp_domains
 
 
@@ -13,26 +15,18 @@ def test_send_data():
     calendar_type = 4
 
     var2_shape = np.array([NX, NY], dtype=np.int32)
-    # var2 = np.empty(shape=NX * NY, dtype=np.float32)
     var2 = np.empty(shape=(NX,NY), dtype=np.float32, order="F")
 
     var3_shape = np.array([NX, NY, NZ], dtype=np.int32)
-    # var3 = np.empty(shape=NX * NY * NZ, dtype=np.float32)
     var3 = np.empty(shape=(NX, NY, NZ), dtype=np.float32, order="F")
 
-    ijk = 0
     for i in range(NX):
         for j in range(NY):
             for k in range(NZ):
-                # var3[ijk] = i * 100 + j * 10 + k * 1
-                # ijk += 1
                 var3[i][j][k] = i * 100 + j * 10 + k * 1
 
-    ij = 0
     for i in range(NX):
         for j in range(NY):
-            # var2[ij] = i * 10.0 + j * 1.0
-            # ij += 1
             var2[i][j] = i * 10.0 + j * 1.0
 
     cfms_path = "./cFMS/libcFMS/.libs/libcFMS.so"
@@ -198,6 +192,7 @@ def test_send_data():
 
     ntime = 24
     for itime in range(ntime):
+
         var3 = -var3
 
         diag_manager.advance_field_time(diag_field_id=id_var3)
