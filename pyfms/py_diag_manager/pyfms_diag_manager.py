@@ -577,7 +577,7 @@ class DiagManager:
                 raise RuntimeError(f"diag_send_data {field.dtype} unsupported")
         else:
             raise RuntimeError(
-                f"diag_send_data {field_shape.size} dimensions unsupported"
+                f"diag_send_data {field_shape_arr.size} dimensions unsupported"
             )
 
         _cfms_diag_send_data_.argtypes = [
