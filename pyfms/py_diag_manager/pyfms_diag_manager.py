@@ -292,7 +292,7 @@ class DiagManager:
         module_name: str,
         field_name: str,
         datatype,
-        axes: NDArray = None,
+        axes: list[int] = None,
         long_name: str = None,
         units: str = None,
         missing_value: int = None,
@@ -324,9 +324,17 @@ class DiagManager:
         if realm is not None:
             realm = realm[:64]
 
+        if axes is not None:
+            if len(axes) < 5:
+                for i in range(5-len(axes)):
+                    axes.append(0)
+            axes_arr = np.array(axes, dtype=np.int32)
+        else:
+            axes_arr = None
+
         module_name_c, module_name_t = set_Cchar(module_name)
         field_name_c, field_name_t = set_Cchar(field_name)
-        axes_p, axes_t = setarray_Cint32(axes)
+        axes_p, axes_t = setarray_Cint32(axes_arr)
         long_name_c, long_name_t = set_Cchar(long_name)
         units_c, units_t = set_Cchar(units)
         mask_variant_c, mask_variant_t = setscalar_Cbool(mask_variant)
