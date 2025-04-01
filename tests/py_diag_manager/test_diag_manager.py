@@ -12,11 +12,11 @@ def test_send_data():
     domain_id = 0
     calendar_type = 4
 
-    var2_shape = np.array([NX, NY], dtype=np.int32)
-    var2 = np.empty(shape=(NX,NY), dtype=np.float32, order="F")
+    var2_shape = [NX, NY]
+    var2 = np.empty(shape=(NX, NY), dtype=np.float32)
 
-    var3_shape = np.array([NX, NY, NZ], dtype=np.int32)
-    var3 = np.empty(shape=(NX, NY, NZ), dtype=np.float32, order="F")
+    var3_shape = [NX, NY, NZ]
+    var3 = np.empty(shape=(NX, NY, NZ), dtype=np.float32)
 
     for i in range(NX):
         for j in range(NY):

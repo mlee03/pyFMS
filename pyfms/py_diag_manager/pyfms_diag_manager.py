@@ -308,9 +308,9 @@ class DiagManager:
         realm: str = None,
         multiple_send_data: bool = None,
     ) -> int:
-        
+
         err_msg = " "
-        
+
         module_name = module_name[:64]
         field_name = field_name[:64]
         if long_name is not None:
@@ -326,7 +326,7 @@ class DiagManager:
 
         if axes is not None:
             if len(axes) < 5:
-                for i in range(5-len(axes)):
+                for i in range(5 - len(axes)):
                     axes.append(0)
             axes_arr = np.array(axes, dtype=np.int32)
         else:
@@ -368,7 +368,9 @@ class DiagManager:
             range_data_p, range_data_t = setarray_Cfloat(range_data)
             missing_value_c, missing_value_t = setscalar_Cfloat(missing_value)
         else:
-            raise RuntimeError("register diag field array range_data datatype not supported")
+            raise RuntimeError(
+                "register diag field array range_data datatype not supported"
+            )
 
         _cfms_register_diag_field_array_.argtypes = [
             module_name_t,
@@ -429,7 +431,7 @@ class DiagManager:
         realm: str = None,
         multiple_send_data: bool = None,
     ) -> int:
-        
+
         err_msg = " "
 
         module_name = module_name[:64]
@@ -474,7 +476,9 @@ class DiagManager:
             range_data_p, range_data_t = setarray_Cfloat(range_data)
             missing_value_c, missing_value_t = setscalar_Cfloat(missing_value)
         else:
-            raise RuntimeError("register diag field array range_data datatype not supported")
+            raise RuntimeError(
+                "register diag field array range_data datatype not supported"
+            )
 
         _cfms_register_diag_field_scalar_.argtypes = [
             module_name_t,
@@ -523,7 +527,7 @@ class DiagManager:
         field_shape_p, field_shape_t = setarray_Cint32(field_shape_arr)
         err_msg_c, err_msg_t = set_Cchar(err_msg)
 
-        if field_shape.size == 2:
+        if field_shape_arr.size == 2:
             if field.dtype == np.int32:
                 _cfms_diag_send_data_ = self.clibFMS.cFMS_diag_send_data_2d_cint
                 field_p, field_t = setarray_Cint32(field)
@@ -535,7 +539,7 @@ class DiagManager:
                 field_p, field_t = setarray_Cfloat(field)
             else:
                 raise RuntimeError(f"diag_send_data {field.dtype} unsupported")
-        elif field_shape.size == 3:
+        elif field_shape_arr.size == 3:
             if field.dtype == np.int32:
                 _cfms_diag_send_data_ = self.clibFMS.cFMS_diag_send_data_3d_cint
                 field_p, field_t = setarray_Cint32(field)
@@ -547,7 +551,7 @@ class DiagManager:
                 field_p, field_t = setarray_Cfloat(field)
             else:
                 raise RuntimeError(f"diag_send_data {field.dtype} unsupported")
-        elif field_shape.size == 4:
+        elif field_shape_arr.size == 4:
             if field.dtype == np.int32:
                 _cfms_diag_send_data_ = self.clibFMS.cFMS_diag_send_data_4d_cint
                 field_p, field_t = setarray_Cint32(field)
@@ -559,7 +563,7 @@ class DiagManager:
                 field_p, field_t = setarray_Cfloat(field)
             else:
                 raise RuntimeError(f"diag_send_data {field.dtype} unsupported")
-        elif field_shape.size == 5:
+        elif field_shape_arr.size == 5:
             if field.dtype == np.int32:
                 _cfms_diag_send_data_ = self.clibFMS.cFMS_diag_send_data_5d_cint
                 field_p, field_t = setarray_Cint32(field)
