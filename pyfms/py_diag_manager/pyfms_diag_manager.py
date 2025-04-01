@@ -17,6 +17,7 @@ from pyfms.pyfms_utils.data_handling import (
 
 class DiagManager:
 
+    # To be class var after refactor, accessed directly from cFMS
     DIAG_ALL = 2
 
     def __init__(self, clibFMS: ctypes.CDLL = None):
@@ -34,7 +35,7 @@ class DiagManager:
         diag_model_subset: int = None,
         time_init: NDArray = None,
     ) -> str:
-        err_msg = ""
+        err_msg = " "
 
         _cfms_diag_init = self.clibFMS.cFMS_diag_init
 
@@ -56,11 +57,9 @@ class DiagManager:
     def send_complete(
         self,
         diag_field_id: int,
-        err_msg: str = None,
     ) -> str:
 
-        if err_msg is not None:
-            err_msg = err_msg[:128]
+        err_msg = " "
 
         _cfms_diag_send_complete = self.clibFMS.cFMS_diag_send_complete
 
@@ -72,10 +71,7 @@ class DiagManager:
 
         _cfms_diag_send_complete(diag_field_id_c, err_msg_c)
 
-        if err_msg is not None:
-            return err_msg_c.value.decode("utf-8")
-        else:
-            return err_msg
+        return err_msg_c.value.decode("utf-8")
 
     def set_field_init_time(
         self,
@@ -88,7 +84,7 @@ class DiagManager:
         tick: int = None,
     ) -> str:
 
-        err_msg = ""
+        err_msg = " "
 
         _cfms_diag_set_field_init_time = self.clibFMS.cFMS_diag_set_field_init_time
 
@@ -125,11 +121,9 @@ class DiagManager:
         dseconds: int,
         ddays: int = None,
         dticks: int = None,
-        err_msg: str = None,
     ) -> str:
 
-        if err_msg is not None:
-            err_msg = err_msg[:128]
+        err_msg = " "
 
         _cfms_diag_set_field_timestep = self.clibFMS.cFMS_diag_set_field_timestep
 
@@ -152,10 +146,7 @@ class DiagManager:
             diag_field_id_c, dseconds_c, ddays_c, dticks_c, err_msg_c
         )
 
-        if err_msg is not None:
-            return err_msg_c.value.decode("utf-8")
-        else:
-            return err_msg
+        return err_msg_c.value.decode("utf-8")
 
     def advance_field_time(
         self,
@@ -310,7 +301,6 @@ class DiagManager:
         standard_name: str = None,
         verbose: bool = None,
         do_not_log: bool = None,
-        err_msg: str = None,
         interp_method: str = None,
         tile_count: int = None,
         area: int = None,
@@ -318,7 +308,9 @@ class DiagManager:
         realm: str = None,
         multiple_send_data: bool = None,
     ) -> int:
-
+        
+        err_msg = " "
+        
         module_name = module_name[:64]
         field_name = field_name[:64]
         if long_name is not None:
@@ -327,8 +319,6 @@ class DiagManager:
             units = units[:64]
         if standard_name is not None:
             standard_name = standard_name[:64]
-        if err_msg is not None:
-            err_msg = err_msg[:64]
         if interp_method is not None:
             interp_method = interp_method[:64]
         if realm is not None:
@@ -426,12 +416,13 @@ class DiagManager:
         missing_value: int = None,
         range_data: NDArray = None,
         do_not_log: bool = None,
-        err_msg: str = None,
         area: int = None,
         volume: int = None,
         realm: str = None,
         multiple_send_data: bool = None,
     ) -> int:
+        
+        err_msg = " "
 
         module_name = module_name[:64]
         field_name = field_name[:64]
@@ -441,8 +432,6 @@ class DiagManager:
             units = units[:64]
         if standard_name is not None:
             standard_name = standard_name[:64]
-        if err_msg is not None:
-            err_msg = err_msg[:64]
         if realm is not None:
             realm = realm[:64]
 
@@ -517,11 +506,9 @@ class DiagManager:
         diag_field_id: int,
         field_shape: list[int],
         field: NDArray,
-        err_msg: str = None,
     ) -> bool:
 
-        if err_msg is not None:
-            err_msg = err_msg[:128]
+        err_msg = " "
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         field_shape_arr = np.array(field_shape, dtype=np.int32)
