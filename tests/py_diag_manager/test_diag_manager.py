@@ -1,7 +1,5 @@
 import numpy as np
 
-import pdb
-
 from pyfms import DiagManager, pyFMS, pyFMS_mpp_domains
 
 
@@ -105,7 +103,7 @@ def test_send_data():
     register diag field var3
     """
 
-    axes_3d = np.array([id_x, id_y, id_z, 0, 0], dtype=np.int32)
+    axes_3d = [id_x, id_y, id_z]
     range_3d = np.array([-1000.0, 1000.0], dtype=np.float32)
 
     diag_manager.set_field_init_time(
@@ -136,7 +134,7 @@ def test_send_data():
     register diag_field var 2
     """
 
-    axes_2d = np.array([id_x, id_y, 0, 0, 0], dtype=np.int32)
+    axes_2d = [id_x, id_y]
     range_2d = np.array([-1000.0, 1000.0], dtype=np.float32)
 
     diag_manager.set_field_init_time(
