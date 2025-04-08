@@ -7,11 +7,36 @@ import numpy.typing as npt
 
 class pyDataOverride:
 
-    def __init__(self, cFMS: ctypes.CDLL = None):
-        self.cfms = cFMS
+    __cfms_path: str = None
+    __cfms: ctypes.CDLL = None
+    __initialized = False
 
+    @classmethod
+    def setlib(cls, cfms_path, cfms):
+        if cls.__initialized: pass
+        cls.__cfms_path = cfms_path
+        cls.__cfms = cfms
+        cls.__initialized = True
+
+    @classmethod
+    def changelib(cls, cfms):
+        cls.__cfms = cfms
+        cls.__initialized = True
+
+    @classmethod
+    def getlib(cls):
+        return cls.__cfms_path, cls.__cfms
+
+    @classmethod
+    def get_initialized(cls):
+        return cls.__is_initialized
+        
+    #def __init__(self, cFMS: ctypes.CDLL = None):
+    #    self.cfms = cFMS
+
+    @classmethod
     def init(
-        self,
+        cls,
         atm_domain_id: int = None,
         ocn_domain_id: int = None,
         ice_domain_id: int = None,
@@ -20,7 +45,7 @@ class pyDataOverride:
         mode: int = None,
     ):
 
-        _data_override_init = self.cfms.cFMS_data_override_init
+        _data_override_init = cls.__cfms.cFMS_data_override_init
 
         atm_domain_id_t = ctypes.c_int
         ocn_domain_id_t = ctypes.c_int
@@ -68,7 +93,7 @@ class pyDataOverride:
         )
 
     def set_time(
-        self,
+        cls,
         year: int = None,
         month: int = None,
         day: int = None,
@@ -78,7 +103,7 @@ class pyDataOverride:
         tick: int = None,
     ):
 
-        _data_override_set_time = self.cfms.cFMS_data_override_set_time
+        _data_override_set_time = cls.__cfms.cFMS_data_override_set_time
 
         year_t = ctypes.c_int
         month_t = ctypes.c_int
@@ -115,14 +140,14 @@ class pyDataOverride:
         )
 
     def override_scalar(
-        self,
+        cls,
         gridname: str,
         fieldname: str,
         data_type: Any,
         data_index: int = None,
     ) -> np.float32 | np.float64:
 
-        _data_override_scalar = self.cfms.cFMS_data_override_0d_cdouble
+        _data_override_scalar = cls.__cfms.cFMS_data_override_0d_cdouble
         gridname_t = ctypes.c_char_p
         fieldname_t = ctypes.c_char_p
         data_t = ctypes.c_float if data_type is np.float32 else ctypes.c_double
@@ -150,7 +175,7 @@ class pyDataOverride:
         return data_c.value
 
     def override(
-        self,
+        cls,
         gridname: str,
         fieldname: str,
         data_shape: list[int],
@@ -165,14 +190,14 @@ class pyDataOverride:
 
         if data_type is np.float32:
             if nshape == 2:
-                _data_override = self.cfms.cFMS_data_override_2d_cfloat
+                _data_override = cls.__cfms.cFMS_data_override_2d_cfloat
             if nshape == 3:
-                _data_override = self.cfms.cFMS_data_override_3d_cfloat
+                _data_override = cls.__cfms.cFMS_data_override_3d_cfloat
         elif data_type is np.float64:
             if nshape == 2:
-                _data_override = self.cfms.cFMS_data_override_2d_cdouble
+                _data_override = cls.__cfms.cFMS_data_override_2d_cdouble
             if nshape == 3:
-                _data_override = self.cfms.cFMS_data_override_3d_cdouble
+                _data_override = cls.__cfms.cFMS_data_override_3d_cdouble
         else:
             # add cFMS_end
             raise RuntimeError("Data_override, datatype not supported")
