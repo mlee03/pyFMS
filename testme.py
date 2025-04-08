@@ -6,7 +6,7 @@ cfms_path_in_do, cfms_in_do = pyfms.pyDataOverride.getlib()
 assert(cfms_path == cfms_path_in_do)
 assert(id(cfms)==id(cfms_in_do))
 
-fake_path = "None"
+fake_path = "I/dont/exist"
 pyfms.cFMS.cfms_path = fake_path
 assert(pyfms.cFMS.getlib()[0] is not fake_path)
 
