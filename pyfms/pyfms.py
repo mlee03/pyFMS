@@ -4,31 +4,26 @@ import ctypes
 import os
 from .pyfms_utils.data_handling import set_Cchar, setscalar_Cint32
 
-class pyFMS:
+class fms:
 
-    __cfms_path: str = None
-    __cfms: ctypes.CDLL = None
+    __libpath: str = None
+    __lib: ctypes.CDLL = None
     __initialized = False
 
     @classmethod
-    def setlib(cls, cfms_path, cfms):
-        if cls.__initialized: pass
-        cls.__cfms_path = cfms_path
-        cls.__cfms = cfms
-        cls.__initialized = True
+    def setlib(cls, libpath, lib):
+        cls.__lib_path = libpath
+        cls.__lib = lib
         
     @classmethod
-    def changelib(cls, cfms):
-        cls.__cfms = cfms
-        cls.__initialized = True
+    @property
+    def lib(cls):
+        return cls.__lib
 
     @classmethod
-    def getlib(cls):
-        return cls.__cfms_path, cls.__cfms
-
-    @classmethod
-    def get_initialized(cls):
-        return cls.__is_initialized
+    @property
+    def libpath(cls):
+        return cls.__libpath
     
     @classmethod
     def init(cls,
@@ -39,7 +34,7 @@ class pyFMS:
              calendar_type: int = None,
     ):
         
-        _cfms_init = cls.__cfms.cFMS_init
+        _cfms_init = cls.lib.cFMS_init
         
         localcomm_c, localcomm_t = setscalar_Cint32(localcomm)
         alt_input_nml_path_c, alt_input_nml_path_t = set_Cchar(alt_input_nml_path)
@@ -75,18 +70,6 @@ class pyFMS:
 
     @classmethod
     def pyfms_end(cls):
-        _cfms_end = cls.__cfms.cFMS_end
+        _cfms_end = cls.lib.cFMS_end
         _cfms_end.restype = None
         _cfms_end()
-
-
-    @classmethod
-    def set_pelist_npes(cls, npes_in: int):
-        _cfms_set_npes = cls.__cfms.cFMS_set_pelist_npes
-
-        npes_in_c, npes_in_t = setscalar_Cint32(npes_in)
-
-        _cfms_set_npes.argtypes = [npes_in_t]
-        _cfms_set_npes.restype = None
-
-        _cfms_set_npes(npes_in_c)

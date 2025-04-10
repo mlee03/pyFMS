@@ -1,33 +1,30 @@
 import ctypes
 import os
-from pyfms import pyDataOverride
-from pyfms import pyFMS
+import pyfms
 
 class cFMS():
 
-    __cfms_path: str = os.path.dirname(__file__) + "/../cFMS/cLIBFMS/lib/libcFMS.so"
-    __cfms: ctypes.CDLL = ctypes.CDLL(__cfms_path)
-    __initialized = False
+    __libpath: str = os.path.dirname(__file__) + "/../cFMS/cLIBFMS/lib/libcFMS.so"
+    __lib: ctypes.CDLL = ctypes.CDLL(__libpath)
 
     @classmethod
     def init(cls):
-        if cls.__initialized: pass
-        
-        pyDataOverride.setlib(cls.__cfms_path, cls.__cfms)
-        pyFMS.setlib(cls.__cfms_path, cls.__cfms)
-        cls.__initialized = True    
+        pyfms.data_override.setlib(cls.libpath, cls.lib)
+        pyfms.fms.setlib(cls.libpath, cls.lib)
         
     @classmethod
-    def changelib(cls, cfms_path):
-        cls.__cfms_path = cfms_path
-        cls.__cfms = ctypes.CDLL(cls.__cfms_path)
-        pyDataOverride.setlib(cls.__cfms_path, cls.__cfms)
-        pyFMS.setlib(cls.__cfms_path, cls.__cfms)
-        cls.__initialized = True
+    def changelib(cls, libpath):
+        cls.__libpath = libpath
+        cls.__lib = ctypes.CDLL(cls.__libpath)
+        pyfms.data_override.setlib(cls.libpath, cls.lib)
+        #pyfms.init.setlib(cls.__libpath, cls.__lib)
 
-    def is_initialized(cls):
-        return cls.__initialized
-        
     @classmethod
-    def getlib(cls):
-        return cls.__cfms_path, cls.__cfms
+    @property
+    def lib(cls):
+        return cls.__lib
+
+    @classmethod
+    @property
+    def libpath(cls):
+        return cls.__libpath
