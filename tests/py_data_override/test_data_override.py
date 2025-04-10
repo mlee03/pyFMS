@@ -10,11 +10,6 @@ import pyfms
 @pytest.mark.parallel
 def test_data_override():
 
-    pyfmsobj = pyfms.pyFMS()
-    cfms = pyfmsobj.cFMS
-    mpp = pyfms.pyFMS_mpp(cFMS=cfms)
-    mpp_domains = pyfms.pyFMS_mpp_domains(cFMS=cfms)
-
     ocn_domain_id = 0
     nx = 360
     ny = 180
@@ -22,14 +17,11 @@ def test_data_override():
     ehalo = 2
     whalo = 2
     shalo = 2
-    nhalo = 2
-
-    global_indices = np.array([0, nx - 1, 0, ny - 1], dtype=np.int32, order="C")
-    layout = np.array([2, 3], dtype=np.int32, order="C")
-
-    mpp_domains.define_domains(
-        global_indices=global_indices,
-        layout=layout,
+    nhalo = 2    
+    
+    pyfms.mpp_domains.define_domains(
+        global_indices=[0, nx-1, 0, ny-1],
+        layout=[2,3],
         ehalo=ehalo,
         whalo=whalo,
         shalo=shalo,
@@ -37,20 +29,19 @@ def test_data_override():
         domain_id=ocn_domain_id,
     )
 
-    compute_dict = mpp_domains.get_compute_domain2(domain_id=ocn_domain_id)
+    compute_dict = pyfms.mpp_domains.get_compute_domain(domain_id=ocn_domain_id)
     xsize = compute_dict["xsize"]
     ysize = compute_dict["ysize"]
 
-    data_override = pyfms.pyDataOverride(cfms)
-    data_override.init(ocn_domain_id=ocn_domain_id)
-    data_override.set_time(year=1, month=1, day=3, hour=0, minute=0, second=0, tick=0)
+    pyfms.data_override.init(ocn_domain_id=ocn_domain_id)
+    pyfms.data_override.set_time(year=1, month=1, day=3, hour=0, minute=0, second=0, tick=0)
 
-    data = data_override.override_scalar(
+    data = pyfms.data_override.override_scalar(
         gridname="OCN", fieldname="runoff_scalar", data_type=np.float64
     )
     assert data == 2.0
 
-    data = data_override.override(
+    data = pyfms.data_override.override(
         gridname="OCN",
         fieldname="runoff_2d",
         data_shape=(xsize, ysize),
@@ -58,7 +49,7 @@ def test_data_override():
     )
     assert np.all(data == 200.0)
 
-    data = data_override.override(
+    data = pyfms.data_override.override(
         gridname="OCN",
         fieldname="runoff_3d",
         data_shape=(xsize, ysize, nz),
@@ -69,7 +60,7 @@ def test_data_override():
     )
     assert np.all(data == answers)
 
-    pyfmsobj.pyfms_end()
+    pyfms.fms.end()
 
 
 @pytest.mark.remove

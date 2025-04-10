@@ -84,6 +84,7 @@ class data_override:
             mode_c,
         )
 
+    @classmethod
     def set_time(
         cls,
         year: int = None,
@@ -131,6 +132,7 @@ class data_override:
             year_c, month_c, day_c, hour_c, minute_c, second_c, tick_c, err_msg_c
         )
 
+    @classmethod
     def override_scalar(
         cls,
         gridname: str,
@@ -166,6 +168,7 @@ class data_override:
         # TODO:  add check for override
         return data_c.value
 
+    @classmethod
     def override(
         cls,
         gridname: str,
