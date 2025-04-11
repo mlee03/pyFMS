@@ -23,8 +23,10 @@ class grid_utils():
    @property
    def libpath(cls):
       return cls.__libpath
-   
-   def get_grid_area(         
+
+   @classmethod
+   def get_grid_area(
+         cls,
          nlon: int,
          nlat: int,
          lon: npt.NDArray[np.float64],
@@ -50,7 +52,7 @@ class grid_utils():
       nlat_c = nlat_t(nlat)
       area = np.zeros(ncells, dtype=np.float64)
       
-      _get_grid_area = cfms.cFMS_get_grid_area
+      _get_grid_area = cls.lib.cFMS_get_grid_area
       
       _get_grid_area.restype = None
       _get_grid_area.argtypes = [

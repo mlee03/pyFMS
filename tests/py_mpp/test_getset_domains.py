@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from pyfms import pyDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
+import pyfms
 
 
 @pytest.mark.create
@@ -35,25 +35,23 @@ def test_getset_domains():
     nhalo = 2
     name = "test domain"
 
-    pyfms = pyFMS(cFMS_path="./cFMS/libcFMS/.libs/libcFMS.so")
-    mpp = pyFMS_mpp(cFMS=pyfms.cFMS)
-    mpp_domains = pyFMS_mpp_domains(cFMS=pyfms.cFMS)
+    pyfms.fms.init()
 
     # set domain
 
-    layout = mpp_domains.define_layout(global_indices=global_indices, ndivs=ndiv)
+    layout = pyfms.mpp_domains.define_layout(global_indices=global_indices, ndivs=ndiv)
 
-    domain = pyDomain(
-        global_indices=global_indices,
-        layout=layout,
-        mpp_domains_obj=mpp_domains,
-        domain_id=domain_id,
-        name=name,
-        whalo=whalo,
-        ehalo=ehalo,
-        shalo=shalo,
-        nhalo=nhalo,
-    )
+    #domain = pyDomain(
+    #    global_indices=global_indices,
+    #    layout=layout,
+    #    mpp_domains_obj=mpp_domains,
+    #    domain_id=domain_id,
+    #    name=name,
+    #    whalo=whalo,
+    #    ehalo=ehalo,
+    #    shalo=shalo,
+    #    nhalo=nhalo,
+    #)
 
     if not mpp_domains.domain_is_initialized(domain_id):
         mpp.pyfms_error(1, "error in setting domain")
