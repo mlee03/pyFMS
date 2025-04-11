@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from pyfms import pyDomain, pyFMS, pyFMS_mpp, pyFMS_mpp_domains
+import pyfms
 
 
 @pytest.mark.create
@@ -28,32 +28,30 @@ def test_getset_domains():
     """
     domain_id = 0
     ndiv = 4
-    global_indices = np.array([0, 3, 0, 3], dtype=np.int32, order="C")
+    global_indices = [0, 3, 0, 3]
     whalo = 2
     ehalo = 2
     shalo = 2
     nhalo = 2
     name = "test domain"
 
-    pyfms = pyFMS(cFMS_path="./cFMS/libcFMS/.libs/libcFMS.so")
-    mpp = pyFMS_mpp(cFMS=pyfms.cFMS)
-    mpp_domains = pyFMS_mpp_domains(cFMS=pyfms.cFMS)
+    pyfms.fms.init()
 
     # set domain
 
-    layout = mpp_domains.define_layout(global_indices=global_indices, ndivs=ndiv)
+    layout = pyfms.mpp_domains.define_layout(global_indices=global_indices, ndivs=ndiv)
 
-    domain = pyDomain(
-        global_indices=global_indices,
-        layout=layout,
-        mpp_domains_obj=mpp_domains,
-        domain_id=domain_id,
-        name=name,
-        whalo=whalo,
-        ehalo=ehalo,
-        shalo=shalo,
-        nhalo=nhalo,
-    )
+    #domain = pyDomain(
+    #    global_indices=global_indices,
+    #    layout=layout,
+    #    mpp_domains_obj=mpp_domains,
+    #    domain_id=domain_id,
+    #    name=name,
+    #    whalo=whalo,
+    #    ehalo=ehalo,
+    #    shalo=shalo,
+    #    nhalo=nhalo,
+    #)
 
     if not mpp_domains.domain_is_initialized(domain_id):
         mpp.pyfms_error(1, "error in setting domain")
@@ -130,15 +128,6 @@ def test_getset_domains():
 
     # get domain
 
-    assert domain.data_domain.xbegin.value == isd[pe]
-    assert domain.data_domain.xend.value == ied[pe]
-    assert domain.data_domain.ybegin.value == jsd[pe]
-    assert domain.data_domain.yend.value == jed[pe]
-    assert domain.data_domain.xsize.value == 6
-    assert domain.data_domain.ysize.value == 6
-    assert domain.data_domain.xmax_size.value == 6
-    assert domain.data_domain.ymax_size.value == 6
-
     assert domain.compute_domain.xbegin.value == isc[pe]
     assert domain.compute_domain.xend.value == iec[pe]
     assert domain.compute_domain.ybegin.value == jsc[pe]
@@ -149,6 +138,15 @@ def test_getset_domains():
     assert domain.compute_domain.ymax_size.value == 2
     assert domain.compute_domain.x_is_global.value is False
     assert domain.compute_domain.y_is_global.value is False
+
+    assert domain.data_domain.xbegin.value == isd[pe]
+    assert domain.data_domain.xend.value == ied[pe]
+    assert domain.data_domain.ybegin.value == jsd[pe]
+    assert domain.data_domain.yend.value == jed[pe]
+    assert domain.data_domain.xsize.value == 6
+    assert domain.data_domain.ysize.value == 6
+    assert domain.data_domain.xmax_size.value == 6
+    assert domain.data_domain.ymax_size.value == 6
 
     pyfms.pyfms_end()
 
