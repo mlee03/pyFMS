@@ -18,7 +18,8 @@ def test_data_override():
     whalo = 2
     shalo = 2
     nhalo = 2    
-    
+
+    pyfms.fms.init()
     pyfms.mpp_domains.define_domains(
         global_indices=[0, nx-1, 0, ny-1],
         layout=[2,3],
@@ -71,3 +72,5 @@ def test_remove_files():
     assert not os.path.exists("INPUT")
     assert not os.path.isfile("input.nml")
     assert not os.path.isfile("data_table.yaml")
+
+

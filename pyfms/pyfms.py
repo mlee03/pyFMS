@@ -10,6 +10,14 @@ class fms:
     __lib: ctypes.CDLL = None
     __initialized = False
 
+    NOTE : int = None
+    WARNING: int = None
+    FATAL: int = None
+    THIRTY_DAY_MONTHS: int = None
+    GREGORIAN: int = None
+    JULIAN: int = None
+    NOLEAP: int = None
+
     @classmethod
     def setlib(cls, libpath, lib):
         cls.__lib_path = libpath
@@ -33,6 +41,14 @@ class fms:
              nnest_domain: int = None,
              calendar_type: int = None,
     ):
+
+        cls.NOTE = ctypes.c_int.in_dll(cls.lib, "NOTE")
+        cls.WARNING = ctypes.c_int.in_dll(cls.lib, "WARNING")
+        cls.FATAL = ctypes.c_int.in_dll(cls.lib, "FATAL")
+        cls.THIRTY_DAY_MONTHS = ctypes.c_int.in_dll(cls.lib, "THIRTY_DAY_MONTHS")
+        cls.GREGORIAN = ctypes.c_int.in_dll(cls.lib, "GREGORIAN")
+        cls.JULIAN = ctypes.c_int.in_dll(cls.lib, "JULIAN")
+        cls.NOLEAP = ctypes.c_int.in_dll(cls.lib, "NOLEAP")
         
         _cfms_init = cls.lib.cFMS_init
         
@@ -69,7 +85,7 @@ class fms:
     """
 
     @classmethod
-    def pyfms_end(cls):
+    def end(cls):
         _cfms_end = cls.lib.cFMS_end
         _cfms_end.restype = None
         _cfms_end()

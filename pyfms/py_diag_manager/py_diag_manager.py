@@ -2,6 +2,7 @@ import ctypes
 
 import numpy as np
 from numpy.typing import NDArray
+from typing import Any
 
 from pyfms.pyfms_utils.data_handling import (
     set_Cchar,
@@ -323,7 +324,7 @@ class diag_manager():
         long_name: str = None,
         units: str = None,
         missing_value: int = None,
-        range_data: NDArray = None,
+        range_data: list[np.int32|np.int64|np.float32|np.float64] = None,
         mask_variant: bool = None,
         standard_name: str = None,
         verbose: bool = None,
@@ -352,13 +353,14 @@ class diag_manager():
             realm = realm[:64]
 
         if axes is not None:
-            if len(axes) < 5:
-                for i in range(5 - len(axes)):
-                    axes.append(0)
-            axes_arr = np.array(axes, dtype=np.int32)
-        else:
-            axes_arr = None
+            axes_arr = axes
+            while len(axes_arr) < 5:
+                axes_arr.append(0)
+            axes_arr = np.array(axes_arr, dtype=np.int32)
 
+        if range_data is not None:
+            range_data_arr = np.array(range_data, dtype=datatype)
+                
         module_name_c, module_name_t = set_Cchar(module_name)
         field_name_c, field_name_t = set_Cchar(field_name)
         axes_p, axes_t = setarray_Cint32(axes_arr)
@@ -380,19 +382,19 @@ class diag_manager():
             _cfms_register_diag_field_array_ = (
                 cls.lib.cFMS_register_diag_field_array_cint
             )
-            range_data_p, range_data_t = setarray_Cint32(range_data)
+            range_data_p, range_data_t = setarray_Cint32(range_data_arr)
             missing_value_c, missing_value_t = setscalar_Cint32(missing_value)
         elif datatype == np.float64:
             _cfms_register_diag_field_array_ = (
                 cls.lib.cFMS_register_diag_field_array_cdouble
             )
-            range_data_p, range_data_t = setarray_Cdouble(range_data)
+            range_data_p, range_data_t = setarray_Cdouble(range_data_arr)
             missing_value_c, missing_value_t = setscalar_Cdouble(missing_value)
         elif datatype == np.float32:
             _cfms_register_diag_field_array_ = (
                 cls.lib.cFMS_register_diag_field_array_cfloat
             )
-            range_data_p, range_data_t = setarray_Cfloat(range_data)
+            range_data_p, range_data_t = setarray_Cfloat(range_data_arr)
             missing_value_c, missing_value_t = setscalar_Cfloat(missing_value)
         else:
             raise RuntimeError(
