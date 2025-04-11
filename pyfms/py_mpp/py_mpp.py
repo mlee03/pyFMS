@@ -39,13 +39,15 @@ class pyFMS_mpp:
 
     def declare_pelist(
         self,
-        pelist: NDArray,
-        name: Optional[str] = None,
-        commID: Optional[int] = None,
-    ) -> int | None:
+        pelist: list[int],
+        name: str = None,
+    ) -> int:
+
         _cfms_declare_pelist = self.cFMS.cFMS_declare_pelist
 
-        pelist_p, pelist_t = setarray_Cint32(pelist)
+        commID = 0
+        
+        pelist_p, pelist_t = setarray_Cint32(np.array(pelist))
         name_c, name_t = set_Cchar(name)
         commID_c, commID_t = setscalar_Cint32(commID)
 
@@ -54,9 +56,7 @@ class pyFMS_mpp:
 
         _cfms_declare_pelist(pelist_p, name_c, commID_c)
 
-        if commID is not None:
-            commID = commID_c.value
-        return commID
+        return commID_c.value
 
     """
     Subroutine: pyfms_error
@@ -66,7 +66,7 @@ class pyFMS_mpp:
     Returns: No return
     """
 
-    def pyfms_error(self, errortype: int, errormsg: Optional[str] = None):
+    def pyfms_error(self, errortype: int, errormsg: str = None):
         # truncating string
         if errormsg is not None:
             errormsg = errormsg[:128]
@@ -94,12 +94,14 @@ class pyFMS_mpp:
 
     def get_current_pelist(
         self,
-        name: Optional[str] = None,
-        commID: Optional[int] = None,
-    ) -> NDArray:
+        get_name: str = None,
+        get_commID: bool = False,
+    ) -> (NDArray, Optional[int], Optional[str]):
 
+        commID = 0 if get_commID else None
+        
         npes = ctypes.c_int.in_dll(self.cFMS, "cFMS_pelist_npes")
-        pelist = np.empty(shape=npes.value, dtype=np.int32, order="C")
+        pelist = np.empty(shape=npes.value, dtype=np.int32)
 
         _cfms_get_current_pelist = self.cFMS.cFMS_get_current_pelist
 
@@ -119,8 +121,9 @@ class pyFMS_mpp:
 
         # return commID, name
 
-        return pelist
-
+        if get_commID: return pelist.tolist(), commID_c.value
+        else: return pelist.tolist()
+    
     """
     Function: npes
 
@@ -159,11 +162,11 @@ class pyFMS_mpp:
     """
 
     def set_current_pelist(
-        self, pelist: Optional[NDArray] = None, no_sync: Optional[bool] = None
+        self, pelist: list[int] = None, no_sync: bool = None
     ):
         _cfms_set_current_pelist = self.cFMS.cFMS_set_current_pelist
 
-        pelist_p, pelist_t = setarray_Cint32(pelist)
+        pelist_p, pelist_t = setarray_Cint32(np.array(pelist))
         no_sync_c, no_sync_t = setscalar_Cbool(no_sync)
 
         _cfms_set_current_pelist.argtypes = [pelist_t, no_sync_t]
