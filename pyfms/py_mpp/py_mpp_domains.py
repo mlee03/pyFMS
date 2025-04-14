@@ -72,10 +72,53 @@ class pyDomain():
             
 class mpp_domains:
 
+    GLOBAL_DATA_DOMAIN: int = None
+    BGRID_NE: int = None
+    CGRID_NE: int = None
+    DGRID_NE: int = None
+    AGRID: int = None
+    FOLD_SOUTH_EDGE: int = None
+    FOLD_WEST_EDGE: int = None
+    FOLD_EAST_EDGE: int = None
+    CYCLIC_GLOBAL_DOMAIN: int = None
+    NUPDATE: int = None
+    EUPDATE: int = None
+    XUPDATE: int = None
+    YUPDATE: int = None
+    NORTH: int = None
+    NORTH_EAST: int = None
+    EAST: int = None
+    SOUTH_EAST: int = None
+    CORNER: int = None
+    CENTER: int = None
+    SOUTH: int = None
+    SOUTH_WEST: int = None
     
-
     def __init__(self, cFMS: ctypes.CDLL = None):
         self.cFMS = cFMS
+        self.GLOBAL_DATA_DOMAIN = ctypes.c_int.in_dll(self.cFMS, "GLOBAL_DATA_DOMAIN")
+        self.BGRID_NE = ctypes.c_int.in_dll(self.cFMS, "BGRID_NE")
+        self.CGRID_NE = ctypes.c_int.in_dll(self.cFMS, "CGRID_NE")
+        self.DGRID_NE = ctypes.c_int.in_dll(self.cFMS, "DGRID_NE")
+        self.AGRID = ctypes.c_int.in_dll(self.cFMS, "AGRID")
+        self.FOLD_SOUTH_EDGE = ctypes.c_int.in_dll(self.cFMS, "FOLD_SOUTH_EDGE")
+        self.FOLD_WEST_EDGE = ctypes.c_int.in_dll(self.cFMS, "FOLD_WEST_EDGE")
+        self.FOLD_EAST_EDGE = ctypes.c_int.in_dll(self.cFMS, "FOLD_EAST_EDGE")
+        self.CYCLIC_GLOBAL_DOMAIN = ctypes.c_int.in_dll(self.cFMS, "CYCLIC_GLOBAL_DOMAIN")
+        self.NUPDATE = ctypes.c_int.in_dll(self.cFMS, "NUPDATE")
+        self.EUPDATE = ctypes.c_int.in_dll(self.cFMS, "EUPDATE")
+        self.XUPDATE = ctypes.c_int.in_dll(self.cFMS, "XUPDATE")
+        self.YUPDATE = ctypes.c_int.in_dll(self.cFMS, "YUPDATE")
+        self.NORTH = ctypes.c_int.in_dll(self.cFMS, "NORTH")
+        self.NORTH_EAST = ctypes.c_int.in_dll(self.cFMS, "NORTH_EAST")
+        self.EAST = ctypes.c_int.in_dll(self.cFMS, "EAST")
+        self.SOUTH_EAST = ctypes.c_int.in_dll(self.cFMS, "SOUTH_EAST")
+        self.CORNER = ctypes.c_int.in_dll(self.cFMS, "CORNER")
+        self.CENTER = ctypes.c_int.in_dll(self.cFMS, "CENTER")
+        self.SOUTH = ctypes.c_int.in_dll(self.cFMS, "SOUTH")
+        self.SOUTH_WEST = ctypes.c_int.in_dll(self.cFMS, "SOUTH_WEST")
+        self.WEST = ctypes.c_int.in_dll(self.cFMS, "WEST")
+        self.NORTH_WEST = ctypes.c_int.in_dll(self.cFMS, "NORTH_WEST")
 
     """
     Subroutine: define_domains
