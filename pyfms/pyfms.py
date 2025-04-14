@@ -2,6 +2,7 @@
 
 import ctypes
 import os
+from .py_mpp.py_mpp_domains import mpp_domains
 from .pyfms_utils.data_handling import set_Cchar, setscalar_Cint32
 
 class fms:
@@ -74,6 +75,7 @@ class fms:
             nnest_domain_c,
             calendar_type_c,
         )
+        mpp_domains.init()
 
     """
     Subroutine: pyfms_end
