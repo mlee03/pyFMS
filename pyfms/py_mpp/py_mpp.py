@@ -12,7 +12,7 @@ from ..pyfms_utils.data_handling import (
 )
 
 
-class pyFMS_mpp:
+class mpp:
 
     def __init__(self, cFMS: ctypes.CDLL = None):
         self.cFMS = cFMS
@@ -47,13 +47,14 @@ class pyFMS_mpp:
 
         commID = 0
         
-        pelist_p, pelist_t = setarray_Cint32(np.array(pelist))
+        pelist_p = np.array(pelist, dtype=np.int32)
+        pelist_t = np.ctypeslib.ndpointer(dtype=np.int32, shape=(pelist_p.shape))
         name_c, name_t = set_Cchar(name)
         commID_c, commID_t = setscalar_Cint32(commID)
 
         _cfms_declare_pelist.argtypes = [pelist_t, name_t, commID_t]
         _cfms_declare_pelist.restype = None
-
+        
         _cfms_declare_pelist(pelist_p, name_c, commID_c)
 
         return commID_c.value
@@ -99,6 +100,9 @@ class pyFMS_mpp:
     ) -> (NDArray, Optional[int], Optional[str]):
 
         commID = 0 if get_commID else None
+        name = None
+        #if get_name: name="NAME"
+
         
         npes = ctypes.c_int.in_dll(self.cFMS, "cFMS_pelist_npes")
         pelist = np.empty(shape=npes.value, dtype=np.int32)
@@ -166,10 +170,32 @@ class pyFMS_mpp:
     ):
         _cfms_set_current_pelist = self.cFMS.cFMS_set_current_pelist
 
-        pelist_p, pelist_t = setarray_Cint32(np.array(pelist))
+        if pelist is not None:
+            pelist_p = np.array(pelist, dtype=np.int32) 
+            pelist_t = np.ctypeslib.ndpointer(dtype=np.int32, shape=pelist_p.shape)
+        else:
+            pelist_p = None
+            pelist_t = ctypes.POINTER(ctypes.c_int)
         no_sync_c, no_sync_t = setscalar_Cbool(no_sync)
 
         _cfms_set_current_pelist.argtypes = [pelist_t, no_sync_t]
         _cfms_set_current_pelist.restype = None
 
         _cfms_set_current_pelist(pelist_p, no_sync_c)
+
+
+    """
+    Subroutine: pyfms_set_pelist_npes
+
+    This method is used to set a npes variable of the cFMS module it wraps
+    """
+
+    def set_pelist_npes(self, npes_in: int):
+        _cfms_set_npes = self.cFMS.cFMS_set_pelist_npes
+
+        npes_in_c, npes_in_t = setscalar_Cint32(npes_in)
+
+        _cfms_set_npes.argtypes = [npes_in_t]
+        _cfms_set_npes.restype = None
+
+        _cfms_set_npes(npes_in_c)

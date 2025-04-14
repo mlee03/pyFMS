@@ -15,19 +15,29 @@ from ..pyfms_utils.data_handling import (
 
 class pyDomain():
 
-    def __init__(self):
+    def __init__(self,
+                 domain_id: int = None,
+                 isc: int = None,
+                 jsc: int = None,
+                 iec: int = None,
+                 jec: int = None,
+                 isd: int = None,
+                 jsd: int = None,
+                 ied: int = None,
+                 jed: int = None,
+                 tile: int = None,
+                 layout: list[int] = None):
         self.domain_id = domain_id
-        self.isc
-        self.jsc
-        self.iec
-        self.jec
-        self.isd
-        self.jsd
-        self.ied
-        self.jed
-        self.tile
-        self.pe
-        self.layout
+        self.isc = isc
+        self.jsc = jsc
+        self.iec = iec
+        self.jec = jec
+        self.isd = isd
+        self.jsd = jsd
+        self.ied = ied
+        self.jed = jed
+        self.tile = tile
+        self.layout = layout
         
         def update_compute_domain(self,
                                   position: int = None,
@@ -61,6 +71,9 @@ class pyDomain():
 
             
 class mpp_domains:
+
+    
+
     def __init__(self, cFMS: ctypes.CDLL = None):
         self.cFMS = cFMS
 
@@ -81,17 +94,17 @@ class mpp_domains:
         global_indices: list[int],
         layout: list[int],
         domain_id: int = None,
-        pelist: NDArray = None,
+        pelist: list[int] = None,
         xflags: int = None,
         yflags: int = None,
         xhalo: int = None,
         yhalo: int = None,
-        xextent: NDArray = None,
-        yextent: NDArray = None,
-        maskmap: NDArray[np.bool_] = None,
+        xextent: list[int] = None,
+        yextent: list[int] = None,
+        maskmap: list[list[np.bool_]] = None,
         name: str = None,
         symmetry: bool = None,
-        memory_size: NDArray = None,
+        memory_size: list[int] = None,
         whalo: int = None,
         ehalo: int = None,
         shalo: int = None,
@@ -108,21 +121,26 @@ class mpp_domains:
 
         global_indices_arr = np.array(global_indices, dtype=np.int32)
         layout_arr = np.array(layout, dtype=np.int32)
-
+        pelist_arr = np.array(pelist, dtype=np.int32) if pelist is not None else None
+        xextent_arr = np.array(xextent, dtype=np.int32) if xextent is not None else None
+        yextent_arr = np.array(yextent, dtype=np.int32) if yextent is not None else None
+        maskmap_arr = np.array(maskmap, dtype=np.bool_) if maskmap is not None else None
+        memory_size_arr = np.array(memory_size, dtype=np.int32) if memory_size is not None else None
+        
         global_indices_p, global_indices_t = setarray_Cint32(global_indices_arr)
         layout_p, layout_t = setarray_Cint32(layout_arr)
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
-        pelist_p, pelist_t = setarray_Cint32(pelist)
+        pelist_p, pelist_t = setarray_Cint32(pelist_arr)
         xflags_c, xflags_t = setscalar_Cint32(xflags)
         yflags_c, yflags_t = setscalar_Cint32(yflags)
         xhalo_c, xhalo_t = setscalar_Cint32(xhalo)
         yhalo_c, yhalo_t = setscalar_Cint32(yhalo)
-        xextent_p, xextent_t = setarray_Cint32(xextent)
-        yextent_p, yextent_t = setarray_Cint32(yextent)
-        maskmap_p, maskmap_t = setarray_Cbool(maskmap)
+        xextent_p, xextent_t = setarray_Cint32(xextent_arr)
+        yextent_p, yextent_t = setarray_Cint32(yextent_arr)
+        maskmap_p, maskmap_t = setarray_Cbool(maskmap_arr)
         name_c, name_t = set_Cchar(name)
         symmetry_c, symmetry_t = setscalar_Cbool(symmetry)
-        memory_size_p, memory_size_t = setarray_Cint32(memory_size)
+        memory_size_p, memory_size_t = setarray_Cint32(memory_size_arr)
         whalo_c, whalo_t = setscalar_Cint32(whalo)
         ehalo_c, ehalo_t = setscalar_Cint32(ehalo)
         shalo_c, shalo_t = setscalar_Cint32(shalo)
@@ -133,7 +151,7 @@ class mpp_domains:
         complete_c, complete_t = setscalar_Cbool(complete)
         x_cyclic_offset_c, x_cyclic_offset_t = setscalar_Cint32(x_cyclic_offset)
         y_cyclic_offset_c, y_cyclic_offset_t = setscalar_Cint32(y_cyclic_offset)
-
+        
         _cfms_define_domains.argtypes = [
             global_indices_t,
             layout_t,
@@ -192,7 +210,7 @@ class mpp_domains:
 
         return pyDomain(domain_id=domain_id,
                         layout=layout,
-                        tile_id=tile_id)                                                
+                        tile=tile_id)
         
     """
     Subroutine: define_io_domains
@@ -258,16 +276,16 @@ class mpp_domains:
         self,
         num_nest: int,
         ntiles: int,
-        nest_level: NDArray,
-        tile_fine: NDArray,
-        tile_coarse: NDArray,
-        istart_coarse: NDArray,
-        icount_coarse: NDArray,
-        jstart_coarse: NDArray,
-        jcount_coarse: NDArray,
-        npes_nest_tile: NDArray,
-        x_refine: NDArray,
-        y_refine: NDArray,
+        nest_level: list[int],
+        tile_fine: list[int],
+        tile_coarse: list[int],
+        istart_coarse: list[int],
+        icount_coarse: list[int],
+        jstart_coarse: list[int],
+        jcount_coarse: list[int],
+        npes_nest_tile: list[int],
+        x_refine: list[int],
+        y_refine: list[int],
         nest_domain_id: int = None,
         domain_id: int = None,
         extra_halo: int = None,
@@ -280,6 +298,7 @@ class mpp_domains:
         tile_coarse_arr = np.array(tile_coarse, dtype=np.int32)
         istart_coarse_arr = np.array(istart_coarse, dtype=np.int32)
         jstart_coarse_arr = np.array(jstart_coarse, dtype=np.int32)
+        icount_coarse_arr = np.array(icount_coarse, dtype=np.int32)
         jcount_coarse_arr = np.array(jcount_coarse, dtype=np.int32)
         npes_nest_tile_arr = np.array(npes_nest_tile, dtype=np.int32)
         x_refine_arr = np.array(x_refine, dtype=np.int32)
@@ -630,7 +649,7 @@ class mpp_domains:
 
         _cfms_get_layout(layout_p, domain_id_c)
 
-        return layout_p
+        return layout_p.tolist()
 
     """
     Subroutine: get_domain_pelist
@@ -912,18 +931,3 @@ class mpp_domains:
         )
 
 
-class pyDomain():
-
-    def __init__(self):
-        self.domain_id = domain_id
-        self.isc
-        self.jsc
-        self.iec
-        self.jec
-        self.isd
-        self.jsd
-        self.ied
-        self.jed
-        self.tile
-        self.pe
-        self.layout
