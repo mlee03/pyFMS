@@ -13,63 +13,6 @@ from ..pyfms_utils.data_handling import (
 )
 
 
-class pyDomain():
-
-    def __init__(self,
-                 domain_id: int = None,
-                 isc: int = None,
-                 jsc: int = None,
-                 iec: int = None,
-                 jec: int = None,
-                 isd: int = None,
-                 jsd: int = None,
-                 ied: int = None,
-                 jed: int = None,
-                 tile: int = None,
-                 layout: list[int] = None):
-        self.domain_id = domain_id
-        self.isc = isc
-        self.jsc = jsc
-        self.iec = iec
-        self.jec = jec
-        self.isd = isd
-        self.jsd = jsd
-        self.ied = ied
-        self.jed = jed
-        self.tile = tile
-        self.layout = layout
-        
-        def update_compute_domain(self,
-                                  position: int = None,
-                                  tile_count: int = None,
-                                  whalo: int = None,
-                                  shalo: int = None):
-            compute = self.get_compute_domain(domain_id=self.domain_id,
-                                              tile_count=tile_count,
-                                              position = position,
-                                              whalo=whalo,
-                                              shalo=shalo)
-            self.isc = compute["xbegin"]
-            self.jsc = compute["ybegin"]
-            self.iec = compute["xend"]
-            self.iec = compute["yend"]
-            
-        def update_data_domain(self,
-                               position: int = None,
-                               tile_count: int = None,
-                               whalo: int = None,
-                               shalo: int = None):
-            data = self.get_data_domain(domain_id=self.domain_id,
-                                        tile_count=tile_count,
-                                        position = position,
-                                        whalo=whalo,
-                                        shalo=shalo)
-            self.isd = data["xbegin"]
-            self.jsd = data["ybegin"]
-            self.ied = data["xend"]
-            self.jed = data["yend"]
-
-            
 class mpp_domains:
 
     GLOBAL_DATA_DOMAIN: int = None
@@ -478,7 +421,7 @@ class mpp_domains:
         y_is_global_c = y_is_global_t(default_b)
         domain_id_c = domain_id_t(domain_id) if domain_id is not None else None
         tile_count_c = tile_count_t(tile_count) if tile_count is not None else None
-        position_c = position_t(position) if tile_count is not None else None
+        position_c = position_t(position) if position is not None else None
         whalo_c = whalo_t(whalo) if whalo is not None else None
         shalo_c = shalo_t(shalo) if shalo is not None else None
 
@@ -550,10 +493,11 @@ class mpp_domains:
 
     def get_data_domain(
         self,
-        domain_id: Optional[int] = None,
-        position: Optional[int] = None,
-        whalo: Optional[int] = None,
-        shalo: Optional[int] = None,
+        domain_id: int = None,
+        position: int = None,
+        tile_count: int = None,
+        whalo: int = None,
+        shalo: int = None,
     ):
         _cfms_get_data_domain = self.cFMS.cFMS_get_data_domain
 
@@ -588,7 +532,7 @@ class mpp_domains:
         y_is_global_c = y_is_global_t(default_b)
         domain_id_c = domain_id_t(domain_id) if domain_id is not None else None
         tile_count_c = tile_count_t(tile_count) if tile_count is not None else None
-        position_c = position_t(position) if tile_count is not None else None
+        position_c = position_t(position) if position is not None else None
         whalo_c = whalo_t(whalo) if whalo is not None else None
         shalo_c = shalo_t(shalo) if shalo is not None else None
 
@@ -974,3 +918,60 @@ class mpp_domains:
         )
 
 
+class pyDomain():
+
+    def __init__(self,
+                 domain_id: int = None,
+                 isc: int = None,
+                 jsc: int = None,
+                 iec: int = None,
+                 jec: int = None,
+                 isd: int = None,
+                 jsd: int = None,
+                 ied: int = None,
+                 jed: int = None,
+                 tile: int = None,
+                 layout: list[int] = None):
+        self.domain_id = domain_id
+        self.isc = isc
+        self.jsc = jsc
+        self.iec = iec
+        self.jec = jec
+        self.isd = isd
+        self.jsd = jsd
+        self.ied = ied
+        self.jed = jed
+        self.tile = tile
+        self.layout = layout
+        
+    #def update_compute_domain(self,
+    #                          position: int = None,
+    #                          tile_count: int = None,
+    #                          whalo: int = None,
+    #                          shalo: int = None):
+    #    compute = self.get_compute_domain(domain_id=self.domain_id,
+    #                                      tile_count=tile_count,
+    #                                      position = position,
+    #                                      whalo=whalo,
+    #                                      shalo=shalo)
+    #    self.isc = compute["xbegin"]
+    #    self.jsc = compute["ybegin"]
+    #    self.iec = compute["xend"]
+    #    self.iec = compute["yend"]
+        
+    #def update_data_domain(self,
+    #                       position: int = None,
+    #                       tile_count: int = None,
+    #                       whalo: int = None,
+    #                       shalo: int = None):
+    #    data = self.get_data_domain(domain_id=self.domain_id,
+    #                                tile_count=tile_count,
+    #                                position = position,
+    #                                whalo=whalo,
+    #                                shalo=shalo)
+    #    self.isd = data["xbegin"]
+    #    self.jsd = data["ybegin"]
+    #    self.ied = data["xend"]
+    #    self.jed = data["yend"]
+
+            
