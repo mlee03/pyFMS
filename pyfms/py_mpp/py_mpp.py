@@ -1,8 +1,7 @@
 import ctypes
-from typing import Optional
+from typing import Any
 
 import numpy as np
-from numpy.typing import NDArray
 
 from ..pyfms_utils.data_handling import (
     set_Cchar,
@@ -46,7 +45,7 @@ class mpp:
         _cfms_declare_pelist = self.cFMS.cFMS_declare_pelist
 
         commID = 0
-        
+
         pelist_p = np.array(pelist, dtype=np.int32)
         pelist_t = np.ctypeslib.ndpointer(dtype=np.int32, shape=(pelist_p.shape))
         name_c, name_t = set_Cchar(name)
@@ -54,7 +53,7 @@ class mpp:
 
         _cfms_declare_pelist.argtypes = [pelist_t, name_t, commID_t]
         _cfms_declare_pelist.restype = None
-        
+
         _cfms_declare_pelist(pelist_p, name_c, commID_c)
 
         return commID_c.value
@@ -97,13 +96,12 @@ class mpp:
         self,
         get_name: str = None,
         get_commID: bool = False,
-    ) -> (NDArray, Optional[int], Optional[str]):
+    ) -> Any:
 
         commID = 0 if get_commID else None
         name = None
-        #if get_name: name="NAME"
+        # if get_name: name="NAME"
 
-        
         npes = ctypes.c_int.in_dll(self.cFMS, "cFMS_pelist_npes")
         pelist = np.empty(shape=npes.value, dtype=np.int32)
 
@@ -125,9 +123,11 @@ class mpp:
 
         # return commID, name
 
-        if get_commID: return pelist.tolist(), commID_c.value
-        else: return pelist.tolist()
-    
+        if get_commID:
+            return pelist.tolist(), commID_c.value
+        else:
+            return pelist.tolist()
+
     """
     Function: npes
 
@@ -165,13 +165,11 @@ class mpp:
     Returns: No return
     """
 
-    def set_current_pelist(
-        self, pelist: list[int] = None, no_sync: bool = None
-    ):
+    def set_current_pelist(self, pelist: list[int] = None, no_sync: bool = None):
         _cfms_set_current_pelist = self.cFMS.cFMS_set_current_pelist
 
         if pelist is not None:
-            pelist_p = np.array(pelist, dtype=np.int32) 
+            pelist_p = np.array(pelist, dtype=np.int32)
             pelist_t = np.ctypeslib.ndpointer(dtype=np.int32, shape=pelist_p.shape)
         else:
             pelist_p = None
@@ -182,7 +180,6 @@ class mpp:
         _cfms_set_current_pelist.restype = None
 
         _cfms_set_current_pelist(pelist_p, no_sync_c)
-
 
     """
     Subroutine: pyfms_set_pelist_npes

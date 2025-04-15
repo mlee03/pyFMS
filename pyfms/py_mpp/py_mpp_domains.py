@@ -1,5 +1,4 @@
 import ctypes
-from typing import Optional
 
 import numpy as np
 from numpy.typing import NDArray
@@ -11,6 +10,35 @@ from ..pyfms_utils.data_handling import (
     setscalar_Cbool,
     setscalar_Cint32,
 )
+
+
+class pyDomain:
+
+    def __init__(
+        self,
+        domain_id: int = None,
+        isc: int = None,
+        jsc: int = None,
+        iec: int = None,
+        jec: int = None,
+        isd: int = None,
+        jsd: int = None,
+        ied: int = None,
+        jed: int = None,
+        tile: int = None,
+        layout: list[int] = None,
+    ):
+        self.domain_id = domain_id
+        self.isc = isc
+        self.jsc = jsc
+        self.iec = iec
+        self.jec = jec
+        self.isd = isd
+        self.jsd = jsd
+        self.ied = ied
+        self.jed = jed
+        self.tile = tile
+        self.layout = layout
 
 
 class mpp_domains:
@@ -36,32 +64,36 @@ class mpp_domains:
     CENTER: int = None
     SOUTH: int = None
     SOUTH_WEST: int = None
-    
+
     def __init__(self, cFMS: ctypes.CDLL = None):
         self.cFMS = cFMS
-        self.GLOBAL_DATA_DOMAIN = ctypes.c_int.in_dll(self.cFMS, "GLOBAL_DATA_DOMAIN")
-        self.BGRID_NE = ctypes.c_int.in_dll(self.cFMS, "BGRID_NE")
-        self.CGRID_NE = ctypes.c_int.in_dll(self.cFMS, "CGRID_NE")
-        self.DGRID_NE = ctypes.c_int.in_dll(self.cFMS, "DGRID_NE")
-        self.AGRID = ctypes.c_int.in_dll(self.cFMS, "AGRID")
-        self.FOLD_SOUTH_EDGE = ctypes.c_int.in_dll(self.cFMS, "FOLD_SOUTH_EDGE")
-        self.FOLD_WEST_EDGE = ctypes.c_int.in_dll(self.cFMS, "FOLD_WEST_EDGE")
-        self.FOLD_EAST_EDGE = ctypes.c_int.in_dll(self.cFMS, "FOLD_EAST_EDGE")
-        self.CYCLIC_GLOBAL_DOMAIN = ctypes.c_int.in_dll(self.cFMS, "CYCLIC_GLOBAL_DOMAIN")
-        self.NUPDATE = ctypes.c_int.in_dll(self.cFMS, "NUPDATE")
-        self.EUPDATE = ctypes.c_int.in_dll(self.cFMS, "EUPDATE")
-        self.XUPDATE = ctypes.c_int.in_dll(self.cFMS, "XUPDATE")
-        self.YUPDATE = ctypes.c_int.in_dll(self.cFMS, "YUPDATE")
-        self.NORTH = ctypes.c_int.in_dll(self.cFMS, "NORTH")
-        self.NORTH_EAST = ctypes.c_int.in_dll(self.cFMS, "NORTH_EAST")
-        self.EAST = ctypes.c_int.in_dll(self.cFMS, "EAST")
-        self.SOUTH_EAST = ctypes.c_int.in_dll(self.cFMS, "SOUTH_EAST")
-        self.CORNER = ctypes.c_int.in_dll(self.cFMS, "CORNER")
-        self.CENTER = ctypes.c_int.in_dll(self.cFMS, "CENTER")
-        self.SOUTH = ctypes.c_int.in_dll(self.cFMS, "SOUTH")
-        self.SOUTH_WEST = ctypes.c_int.in_dll(self.cFMS, "SOUTH_WEST")
-        self.WEST = ctypes.c_int.in_dll(self.cFMS, "WEST")
-        self.NORTH_WEST = ctypes.c_int.in_dll(self.cFMS, "NORTH_WEST")
+        self.GLOBAL_DATA_DOMAIN = ctypes.c_int.in_dll(
+            self.cFMS, "GLOBAL_DATA_DOMAIN"
+        ).value
+        self.BGRID_NE = ctypes.c_int.in_dll(self.cFMS, "BGRID_NE").value
+        self.CGRID_NE = ctypes.c_int.in_dll(self.cFMS, "CGRID_NE").value
+        self.DGRID_NE = ctypes.c_int.in_dll(self.cFMS, "DGRID_NE").value
+        self.AGRID = ctypes.c_int.in_dll(self.cFMS, "AGRID").value
+        self.FOLD_SOUTH_EDGE = ctypes.c_int.in_dll(self.cFMS, "FOLD_SOUTH_EDGE").value
+        self.FOLD_WEST_EDGE = ctypes.c_int.in_dll(self.cFMS, "FOLD_WEST_EDGE").value
+        self.FOLD_EAST_EDGE = ctypes.c_int.in_dll(self.cFMS, "FOLD_EAST_EDGE").value
+        self.CYCLIC_GLOBAL_DOMAIN = ctypes.c_int.in_dll(
+            self.cFMS, "CYCLIC_GLOBAL_DOMAIN"
+        ).value
+        self.NUPDATE = ctypes.c_int.in_dll(self.cFMS, "NUPDATE").value
+        self.EUPDATE = ctypes.c_int.in_dll(self.cFMS, "EUPDATE").value
+        self.XUPDATE = ctypes.c_int.in_dll(self.cFMS, "XUPDATE").value
+        self.YUPDATE = ctypes.c_int.in_dll(self.cFMS, "YUPDATE").value
+        self.NORTH = ctypes.c_int.in_dll(self.cFMS, "NORTH").value
+        self.NORTH_EAST = ctypes.c_int.in_dll(self.cFMS, "NORTH_EAST").value
+        self.EAST = ctypes.c_int.in_dll(self.cFMS, "EAST").value
+        self.SOUTH_EAST = ctypes.c_int.in_dll(self.cFMS, "SOUTH_EAST").value
+        self.CORNER = ctypes.c_int.in_dll(self.cFMS, "CORNER").value
+        self.CENTER = ctypes.c_int.in_dll(self.cFMS, "CENTER").value
+        self.SOUTH = ctypes.c_int.in_dll(self.cFMS, "SOUTH").value
+        self.SOUTH_WEST = ctypes.c_int.in_dll(self.cFMS, "SOUTH_WEST").value
+        self.WEST = ctypes.c_int.in_dll(self.cFMS, "WEST").value
+        self.NORTH_WEST = ctypes.c_int.in_dll(self.cFMS, "NORTH_WEST").value
 
     """
     Subroutine: define_domains
@@ -100,7 +132,7 @@ class mpp_domains:
         complete: bool = None,
         x_cyclic_offset: int = None,
         y_cyclic_offset: int = None,
-    ):
+    ) -> pyDomain:
 
         _cfms_define_domains = self.cFMS.cFMS_define_domains
 
@@ -109,15 +141,17 @@ class mpp_domains:
         xextent_arr = np.array(xextent, dtype=np.int32) if xextent is not None else None
         yextent_arr = np.array(yextent, dtype=np.int32) if yextent is not None else None
         maskmap_arr = np.array(maskmap, dtype=np.bool_) if maskmap is not None else None
-        memory_size_arr = np.array(memory_size, dtype=np.int32) if memory_size is not None else None
+        memory_size_arr = (
+            np.array(memory_size, dtype=np.int32) if memory_size is not None else None
+        )
 
-        if pelist is not None: 
+        if pelist is not None:
             pelist_arr = np.array(pelist, dtype=np.int32)
             npelist = len(pelist)
         else:
             pelist_arr = None
             npelist = 1
-        
+
         global_indices_p, global_indices_t = setarray_Cint32(global_indices_arr)
         layout_p, layout_t = setarray_Cint32(layout_arr)
         npelist_c, npelist_t = setscalar_Cint32(npelist)
@@ -142,11 +176,11 @@ class mpp_domains:
         complete_c, complete_t = setscalar_Cbool(complete)
         x_cyclic_offset_c, x_cyclic_offset_t = setscalar_Cint32(x_cyclic_offset)
         y_cyclic_offset_c, y_cyclic_offset_t = setscalar_Cint32(y_cyclic_offset)
-        
+
         _cfms_define_domains.argtypes = [
             global_indices_t,
             layout_t,
-            npelist_t, 
+            npelist_t,
             pelist_t,
             xflags_t,
             yflags_t,
@@ -175,7 +209,7 @@ class mpp_domains:
         domain_id = _cfms_define_domains(
             global_indices_p,
             layout_p,
-            npelist_c, 
+            npelist_c,
             pelist_p,
             xflags_c,
             yflags_c,
@@ -199,10 +233,8 @@ class mpp_domains:
             y_cyclic_offset_c,
         )
 
-        return pyDomain(domain_id=domain_id,
-                        layout=layout,
-                        tile=tile_id)
-        
+        return pyDomain(domain_id=domain_id, layout=layout, tile=tile_id)
+
     """
     Subroutine: define_io_domains
 
@@ -280,7 +312,7 @@ class mpp_domains:
         domain_id: int,
         extra_halo: int = None,
         name: str = None,
-    ):
+    ) -> int:
         _cfms_define_nest_domain = self.cFMS.cFMS_define_nest_domains
 
         nest_level_arr = np.array(nest_level, dtype=np.int32)
@@ -293,7 +325,7 @@ class mpp_domains:
         npes_nest_tile_arr = np.array(npes_nest_tile, dtype=np.int32)
         x_refine_arr = np.array(x_refine, dtype=np.int32)
         y_refine_arr = np.array(y_refine, dtype=np.int32)
-        
+
         num_nest_p, num_nest_t = setscalar_Cint32(num_nest)
         ntiles_c, ntiles_t = setscalar_Cint32(ntiles)
         nest_level_p, nest_level_t = setarray_Cint32(nest_level_arr)
@@ -328,7 +360,7 @@ class mpp_domains:
             name_t,
         ]
         _cfms_define_nest_domain.restype = ctypes.c_int
-        
+
         return _cfms_define_nest_domain(
             num_nest_p,
             ntiles_c,
@@ -680,19 +712,19 @@ class mpp_domains:
     """
 
     def set_compute_domain(
-            self,
-            domain_id: int,
-            xbegin: int = None,
-            xend: int = None,
-            ybegin: int = None,
-            yend: int = None,
-            xsize: int = None,
-            ysize: int = None,
-            x_is_global: bool = None,
-            y_is_global: bool = None,
-            tile_count: int = None,
-            whalo: int = None,
-            shalo: int = None,
+        self,
+        domain_id: int,
+        xbegin: int = None,
+        xend: int = None,
+        ybegin: int = None,
+        yend: int = None,
+        xsize: int = None,
+        ysize: int = None,
+        x_is_global: bool = None,
+        y_is_global: bool = None,
+        tile_count: int = None,
+        whalo: int = None,
+        shalo: int = None,
     ):
         _cfms_set_compute_domain = self.cFMS.cFMS_set_compute_domain
 
@@ -788,19 +820,19 @@ class mpp_domains:
     """
 
     def set_data_domain(
-            self,
-            domain_id: int, 
-            xbegin: int = None,
-            xend: int = None,
-            ybegin: int = None,
-            yend: int = None,
-            xsize: int = None,
-            ysize: int = None,
-            x_is_global: bool = None,
-            y_is_global: bool = None,
-            tile_count: int = None,
-            whalo: int = None,
-            shalo: int = None,
+        self,
+        domain_id: int,
+        xbegin: int = None,
+        xend: int = None,
+        ybegin: int = None,
+        yend: int = None,
+        xsize: int = None,
+        ysize: int = None,
+        x_is_global: bool = None,
+        y_is_global: bool = None,
+        tile_count: int = None,
+        whalo: int = None,
+        shalo: int = None,
     ):
         _cfms_set_data_domain = self.cFMS.cFMS_set_data_domain
 
@@ -866,17 +898,17 @@ class mpp_domains:
     """
 
     def set_global_domain(
-            self,
-            domain_id: int,
-            xbegin: int = None,
-            xend: int = None,
-            ybegin: int = None,
-            yend: int = None,
-            xsize: int = None,
-            ysize: int = None,
-            tile_count: int = None,
-            whalo: int = None,
-            shalo: int = None,
+        self,
+        domain_id: int,
+        xbegin: int = None,
+        xend: int = None,
+        ybegin: int = None,
+        yend: int = None,
+        xsize: int = None,
+        ysize: int = None,
+        tile_count: int = None,
+        whalo: int = None,
+        shalo: int = None,
     ):
         _cfms_set_global_domain = self.cFMS.cFMS_set_global_domain
 
@@ -917,31 +949,3 @@ class mpp_domains:
             whalo_c,
             shalo_c,
         )
-
-
-class pyDomain():
-
-    def __init__(self,
-                 domain_id: int = None,
-                 isc: int = None,
-                 jsc: int = None,
-                 iec: int = None,
-                 jec: int = None,
-                 isd: int = None,
-                 jsd: int = None,
-                 ied: int = None,
-                 jed: int = None,
-                 tile: int = None,
-                 layout: list[int] = None):
-        self.domain_id = domain_id
-        self.isc = isc
-        self.jsc = jsc
-        self.iec = iec
-        self.jec = jec
-        self.isd = isd
-        self.jsd = jsd
-        self.ied = ied
-        self.jed = jed
-        self.tile = tile
-        self.layout = layout
-        

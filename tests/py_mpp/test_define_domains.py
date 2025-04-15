@@ -1,6 +1,5 @@
 import os
 
-import numpy as np
 import pytest
 
 from pyfms import mpp, mpp_domains, pyFMS
@@ -22,10 +21,10 @@ def test_define_domains():
     nest_domain_id = -99
 
     nx = 96
-    ny = 96    
+    ny = 96
     coarse_global_indices = [0, nx - 1, 0, ny - 1]
     coarse_npes = 4
-    coarse_pelist = list(range(coarse_npes))    
+    coarse_pelist = list(range(coarse_npes))
     coarse_tile_id = 0
 
     nx_fine = 48
@@ -34,7 +33,7 @@ def test_define_domains():
     fine_npes = 4
     fine_pelist = list(range(fine_npes))
     fine_tile_id = 1
-    
+
     cfms_path = "./cFMS/libcFMS/.libs/libcFMS.so"
 
     assert os.path.exists(cfms_path)
@@ -63,21 +62,21 @@ def test_define_domains():
     if mpp_obj.pe() in coarse_pelist:
         mpp_obj.set_pelist_npes(coarse_npes)
         mpp_obj.set_current_pelist(coarse_pelist)
-        
+
         layout = mpp_domains_obj.define_layout(
             global_indices=coarse_global_indices,
             ndivs=coarse_npes,
         )
-        
+
         domain = mpp_domains_obj.define_domains(
             global_indices=coarse_global_indices,
             layout=layout,
             pelist=coarse_pelist,
             xflags=mpp_domains_obj.WEST,
             yflags=mpp_domains_obj.SOUTH,
-            xextent=[nx/2]*4,
-            yextent=[ny/2]*4,
-            maskmap=[[True,True],[True,True]],
+            xextent=[nx / 2] * 4,
+            yextent=[ny / 2] * 4,
+            maskmap=[[True, True], [True, True]],
             name="test coarse domain",
             symmetry=False,
             whalo=2,
@@ -87,12 +86,12 @@ def test_define_domains():
             is_mosaic=False,
             tile_id=coarse_tile_id,
         )
-        assert(domain.domain_id==0)
-    mpp_obj.set_current_pelist()    
+        assert domain.domain_id == 0
+    mpp_obj.set_current_pelist()
 
     """set fine domain as tile=1"""
 
-    fine_pelist = global_pelist[coarse_npes:coarse_npes+fine_npes]
+    fine_pelist = global_pelist[coarse_npes : coarse_npes + fine_npes]
     mpp_obj.set_pelist_npes(fine_npes)
     mpp_obj.declare_pelist(pelist=fine_pelist, name="test fine pelist")
 
@@ -118,13 +117,13 @@ def test_define_domains():
             is_mosaic=False,
             tile_id=fine_tile_id,
         )
-        assert(domain.domain_id==0)
-    assert mpp_domains_obj.domain_is_initialized(domain.domain_id)        
+        assert domain.domain_id == 0
+    assert mpp_domains_obj.domain_is_initialized(domain.domain_id)
 
     mpp_obj.set_current_pelist()
 
     """set nest domain"""
-    
+
     nest_domain = mpp_domains_obj.define_nest_domains(
         num_nest=1,
         ntiles=2,
@@ -143,7 +142,7 @@ def test_define_domains():
     )
 
     mpp_obj.set_current_pelist()
-    
+
     pyfms.pyfms_end()
 
 

@@ -1,6 +1,5 @@
 import os
 
-import numpy as np
 import pytest
 
 import pyfms
@@ -15,7 +14,6 @@ def test_create_input_nml():
 
 @pytest.mark.parallel
 def test_getset_domains():
-    
     """
     copied from cFMS
     global domain
@@ -44,16 +42,17 @@ def test_getset_domains():
 
     layout = mpp_domains_obj.define_layout(global_indices=global_indices, ndivs=4)
 
-    domain = mpp_domains_obj.define_domains(global_indices=global_indices,
-                                            layout=layout,
-                                            name=name,
-                                            whalo=whalo,
-                                            ehalo=ehalo,
-                                            shalo=shalo,
-                                            nhalo=nhalo,
+    domain = mpp_domains_obj.define_domains(
+        global_indices=global_indices,
+        layout=layout,
+        name=name,
+        whalo=whalo,
+        ehalo=ehalo,
+        shalo=shalo,
+        nhalo=nhalo,
     )
-    
-    assert(mpp_domains_obj.domain_is_initialized(domain.domain_id))
+
+    assert mpp_domains_obj.domain_is_initialized(domain.domain_id)
 
     mpp_obj.set_current_pelist()
 
@@ -101,8 +100,8 @@ def test_getset_domains():
         y_is_global=y_is_global,
         whalo=whalo,
         shalo=shalo,
-    )    
-    
+    )
+
     mpp_domains_obj.set_data_domain(
         domain_id=domain.domain_id,
         xbegin=isd[pe],
@@ -117,11 +116,15 @@ def test_getset_domains():
         shalo=shalo,
     )
 
-    compute = mpp_domains_obj.get_compute_domain(domain_id=domain.domain_id, whalo=whalo, shalo=shalo)
-    data = mpp_domains_obj.get_data_domain(domain_id=domain.domain_id, whalo=whalo, shalo=shalo)
-    
-    # get domain    
-    
+    compute = mpp_domains_obj.get_compute_domain(
+        domain_id=domain.domain_id, whalo=whalo, shalo=shalo
+    )
+    data = mpp_domains_obj.get_data_domain(
+        domain_id=domain.domain_id, whalo=whalo, shalo=shalo
+    )
+
+    # get domain
+
     assert compute["xbegin"] == isc[pe]
     assert compute["xend"] == iec[pe]
     assert compute["ybegin"] == jsc[pe]

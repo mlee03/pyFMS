@@ -28,7 +28,7 @@ def test_send_data():
             var2[i][j] = i * 10.0 + j * 1.0
 
     cfms_path = "./cFMS/libcFMS/.libs/libcFMS.so"
-    
+
     pyfms_obj = pyfms.pyFMS(cFMS_path=cfms_path, calendar_type=calendar_type)
     mpp_domains_obj = pyfms.mpp_domains(cFMS=pyfms_obj.cFMS)
 
@@ -81,7 +81,7 @@ def test_send_data():
         long_name="point_N",
         set_name="atm",
     )
-    
+
     """
     diag axis init z
     """

@@ -279,7 +279,7 @@ class DiagManager:
             axis_data_p,
             units_c,
             cart_name_c,
-            domain_id_c, 
+            domain_id_c,
             long_name_c,
             direction_c,
             set_name_c,

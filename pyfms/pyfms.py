@@ -107,4 +107,3 @@ class pyFMS:
             nnest_domain_c,
             calendar_type_c,
         )
-
