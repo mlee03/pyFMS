@@ -18,8 +18,8 @@ def test_define_domains():
 
     ndomain = 2
     nnest_domain = 2
-    domain_id = 0
-    nest_domain_id = 0
+    domain_id = -99
+    nest_domain_id = -99
 
     nx = 96
     ny = 96    
@@ -69,16 +69,15 @@ def test_define_domains():
             ndivs=coarse_npes,
         )
         
-        mpp_domains_obj.define_domains(
+        domain = mpp_domains_obj.define_domains(
             global_indices=coarse_global_indices,
             layout=layout,
-            domain_id=domain_id,
             pelist=coarse_pelist,
             xflags=mpp_domains_obj.WEST,
             yflags=mpp_domains_obj.SOUTH,
             xextent=[nx/2]*4,
             yextent=[ny/2]*4,
-            maskmap=None, #[[True,True],[True,True]],
+            maskmap=[[True,True],[True,True]],
             name="test coarse domain",
             symmetry=False,
             whalo=2,
@@ -88,7 +87,7 @@ def test_define_domains():
             is_mosaic=False,
             tile_id=coarse_tile_id,
         )
-
+        assert(domain.domain_id==0)
     mpp_obj.set_current_pelist()    
 
     """set fine domain as tile=1"""
@@ -106,10 +105,9 @@ def test_define_domains():
             ndivs=fine_npes,
         )
 
-        mpp_domains_obj.define_domains(
+        domain = mpp_domains_obj.define_domains(
             global_indices=fine_global_indices,
             layout=layout,
-            domain_id=domain_id,
             pelist=fine_pelist,
             name="test fine domain",
             symmetry=False,
@@ -120,13 +118,14 @@ def test_define_domains():
             is_mosaic=False,
             tile_id=fine_tile_id,
         )
-    assert mpp_domains_obj.domain_is_initialized(domain_id)        
+        assert(domain.domain_id==0)
+    assert mpp_domains_obj.domain_is_initialized(domain.domain_id)        
 
     mpp_obj.set_current_pelist()
 
     """set nest domain"""
     
-    mpp_domains_obj.define_nest_domains(
+    nest_domain = mpp_domains_obj.define_nest_domains(
         num_nest=1,
         ntiles=2,
         nest_level=[1],
@@ -139,8 +138,7 @@ def test_define_domains():
         npes_nest_tile=[coarse_npes, fine_npes],
         x_refine=[2],
         y_refine=[2],
-        nest_domain_id=nest_domain_id,
-        domain_id=domain_id,
+        domain_id=domain.domain_id,
         name="test nest domain",
     )
 

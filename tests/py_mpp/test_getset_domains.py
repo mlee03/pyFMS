@@ -29,7 +29,6 @@ def test_getset_domains():
           *     *     *     *
     """
 
-    domain_id = 0
     global_indices = [0, 3, 0, 3]
     whalo = 2
     ehalo = 2
@@ -47,7 +46,6 @@ def test_getset_domains():
 
     domain = mpp_domains_obj.define_domains(global_indices=global_indices,
                                             layout=layout,
-                                            domain_id=domain_id,
                                             name=name,
                                             whalo=whalo,
                                             ehalo=ehalo,
@@ -55,7 +53,7 @@ def test_getset_domains():
                                             nhalo=nhalo,
     )
     
-    assert(mpp_domains_obj.domain_is_initialized(domain_id))
+    assert(mpp_domains_obj.domain_is_initialized(domain.domain_id))
 
     mpp_obj.set_current_pelist()
 
@@ -92,7 +90,7 @@ def test_getset_domains():
     # set compute and data domains
 
     mpp_domains_obj.set_compute_domain(
-        domain_id=domain_id,
+        domain_id=domain.domain_id,
         xbegin=isc[pe],
         xend=iec[pe],
         ybegin=jsc[pe],
@@ -106,7 +104,7 @@ def test_getset_domains():
     )    
     
     mpp_domains_obj.set_data_domain(
-        domain_id=domain_id,
+        domain_id=domain.domain_id,
         xbegin=isd[pe],
         xend=ied[pe],
         ybegin=jsd[pe],
@@ -119,8 +117,8 @@ def test_getset_domains():
         shalo=shalo,
     )
 
-    compute = mpp_domains_obj.get_compute_domain(domain_id=domain_id, whalo=whalo, shalo=shalo)
-    data = mpp_domains_obj.get_data_domain(domain_id=domain_id, whalo=whalo, shalo=shalo)
+    compute = mpp_domains_obj.get_compute_domain(domain_id=domain.domain_id, whalo=whalo, shalo=shalo)
+    data = mpp_domains_obj.get_data_domain(domain_id=domain.domain_id, whalo=whalo, shalo=shalo)
     
     # get domain    
     

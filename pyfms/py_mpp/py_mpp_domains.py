@@ -79,7 +79,6 @@ class mpp_domains:
         self,
         global_indices: list[int],
         layout: list[int],
-        domain_id: int = None,
         pelist: list[int] = None,
         xflags: int = None,
         yflags: int = None,
@@ -107,15 +106,21 @@ class mpp_domains:
 
         global_indices_arr = np.array(global_indices, dtype=np.int32)
         layout_arr = np.array(layout, dtype=np.int32)
-        pelist_arr = np.array(pelist, dtype=np.int32) if pelist is not None else None
         xextent_arr = np.array(xextent, dtype=np.int32) if xextent is not None else None
         yextent_arr = np.array(yextent, dtype=np.int32) if yextent is not None else None
         maskmap_arr = np.array(maskmap, dtype=np.bool_) if maskmap is not None else None
         memory_size_arr = np.array(memory_size, dtype=np.int32) if memory_size is not None else None
+
+        if pelist is not None: 
+            pelist_arr = np.array(pelist, dtype=np.int32)
+            npelist = len(pelist)
+        else:
+            pelist_arr = None
+            npelist = 1
         
         global_indices_p, global_indices_t = setarray_Cint32(global_indices_arr)
         layout_p, layout_t = setarray_Cint32(layout_arr)
-        domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
+        npelist_c, npelist_t = setscalar_Cint32(npelist)
         pelist_p, pelist_t = setarray_Cint32(pelist_arr)
         xflags_c, xflags_t = setscalar_Cint32(xflags)
         yflags_c, yflags_t = setscalar_Cint32(yflags)
@@ -141,7 +146,7 @@ class mpp_domains:
         _cfms_define_domains.argtypes = [
             global_indices_t,
             layout_t,
-            domain_id_t,
+            npelist_t, 
             pelist_t,
             xflags_t,
             yflags_t,
@@ -165,12 +170,12 @@ class mpp_domains:
             y_cyclic_offset_t,
         ]
 
-        _cfms_define_domains.restype = None
+        _cfms_define_domains.restype = ctypes.c_int
 
-        _cfms_define_domains(
+        domain_id = _cfms_define_domains(
             global_indices_p,
             layout_p,
-            domain_id_c,
+            npelist_c, 
             pelist_p,
             xflags_c,
             yflags_c,
@@ -206,7 +211,7 @@ class mpp_domains:
     Returns: No return
     """
 
-    def define_io_domain(self, io_layout: list[int], domain_id: int = None):
+    def define_io_domain(self, io_layout: list[int], domain_id: int):
         _cfms_define_io_domain = self.cFMS.cFMS_define_io_domain
 
         io_layout_arr = np.array(io_layout, dtype=np.int32)
@@ -272,8 +277,7 @@ class mpp_domains:
         npes_nest_tile: list[int],
         x_refine: list[int],
         y_refine: list[int],
-        nest_domain_id: int = None,
-        domain_id: int = None,
+        domain_id: int,
         extra_halo: int = None,
         name: str = None,
     ):
@@ -302,7 +306,6 @@ class mpp_domains:
         npes_nest_tile_p, npes_nest_tile_t = setarray_Cint32(npes_nest_tile_arr)
         x_refine_p, x_refine_t = setarray_Cint32(x_refine_arr)
         y_refine_p, y_refine_t = setarray_Cint32(y_refine_arr)
-        nest_domain_id_c, nest_domain_id_t = setscalar_Cint32(nest_domain_id)
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
         extra_halo_c, extra_halo_t = setscalar_Cint32(extra_halo)
         name_p, name_t = set_Cchar(name)
@@ -320,14 +323,13 @@ class mpp_domains:
             npes_nest_tile_t,
             x_refine_t,
             y_refine_t,
-            nest_domain_id_t,
             domain_id_t,
             extra_halo_t,
             name_t,
         ]
-        _cfms_define_nest_domain.restype = None
-
-        _cfms_define_nest_domain(
+        _cfms_define_nest_domain.restype = ctypes.c_int
+        
+        return _cfms_define_nest_domain(
             num_nest_p,
             ntiles_c,
             nest_level_p,
@@ -340,7 +342,6 @@ class mpp_domains:
             npes_nest_tile_p,
             x_refine_p,
             y_refine_p,
-            nest_domain_id_c,
             domain_id_c,
             extra_halo_c,
             name_p,
@@ -355,7 +356,7 @@ class mpp_domains:
     Returns: Boolean
     """
 
-    def domain_is_initialized(self, domain_id: int = None) -> bool:
+    def domain_is_initialized(self, domain_id: int) -> bool:
         _cfms_domain_is_initialized = self.cFMS.cFMS_domain_is_initialized
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -381,7 +382,7 @@ class mpp_domains:
 
     def get_compute_domain(
         self,
-        domain_id: int = None,
+        domain_id: int,
         position: int = None,
         tile_count: int = None,
         whalo: int = None,
@@ -493,7 +494,7 @@ class mpp_domains:
 
     def get_data_domain(
         self,
-        domain_id: int = None,
+        domain_id: int,
         position: int = None,
         tile_count: int = None,
         whalo: int = None,
@@ -599,7 +600,7 @@ class mpp_domains:
     its value as well.
     """
 
-    def get_domain_name(self, domain_id: int = None) -> str:
+    def get_domain_name(self, domain_id: int) -> str:
         _cfms_get_domain_name = self.cFMS.cFMS_get_domain_name
 
         domain_name = ""
@@ -622,7 +623,7 @@ class mpp_domains:
     Returns: NDArray with layout info
     """
 
-    def get_layout(self, domain_id: int = None) -> list[int]:
+    def get_layout(self, domain_id: int) -> list[int]:
 
         layout = np.empty(shape=2, dtype=np.int32, order="C")
 
@@ -644,7 +645,7 @@ class mpp_domains:
     Returns: NDArray containing pelist
     """
 
-    def get_domain_pelist(self, domain_id: Optional[int]) -> NDArray:
+    def get_domain_pelist(self, domain_id: int) -> NDArray:
 
         npes = ctypes.c_int.in_dll(self.cFMS, "cFMS_pelist_npes")
         pelist = np.empty(shape=npes.value, dtype=np.int32, order="C")
@@ -679,19 +680,19 @@ class mpp_domains:
     """
 
     def set_compute_domain(
-        self,
-        xbegin: Optional[int] = None,
-        xend: Optional[int] = None,
-        ybegin: Optional[int] = None,
-        yend: Optional[int] = None,
-        xsize: Optional[int] = None,
-        ysize: Optional[int] = None,
-        x_is_global: Optional[bool] = None,
-        y_is_global: Optional[bool] = None,
-        tile_count: Optional[int] = None,
-        domain_id: Optional[int] = None,
-        whalo: Optional[int] = None,
-        shalo: Optional[int] = None,
+            self,
+            domain_id: int,
+            xbegin: int = None,
+            xend: int = None,
+            ybegin: int = None,
+            yend: int = None,
+            xsize: int = None,
+            ysize: int = None,
+            x_is_global: bool = None,
+            y_is_global: bool = None,
+            tile_count: int = None,
+            whalo: int = None,
+            shalo: int = None,
     ):
         _cfms_set_compute_domain = self.cFMS.cFMS_set_compute_domain
 
@@ -746,7 +747,7 @@ class mpp_domains:
     to domain_id
     """
 
-    def set_current_domain(self, domain_id: Optional[int] = None):
+    def set_current_domain(self, domain_id: int):
         _cfms_set_current_domain = self.cFMS.cFMS_set_current_domain
 
         domain_id_c, domain_id_t = setscalar_Cint32(domain_id)
@@ -763,7 +764,7 @@ class mpp_domains:
     to nest_domain_id
     """
 
-    def set_current_nest_domain(self, nest_domain_id: Optional[int] = None):
+    def set_current_nest_domain(self, nest_domain_id: int):
         _cfms_set_current_nest_domain = self.cFMS.cFMS_set_current_nest_domain
 
         nest_domain_id_c, nest_domain_id_t = setscalar_Cint32(nest_domain_id)
@@ -787,19 +788,19 @@ class mpp_domains:
     """
 
     def set_data_domain(
-        self,
-        xbegin: Optional[int] = None,
-        xend: Optional[int] = None,
-        ybegin: Optional[int] = None,
-        yend: Optional[int] = None,
-        xsize: Optional[int] = None,
-        ysize: Optional[int] = None,
-        x_is_global: Optional[bool] = None,
-        y_is_global: Optional[bool] = None,
-        tile_count: Optional[int] = None,
-        domain_id: Optional[int] = None,
-        whalo: Optional[int] = None,
-        shalo: Optional[int] = None,
+            self,
+            domain_id: int, 
+            xbegin: int = None,
+            xend: int = None,
+            ybegin: int = None,
+            yend: int = None,
+            xsize: int = None,
+            ysize: int = None,
+            x_is_global: bool = None,
+            y_is_global: bool = None,
+            tile_count: int = None,
+            whalo: int = None,
+            shalo: int = None,
     ):
         _cfms_set_data_domain = self.cFMS.cFMS_set_data_domain
 
@@ -865,17 +866,17 @@ class mpp_domains:
     """
 
     def set_global_domain(
-        self,
-        xbegin: Optional[int] = None,
-        xend: Optional[int] = None,
-        ybegin: Optional[int] = None,
-        yend: Optional[int] = None,
-        xsize: Optional[int] = None,
-        ysize: Optional[int] = None,
-        tile_count: Optional[int] = None,
-        domain_id: Optional[int] = None,
-        whalo: Optional[int] = None,
-        shalo: Optional[int] = None,
+            self,
+            domain_id: int,
+            xbegin: int = None,
+            xend: int = None,
+            ybegin: int = None,
+            yend: int = None,
+            xsize: int = None,
+            ysize: int = None,
+            tile_count: int = None,
+            whalo: int = None,
+            shalo: int = None,
     ):
         _cfms_set_global_domain = self.cFMS.cFMS_set_global_domain
 
@@ -944,34 +945,3 @@ class pyDomain():
         self.tile = tile
         self.layout = layout
         
-    #def update_compute_domain(self,
-    #                          position: int = None,
-    #                          tile_count: int = None,
-    #                          whalo: int = None,
-    #                          shalo: int = None):
-    #    compute = self.get_compute_domain(domain_id=self.domain_id,
-    #                                      tile_count=tile_count,
-    #                                      position = position,
-    #                                      whalo=whalo,
-    #                                      shalo=shalo)
-    #    self.isc = compute["xbegin"]
-    #    self.jsc = compute["ybegin"]
-    #    self.iec = compute["xend"]
-    #    self.iec = compute["yend"]
-        
-    #def update_data_domain(self,
-    #                       position: int = None,
-    #                       tile_count: int = None,
-    #                       whalo: int = None,
-    #                       shalo: int = None):
-    #    data = self.get_data_domain(domain_id=self.domain_id,
-    #                                tile_count=tile_count,
-    #                                position = position,
-    #                                whalo=whalo,
-    #                                shalo=shalo)
-    #    self.isd = data["xbegin"]
-    #    self.jsd = data["ybegin"]
-    #    self.ied = data["xend"]
-    #    self.jed = data["yend"]
-
-            
