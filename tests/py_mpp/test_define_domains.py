@@ -43,6 +43,7 @@ def test_define_domains():
         ndomain=ndomain,
         nnest_domain=nnest_domain,
     )
+
     mpp_obj = mpp(cFMS=pyfms.cFMS)
     mpp_domains_obj = mpp_domains(cFMS=pyfms.cFMS)
 

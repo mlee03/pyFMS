@@ -26,7 +26,6 @@ def test_getset_domains():
           *     *     *     *
           *     *     *     *
     """
-
     global_indices = [0, 3, 0, 3]
     whalo = 2
     ehalo = 2

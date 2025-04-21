@@ -36,11 +36,13 @@ def test_data_override():
     )
 
     compute_dict = mpp_domains_obj.get_compute_domain(domain_id=domain.domain_id)
+
     xsize = compute_dict["xsize"]
     ysize = compute_dict["ysize"]
 
     data_override = pyfms.pyDataOverride(cfms)
     data_override.init(ocn_domain_id=domain.domain_id)
+
     data_override.set_time(year=1, month=1, day=3, hour=0, minute=0, second=0, tick=0)
 
     data = data_override.override_scalar(
