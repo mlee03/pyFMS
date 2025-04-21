@@ -33,61 +33,62 @@ def test_update_domains():
 
     layout = mpp_domains_obj.define_layout(global_indices=global_indices, ndivs=npes)
 
-    domain = mpp_domains_obj.define_domains(global_indices=global_indices,
-                                            layout=layout,
-                                            whalo=whalo,
-                                            ehalo=ehalo,
-                                            shalo=shalo,
-                                            nhalo=nhalo,
-                                            xflags=mpp_domains_obj.CYCLIC_GLOBAL_DOMAIN,
-                                            yflags=mpp_domains_obj.CYCLIC_GLOBAL_DOMAIN)
+    domain = mpp_domains_obj.define_domains(
+        global_indices=global_indices,
+        layout=layout,
+        whalo=whalo,
+        ehalo=ehalo,
+        shalo=shalo,
+        nhalo=nhalo,
+        xflags=mpp_domains_obj.CYCLIC_GLOBAL_DOMAIN,
+        yflags=mpp_domains_obj.CYCLIC_GLOBAL_DOMAIN,
+    )
 
     answers = np.array(
         [
             [
-                [66, 76,  6, 16, 26, 36, 46, 56],
-                [67, 77,  7, 17, 27, 37, 47, 57],
-                [60, 70,  0, 10, 20, 30, 40, 50],
-                [61, 71,  1, 11, 21, 31, 41, 51],
-                [62, 72,  2, 12, 22, 32, 42, 52],
-                [63, 73,  3, 13, 23, 33, 43, 53],
-                [64, 74,  4, 14, 24, 34, 44, 54],
-                [65, 75,  5, 15, 25, 35, 45, 55],
+                [66, 76, 6, 16, 26, 36, 46, 56],
+                [67, 77, 7, 17, 27, 37, 47, 57],
+                [60, 70, 0, 10, 20, 30, 40, 50],
+                [61, 71, 1, 11, 21, 31, 41, 51],
+                [62, 72, 2, 12, 22, 32, 42, 52],
+                [63, 73, 3, 13, 23, 33, 43, 53],
+                [64, 74, 4, 14, 24, 34, 44, 54],
+                [65, 75, 5, 15, 25, 35, 45, 55],
             ],
             [
-                [62, 72,  2, 12, 22, 32, 42, 52],
-                [63, 73,  3, 13, 23, 33, 43, 53],
-                [64, 74,  4, 14, 24, 34, 44, 54],
-                [65, 75,  5, 15, 25, 35, 45, 55],
-                [66, 76,  6, 16, 26, 36, 46, 56],
-                [67, 77,  7, 17, 27, 37, 47, 57],
-                [60, 70,  0, 10, 20, 30, 40, 50],
-                [61, 71,  1, 11, 21, 31, 41, 51],
+                [62, 72, 2, 12, 22, 32, 42, 52],
+                [63, 73, 3, 13, 23, 33, 43, 53],
+                [64, 74, 4, 14, 24, 34, 44, 54],
+                [65, 75, 5, 15, 25, 35, 45, 55],
+                [66, 76, 6, 16, 26, 36, 46, 56],
+                [67, 77, 7, 17, 27, 37, 47, 57],
+                [60, 70, 0, 10, 20, 30, 40, 50],
+                [61, 71, 1, 11, 21, 31, 41, 51],
             ],
             [
-                [26, 36, 46, 56, 66, 76,  6, 16],
-                [27, 37, 47, 57, 67, 77,  7, 17],
-                [20, 30, 40, 50, 60, 70,  0, 10],
-                [21, 31, 41, 51, 61, 71,  1, 11],
-                [22, 32, 42, 52, 62, 72,  2, 12],
-                [23, 33, 43, 53, 63, 73,  3, 13],
-                [24, 34, 44, 54, 64, 74,  4, 14],
-                [25, 35, 45, 55, 65, 75,  5, 15],
+                [26, 36, 46, 56, 66, 76, 6, 16],
+                [27, 37, 47, 57, 67, 77, 7, 17],
+                [20, 30, 40, 50, 60, 70, 0, 10],
+                [21, 31, 41, 51, 61, 71, 1, 11],
+                [22, 32, 42, 52, 62, 72, 2, 12],
+                [23, 33, 43, 53, 63, 73, 3, 13],
+                [24, 34, 44, 54, 64, 74, 4, 14],
+                [25, 35, 45, 55, 65, 75, 5, 15],
             ],
             [
-                [22, 32, 42, 52, 62, 72,  2, 12],
-                [23, 33, 43, 53, 63, 73,  3, 13],
-                [24, 34, 44, 54, 64, 74,  4, 14],
-                [25, 35, 45, 55, 65, 75,  5, 15],
-                [26, 36, 46, 56, 66, 76,  6, 16],
-                [27, 37, 47, 57, 67, 77,  7, 17],
-                [20, 30, 40, 50, 60, 70,  0, 10],
-                [21, 31, 41, 51, 61, 71,  1, 11],
+                [22, 32, 42, 52, 62, 72, 2, 12],
+                [23, 33, 43, 53, 63, 73, 3, 13],
+                [24, 34, 44, 54, 64, 74, 4, 14],
+                [25, 35, 45, 55, 65, 75, 5, 15],
+                [26, 36, 46, 56, 66, 76, 6, 16],
+                [27, 37, 47, 57, 67, 77, 7, 17],
+                [20, 30, 40, 50, 60, 70, 0, 10],
+                [21, 31, 41, 51, 61, 71, 1, 11],
             ],
         ],
         dtype=np.float32,
     )
-
 
     compute = mpp_domains_obj.get_compute_domain(
         domain_id=domain.domain_id, whalo=whalo, shalo=shalo
@@ -95,7 +96,7 @@ def test_update_domains():
     data = mpp_domains_obj.get_data_domain(
         domain_id=domain.domain_id, whalo=whalo, shalo=shalo
     )
-    
+
     isc = compute["xbegin"]
     jsc = compute["ybegin"]
     xsize_c = compute["xsize"]
@@ -103,15 +104,17 @@ def test_update_domains():
     xsize_d = data["xsize"]
     ysize_d = data["ysize"]
 
-    global_data = np.zeros(shape=(nx+ehalo+whalo, ny+ehalo+whalo), dtype=np.float32)
+    global_data = np.zeros(
+        shape=(nx + ehalo + whalo, ny + ehalo + whalo), dtype=np.float32
+    )
     for ix in range(nx):
         for iy in range(ny):
-            global_data[whalo+ix][shalo+iy] = iy*10 + ix
+            global_data[whalo + ix][shalo + iy] = iy * 10 + ix
 
     idata = np.zeros(shape=(xsize_d, ysize_d), dtype=np.float32)
     for i in range(xsize_c):
         for j in range(ysize_c):
-            idata[whalo+i][shalo+j] = global_data[isc+i][jsc+j]
+            idata[whalo + i][shalo + j] = global_data[isc + i][jsc + j]
 
     mpp_domains_obj.update_domains(
         field=idata,

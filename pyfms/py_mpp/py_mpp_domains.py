@@ -5,10 +5,10 @@ from numpy.typing import NDArray
 
 from ..pyfms_utils.data_handling import (
     set_Cchar,
-    setarray_Cint32,
+    setarray_Cbool,
     setarray_Cdouble,
     setarray_Cfloat,
-    setarray_Cbool,
+    setarray_Cint32,
     setscalar_Cbool,
     setscalar_Cint32,
 )
@@ -1073,5 +1073,3 @@ class mpp_domains:
             name_c,
             tile_count_c,
         )
-
-
