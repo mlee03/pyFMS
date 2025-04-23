@@ -1,7 +1,9 @@
 import ctypes
+
 import numpy as np
 
-class constants():
+
+class constants:
 
     PI: np.float64 = None
     RAD_TO_DEG: np.float64 = None
@@ -51,7 +53,7 @@ class constants():
     EPSLN: np.float64 = None
     RADCON: np.float64 = None
     RADCON_MKS: np.float64 = None
-    
+
     def __init__(self, cFMS: ctypes.CDLL = None):
         self.cFMS = cFMS
         self.PI = self.get_constant("PI")
@@ -81,7 +83,7 @@ class constants():
         self.WTMAIR = self.get_constant("WTMAIR")
         self.WTMH2O = self.get_constant("WTMH2O")
         self.WTMOZONE = self.get_constant("WTMOZONE")
-        self.WTMC = self.get_constant( "WTMC")
+        self.WTMC = self.get_constant("WTMC")
         self.WTMCO2 = self.get_constant("WTMCO2")
         self.WTMCH4 = self.get_constant("WTMCH4")
         self.WTMO2 = self.get_constant("WTMO2")
@@ -90,7 +92,7 @@ class constants():
         self.WTMN = self.get_constant("WTMN")
         self.DIFFAC = self.get_constant("DIFFAC")
         self.ES0 = self.get_constant("ES0")
-        self.PSTD = self.get_constant("PSTD") 
+        self.PSTD = self.get_constant("PSTD")
         self.PSTD_MKS = self.get_constant("PSTD_MKS")
         self.KELVIN = self.get_constant("KELVIN")
         self.TFREEZE = self.get_constant("TFREEZE")
@@ -105,5 +107,3 @@ class constants():
 
     def get_constant(self, variable):
         return np.float64(ctypes.c_double.in_dll(self.cFMS, variable).value)
-
-        
