@@ -22,12 +22,10 @@ class mpp:
         cls.__lib = lib
 
     @classmethod
-    @property
     def lib(cls):
         return cls.__lib
 
     @classmethod
-    @property
     def libpath(cls):
         return cls.__libpath
 
