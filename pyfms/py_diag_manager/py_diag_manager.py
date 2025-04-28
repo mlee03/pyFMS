@@ -22,13 +22,13 @@ class diag_manager:
     DIAG_OTHER: int = None
 
     __libpath: str = None
-    __lib: type(ctypes.CDLL) = None
+    __lib: type[ctypes.CDLL] = None
 
     @classmethod
     def setlib(cls, libpath, lib):
         cls.__libpath = libpath
         cls.__lib = lib
-        
+
     @classmethod
     @property
     def lib(cls):
@@ -54,11 +54,13 @@ class diag_manager:
         time_init: NDArray = None,
     ) -> str:
 
-        get_constant = lambda variable: int(ctypes.c_int.in_dll(cls.lib, variable).value)
+        get_constant = lambda variable: int(
+            ctypes.c_int.in_dll(cls.lib, variable).value
+        )
         cls.DIAG_OTHER = get_constant("DIAG_OTHER")
         cls.DIAG_OCEAN = get_constant("DIAG_OCEAN")
         cls.DIAG_ALL = get_constant("DIAG_ALL")
-        
+
         _cfms_diag_init = cls.lib.cFMS_diag_init
 
         diag_model_subset_c, diag_model_subset_t = setscalar_Cint32(diag_model_subset)

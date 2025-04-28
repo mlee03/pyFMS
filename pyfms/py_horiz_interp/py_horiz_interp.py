@@ -7,7 +7,7 @@ import numpy.typing as npt
 class horiz_interp:
 
     __libpath: str = None
-    __lib: type(ctypes.CDLL) = None
+    __lib: type[ctypes.CDLL] = None
 
     @classmethod
     def setlib(cls, libpath, lib):
@@ -45,7 +45,7 @@ class horiz_interp:
         _cfms_set_current_interp.restype = None
 
         _cfms_set_current_interp(ctypes.byref(interp_id_c))
-    
+
     @classmethod
     def get_maxxgrid(cls) -> np.int32:
         cls.lib.get_maxxgrid.restype = np.int32

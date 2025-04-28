@@ -55,18 +55,18 @@ class constants:
     RADCON_MKS: np.float64 = None
 
     __libpath: str = None
-    __lib: type(ctypes.CDLL) = None
-    
+    __lib: type[ctypes.CDLL] = None
+
     @classmethod
     def setlib(cls, libpath, lib):
         cls.__libpath = libpath
         cls.__lib = lib
-        
+
     @classmethod
     @property
     def lib(cls):
         return cls.__lib
-    
+
     @classmethod
     @property
     def libpath(cls):
@@ -75,7 +75,9 @@ class constants:
     @classmethod
     def init(cls):
 
-        get_constant = lambda variable: np.float64(ctypes.c_double.in_dll(cls.lib, variable).value)
+        get_constant = lambda variable: np.float64(
+            ctypes.c_double.in_dll(cls.lib, variable).value
+        )
         cls.PI = get_constant("PI")
         cls.RAD_TO_DEG = get_constant("RAD_TO_DEG")
         cls.DEG_TO_RAD = get_constant("DEG_TO_RAD")

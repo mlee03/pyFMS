@@ -14,18 +14,18 @@ from ..utils.data_handling import (
 class mpp:
 
     __libpath: str = None
-    __lib: type(ctypes.CDLL) = None
-    
+    __lib: type[ctypes.CDLL] = None
+
     @classmethod
     def setlib(cls, libpath, lib):
         cls.__libpath = libpath
         cls.__lib = lib
-        
+
     @classmethod
     @property
     def lib(cls):
         return cls.__lib
-    
+
     @classmethod
     @property
     def libpath(cls):
@@ -121,7 +121,7 @@ class mpp:
         commID = 0 if get_commID else None
         name = None
         # if get_name: name="NAME"
-        
+
         pelist = np.empty(shape=npes, dtype=np.int32)
 
         _cfms_get_current_pelist = cls.lib.cFMS_get_current_pelist
@@ -213,7 +213,7 @@ class mpp:
     """
 
     @classmethod
-    def set_pelist_npes(cls, npes_in: int = None): 
+    def set_pelist_npes(cls, npes_in: int = None):
         _cfms_set_npes = cls.lib.cFMS_set_pelist_npes
 
         npes_in_c, npes_in_t = setscalar_Cint32(npes_in)
@@ -221,4 +221,5 @@ class mpp:
         _cfms_set_npes.argtypes = [npes_in_t]
         _cfms_set_npes.restype = None
 
-        if npes_in is not None: _cfms_set_npes(npes_in_c)
+        if npes_in is not None:
+            _cfms_set_npes(npes_in_c)

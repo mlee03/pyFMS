@@ -68,7 +68,7 @@ class mpp_domains:
     SOUTH_WEST: int = None
 
     __libpath: str = None
-    __lib: type(ctypes.CDLL) = None
+    __lib: type[ctypes.CDLL] = None
 
     @classmethod
     def setlib(cls, libpath, lib):
@@ -84,11 +84,13 @@ class mpp_domains:
     @property
     def libpath(cls):
         return cls.__libpath
-    
+
     @classmethod
     def init(cls):
 
-        get_constant = lambda variable: int(ctypes.c_int.in_dll(cls.lib, variable).value) 
+        get_constant = lambda variable: int(
+            ctypes.c_int.in_dll(cls.lib, variable).value
+        )
         cls.GLOBAL_DATA_DOMAIN = get_constant("GLOBAL_DATA_DOMAIN")
         cls.BGRID_NE = get_constant("BGRID_NE")
         cls.CGRID_NE = get_constant("CGRID_NE")

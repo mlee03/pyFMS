@@ -34,7 +34,7 @@ def test_getset_domains():
     name = "test domain"
 
     pyfms.fms.init()
-    
+
     # set domain
 
     layout = pyfms.mpp_domains.define_layout(global_indices=global_indices, ndivs=4)

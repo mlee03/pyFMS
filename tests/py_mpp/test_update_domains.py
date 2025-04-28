@@ -5,6 +5,7 @@ import pytest
 
 import pyfms
 
+
 @pytest.mark.create
 def test_create_input_nml():
     inputnml = open("input.nml", "w")
@@ -26,11 +27,11 @@ def test_update_domains():
 
     pyfms.fms.init()
 
-    global_indices=[0, (nx-1), 0, (ny-1)]
+    global_indices = [0, (nx - 1), 0, (ny - 1)]
     layout = pyfms.mpp_domains.define_layout(global_indices=global_indices, ndivs=npes)
 
     domain = pyfms.mpp_domains.define_domains(
-        global_indices=[0, (nx-1), 0, (ny-1)] ,
+        global_indices=[0, (nx - 1), 0, (ny - 1)],
         layout=layout,
         whalo=whalo,
         ehalo=ehalo,

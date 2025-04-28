@@ -1,11 +1,13 @@
 import ctypes
 import os
+
 import pyfms
 
-class cfms():
+
+class cfms:
 
     __libpath: str = os.path.dirname(__file__) + "/../cFMS/cLIBFMS/lib/libcFMS.so"
-    __lib: type(ctypes.CDLL) = ctypes.cdll.LoadLibrary(__libpath)
+    __lib: type[ctypes.CDLL] = ctypes.cdll.LoadLibrary(__libpath)
 
     @classmethod
     def init(cls):
@@ -17,13 +19,13 @@ class cfms():
         pyfms.horiz_interp.setlib(cls.libpath, cls.lib)
         pyfms.mpp.setlib(cls.libpath, cls.lib)
         pyfms.mpp_domains.setlib(cls.libpath, cls.lib)
-        
+
     @classmethod
     def changelib(cls, libpath):
         cls.__libpath = libpath
         cls.__lib = ctypes.cdll.LoadLibrary(cls.__libpath)
         cls.init()
-        
+
     @classmethod
     @property
     def lib(cls):

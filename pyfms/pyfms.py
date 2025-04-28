@@ -2,16 +2,18 @@
 
 import ctypes
 import os
+
 from .py_mpp.py_mpp_domains import mpp_domains
-from .utils.data_handling import set_Cchar, setscalar_Cint32
 from .utils.constants import constants
+from .utils.data_handling import set_Cchar, setscalar_Cint32
+
 
 class fms:
 
     __libpath: str = None
-    __lib: type(ctypes.CDLL) = None
+    __lib: type[ctypes.CDLL] = None
 
-    NOTE : int = None
+    NOTE: int = None
     WARNING: int = None
     FATAL: int = None
     THIRTY_DAY_MONTHS: int = None
@@ -23,7 +25,7 @@ class fms:
     def setlib(cls, libpath, lib):
         cls.__lib_path = libpath
         cls.__lib = lib
-        
+
     @classmethod
     @property
     def lib(cls):
@@ -33,17 +35,20 @@ class fms:
     @property
     def libpath(cls):
         return cls.__libpath
-    
+
     @classmethod
-    def init(cls,
-             alt_input_nml_path: str = None,
-             localcomm: int = None,
-             ndomain: int = None,
-             nnest_domain: int = None,
-             calendar_type: int = None,
+    def init(
+        cls,
+        alt_input_nml_path: str = None,
+        localcomm: int = None,
+        ndomain: int = None,
+        nnest_domain: int = None,
+        calendar_type: int = None,
     ):
 
-        get_constant = lambda variable: int(ctypes.c_int.in_dll(cls.lib, variable).value)
+        get_constant = lambda variable: int(
+            ctypes.c_int.in_dll(cls.lib, variable).value
+        )
         cls.NOTE = get_constant("NOTE")
         cls.WARNING = get_constant("WARNING")
         cls.FATAL = get_constant("FATAL")
@@ -51,9 +56,9 @@ class fms:
         cls.GREGORIAN = get_constant("GREGORIAN")
         cls.JULIAN = get_constant("JULIAN")
         cls.NOLEAP = get_constant("NOLEAP")
-        
+
         _cfms_init = cls.lib.cFMS_init
-        
+
         localcomm_c, localcomm_t = setscalar_Cint32(localcomm)
         alt_input_nml_path_c, alt_input_nml_path_t = set_Cchar(alt_input_nml_path)
         ndomain_c, ndomain_t = setscalar_Cint32(ndomain)
@@ -78,7 +83,7 @@ class fms:
         )
         mpp_domains.init()
         constants.init()
-        
+
     """
     Subroutine: pyfms_end
 

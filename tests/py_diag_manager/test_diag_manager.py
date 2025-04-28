@@ -1,14 +1,16 @@
 import os
+
 import numpy as np
 
 import pyfms
+
 
 def test_send_data():
 
     nx = 8
     ny = 8
     nz = 2
-    
+
     var2 = np.empty(shape=(nx, ny), dtype=np.float32)
     for i in range(nx):
         for j in range(ny):
@@ -20,9 +22,8 @@ def test_send_data():
             for k in range(nz):
                 var3[i][j][k] = i * 100 + j * 10 + k * 1
 
-
     pyfms.fms.init(calendar_type=pyfms.fms.NOLEAP)
-    
+
     global_indices = [0, (nx - 1), 0, (ny - 1)]
     layout = [1, 1]
     io_layout = [1, 1]
@@ -111,9 +112,8 @@ def test_send_data():
         long_name="Var in a lon/lat domain",
         units="muntin",
         missing_value=-99.99,
-        range_data=np.array([-1000.0, 1000.0], dtype=np.float32)
+        range_data=np.array([-1000.0, 1000.0], dtype=np.float32),
     )
-    
 
     pyfms.diag_manager.set_field_timestep(
         diag_field_id=id_var3, dseconds=60 * 60, ddays=0, dticks=0
@@ -140,7 +140,7 @@ def test_send_data():
         long_name="Var in a lon/lat domain",
         units="muntin",
         missing_value=-99.99,
-        range_data=np.array([-1000.0, 1000.0],dtype=np.float32)
+        range_data=np.array([-1000.0, 1000.0], dtype=np.float32),
     )
 
     pyfms.diag_manager.set_field_timestep(
@@ -200,9 +200,9 @@ def test_send_data():
     pyfms.diag_manager.end()
     pyfms.fms.end()
 
-
     assert os.path.isfile("test_send_data.nc")
     os.remove("test_send_data.nc")
+
 
 if __name__ == "__main__":
     test_send_data()

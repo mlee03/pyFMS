@@ -8,7 +8,7 @@ import numpy.typing as npt
 class data_override:
 
     __libpath: str = None
-    __lib: type(ctypes.CDLL) = None
+    __lib: type[ctypes.CDLL] = None
 
     @classmethod
     def setlib(cls, libpath, lib):
