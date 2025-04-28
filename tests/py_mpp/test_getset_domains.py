@@ -33,15 +33,13 @@ def test_getset_domains():
     nhalo = 2
     name = "test domain"
 
-    pyfms_obj = pyfms.pyFMS(cFMS_path="./cFMS/libcFMS/.libs/libcFMS.so")
-    mpp_obj = pyfms.mpp(cFMS=pyfms_obj.cFMS)
-    mpp_domains_obj = pyfms.mpp_domains(cFMS=pyfms_obj.cFMS)
-
+    pyfms.fms.init()
+    
     # set domain
 
-    layout = mpp_domains_obj.define_layout(global_indices=global_indices, ndivs=4)
+    layout = pyfms.mpp_domains.define_layout(global_indices=global_indices, ndivs=4)
 
-    domain = mpp_domains_obj.define_domains(
+    domain = pyfms.mpp_domains.define_domains(
         global_indices=global_indices,
         layout=layout,
         name=name,
@@ -51,9 +49,9 @@ def test_getset_domains():
         nhalo=nhalo,
     )
 
-    assert mpp_domains_obj.domain_is_initialized(domain.domain_id)
+    assert pyfms.mpp_domains.domain_is_initialized(domain.domain_id)
 
-    mpp_obj.set_current_pelist()
+    pyfms.mpp.set_current_pelist()
 
     """
     flipping the domain:
@@ -80,14 +78,14 @@ def test_getset_domains():
     jsd = [2, 2, 0, 0]
     jed = [7, 7, 5, 5]
 
-    pe = mpp_obj.pe()
+    pe = pyfms.mpp.pe()
     tile_count = 0
     x_is_global = False
     y_is_global = False
 
     # set compute and data domains
 
-    mpp_domains_obj.set_compute_domain(
+    pyfms.mpp_domains.set_compute_domain(
         domain_id=domain.domain_id,
         xbegin=isc[pe],
         xend=iec[pe],
@@ -101,7 +99,7 @@ def test_getset_domains():
         shalo=shalo,
     )
 
-    mpp_domains_obj.set_data_domain(
+    pyfms.mpp_domains.set_data_domain(
         domain_id=domain.domain_id,
         xbegin=isd[pe],
         xend=ied[pe],
@@ -115,10 +113,10 @@ def test_getset_domains():
         shalo=shalo,
     )
 
-    compute = mpp_domains_obj.get_compute_domain(
+    compute = pyfms.mpp_domains.get_compute_domain(
         domain_id=domain.domain_id, whalo=whalo, shalo=shalo
     )
-    data = mpp_domains_obj.get_data_domain(
+    data = pyfms.mpp_domains.get_data_domain(
         domain_id=domain.domain_id, whalo=whalo, shalo=shalo
     )
 
@@ -144,7 +142,7 @@ def test_getset_domains():
     assert data["xmax_size"] == 6
     assert data["ymax_size"] == 6
 
-    pyfms_obj.pyfms_end()
+    pyfms.fms.end()
 
 
 @pytest.mark.remove

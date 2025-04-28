@@ -3,8 +3,7 @@ import os
 import numpy as np
 import pytest
 
-from pyfms import mpp, mpp_domains, pyFMS
-
+import pyfms
 
 @pytest.mark.create
 def test_create_input_nml():
@@ -25,23 +24,20 @@ def test_update_domains():
     shalo = 2
     domain_id = 0
 
-    pyfms_obj = pyFMS(cFMS_path="./cFMS/libcFMS/.libs/libcFMS.so")
-    mpp_obj = mpp(cFMS=pyfms_obj.cFMS)
-    mpp_domains_obj = mpp_domains(cFMS=pyfms_obj.cFMS)
+    pyfms.fms.init()
 
-    global_indices = [0, (nx - 1), 0, (ny - 1)]
+    global_indices=[0, (nx-1), 0, (ny-1)]
+    layout = pyfms.mpp_domains.define_layout(global_indices=global_indices, ndivs=npes)
 
-    layout = mpp_domains_obj.define_layout(global_indices=global_indices, ndivs=npes)
-
-    domain = mpp_domains_obj.define_domains(
-        global_indices=global_indices,
+    domain = pyfms.mpp_domains.define_domains(
+        global_indices=[0, (nx-1), 0, (ny-1)] ,
         layout=layout,
         whalo=whalo,
         ehalo=ehalo,
         shalo=shalo,
         nhalo=nhalo,
-        xflags=mpp_domains_obj.CYCLIC_GLOBAL_DOMAIN,
-        yflags=mpp_domains_obj.CYCLIC_GLOBAL_DOMAIN,
+        xflags=pyfms.mpp_domains.CYCLIC_GLOBAL_DOMAIN,
+        yflags=pyfms.mpp_domains.CYCLIC_GLOBAL_DOMAIN,
     )
 
     answers = np.array(
@@ -90,10 +86,10 @@ def test_update_domains():
         dtype=np.float32,
     )
 
-    compute = mpp_domains_obj.get_compute_domain(
+    compute = pyfms.mpp_domains.get_compute_domain(
         domain_id=domain.domain_id, whalo=whalo, shalo=shalo
     )
-    data = mpp_domains_obj.get_data_domain(
+    data = pyfms.mpp_domains.get_data_domain(
         domain_id=domain.domain_id, whalo=whalo, shalo=shalo
     )
 
@@ -116,18 +112,18 @@ def test_update_domains():
         for j in range(ysize_c):
             idata[whalo + i][shalo + j] = global_data[isc + i][jsc + j]
 
-    mpp_domains_obj.update_domains(
+    pyfms.mpp_domains.update_domains(
         field=idata,
-        domain_id=domain_id,
+        domain_id=domain.domain_id,
         whalo=whalo,
         ehalo=ehalo,
         shalo=shalo,
         nhalo=nhalo,
     )
 
-    assert np.array_equal(idata, answers[mpp_obj.pe()])
+    assert np.array_equal(idata, answers[pyfms.mpp.pe()])
 
-    pyfms_obj.pyfms_end()
+    pyfms.fms.end()
 
 
 @pytest.mark.remove
