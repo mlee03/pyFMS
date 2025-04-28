@@ -421,7 +421,7 @@ class mpp_domains:
         tile_count: int = None,
         whalo: int = None,
         shalo: int = None,
-    ):
+    ) -> dict():
 
         _cfms_get_compute_domain = self.cFMS.cFMS_get_compute_domain
 
@@ -533,7 +533,7 @@ class mpp_domains:
         tile_count: int = None,
         whalo: int = None,
         shalo: int = None,
-    ):
+    ) -> dict():
         _cfms_get_data_domain = self.cFMS.cFMS_get_data_domain
 
         default_i = 0
