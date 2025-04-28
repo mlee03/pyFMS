@@ -6,4 +6,5 @@ from .py_mpp.py_mpp import mpp
 from .py_mpp.py_mpp_domains import mpp_domains, pyDomain
 from .pyfms import pyFMS
 from .pyfms_utils import data_handling
+from .pyfms_utils.constants import constants
 from .pyfms_utils.grid_utils import GridUtils
