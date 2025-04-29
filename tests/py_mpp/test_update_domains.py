@@ -93,7 +93,7 @@ def test_update_domains():
     for ix in range(nx):
         for iy in range(ny):
             global_data[whalo + ix][shalo + iy] = iy * 10 + ix
-    
+
     isc, jsc = domain.isc, domain.jsc
     idata = np.zeros(shape=(domain.xsize_d, domain.ysize_d), dtype=np.float32)
     for i in range(domain.xsize_c):

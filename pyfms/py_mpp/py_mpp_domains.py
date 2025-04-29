@@ -15,28 +15,29 @@ from ..utils.data_handling import (
 
 
 class pyDomain:
-    def __init__(self,
-                 domain_id: int = None,
-                 isc: int = None,
-                 jsc: int = None,
-                 iec: int = None,
-                 jec: int = None,
-                 isd: int = None,
-                 jsd: int = None,
-                 ied: int = None,
-                 jed: int = None,
-                 xsize_c: int = None,
-                 ysize_c: int = None,
-                 xmax_size_c: int = None,
-                 ymax_size_c: int = None,
-                 x_is_global_c: int = None,
-                 y_is_global_c: int = None,
-                 xsize_d: int = None,
-                 ysize_d: int = None,
-                 xmax_size_d: int = None,
-                 ymax_size_d: int = None,
-                 x_is_global_d: bool = None,
-                 y_is_global_d: bool = None,
+    def __init__(
+        self,
+        domain_id: int = None,
+        isc: int = None,
+        jsc: int = None,
+        iec: int = None,
+        jec: int = None,
+        isd: int = None,
+        jsd: int = None,
+        ied: int = None,
+        jed: int = None,
+        xsize_c: int = None,
+        ysize_c: int = None,
+        xmax_size_c: int = None,
+        ymax_size_c: int = None,
+        x_is_global_c: int = None,
+        y_is_global_c: int = None,
+        xsize_d: int = None,
+        ysize_d: int = None,
+        xmax_size_d: int = None,
+        ymax_size_d: int = None,
+        x_is_global_d: bool = None,
+        y_is_global_d: bool = None,
     ):
         self.domain_id = domain_id
         self.isc = isc
@@ -58,12 +59,14 @@ class pyDomain:
         self.xmax_size_d = xmax_size_d
         self.ymax_size_d = ymax_size_d
         self.x_is_global_d = x_is_global_d
-        self.y_is_global_d = y_is_global_d        
+        self.y_is_global_d = y_is_global_d
 
     def update(self, domain_dict: dict):
-        for key in domain_dict: setattr(self, key, domain_dict[key])
+        for key in domain_dict:
+            setattr(self, key, domain_dict[key])
         return self
-    
+
+
 class mpp_domains:
 
     GLOBAL_DATA_DOMAIN: int = None
@@ -272,15 +275,20 @@ class mpp_domains:
             y_cyclic_offset_c,
         )
 
-        compute = cls.get_compute_domain(domain_id=domain_id, tile_count=tile_count, whalo=whalo, shalo=shalo)
-        data = cls.get_data_domain(domain_id=domain_id, tile_count=tile_count, whalo=whalo, shalo=shalo)
+        compute = cls.get_compute_domain(
+            domain_id=domain_id, tile_count=tile_count, whalo=whalo, shalo=shalo
+        )
+        data = cls.get_data_domain(
+            domain_id=domain_id, tile_count=tile_count, whalo=whalo, shalo=shalo
+        )
 
         pydomain = pyDomain()
-        for key in compute: setattr(pydomain, key, compute[key])
-        for key in data: setattr(pydomain, key, data[key])
+        for key in compute:
+            setattr(pydomain, key, compute[key])
+        for key in data:
+            setattr(pydomain, key, data[key])
         return pydomain
-                               
-                               
+
     """
     Subroutine: define_io_domains
 
@@ -827,7 +835,7 @@ class mpp_domains:
             whalo_c,
             shalo_c,
         )
-        
+
     """
     Subroutine: set_current_domain
 

@@ -122,7 +122,7 @@ def test_getset_domains():
 
     domain.update(compute)
     domain.update(data)
-    
+
     # get domain
 
     assert domain.isc == isc[pe]
