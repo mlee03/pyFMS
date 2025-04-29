@@ -47,4 +47,6 @@ run_test "mpirun -n 1 python -m pytest tests/py_diag_manager/test_diag_manager.p
 
 pytest tests/utils/test_constants.py
 
+pytest tests/test_init.py
+
 rm -rf INPUT *logfile* *warnfile*
