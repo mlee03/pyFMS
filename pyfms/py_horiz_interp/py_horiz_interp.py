@@ -10,21 +10,21 @@ class horiz_interp:
     __lib: type[ctypes.CDLL] = None
 
     @classmethod
-    def setlib(cls, libpath, lib):
+    def setlib(cls, libpath: str, lib: type[ctypes.CDLL]):
         cls.__libpath = libpath
         cls.__lib = lib
 
     @classmethod
-    def lib(cls):
+    def lib(cls) -> type[ctypes.CDLL]:
         return cls.__lib
 
     @classmethod
-    def libpath(cls):
+    def libpath(cls) -> str:
         return cls.__libpath
 
     @classmethod
     def init(cls, ninterp: int = None):
-        _cfms_horiz_interp_init = cls.lib.cFMS_horiz_interp_init
+        _cfms_horiz_interp_init = cls.lib().cFMS_horiz_interp_init
 
         ninterp_c, ninterp_t = ctypes.c_int(ninterp), ctypes.POINTER(ctypes.c_int)
 
@@ -35,7 +35,7 @@ class horiz_interp:
 
     @classmethod
     def set_current_interp(cls, interp_id: int = None):
-        _cfms_set_current_interp = cls.lib.cFMS_set_current_interp
+        _cfms_set_current_interp = cls.lib().cFMS_set_current_interp
 
         interp_id_c, interp_id_t = ctypes.c_int(interp_id), ctypes.POINTER(ctypes.c_int)
 
@@ -46,8 +46,8 @@ class horiz_interp:
 
     @classmethod
     def get_maxxgrid(cls) -> np.int32:
-        cls.lib.get_maxxgrid.restype = np.int32
-        return cls.lib.get_maxxgrid()
+        cls.lib().get_maxxgrid.restype = np.int32
+        return cls.lib().get_maxxgrid()
 
     @classmethod
     def create_xgrid_2dx2d_order1(
@@ -113,7 +113,7 @@ class horiz_interp:
         j_tgt = np.zeros(maxxgrid, dtype=np.int32)
         xarea = np.zeros(maxxgrid, dtype=np.float64)
 
-        _create_xgrid = cls.lib.cFMS_create_xgrid_2dx2d_order1
+        _create_xgrid = cls.lib().cFMS_create_xgrid_2dx2d_order1
 
         _create_xgrid.restype = ctypes.c_int
         _create_xgrid.argtypes = [

@@ -17,16 +17,16 @@ class mpp:
     __lib: type[ctypes.CDLL] = None
 
     @classmethod
-    def setlib(cls, libpath, lib):
+    def setlib(cls, libpath: str, lib: type[ctypes.CDLL]):
         cls.__libpath = libpath
         cls.__lib = lib
 
     @classmethod
-    def lib(cls):
+    def lib(cls) -> type[ctypes.CDLL]:
         return cls.__lib
 
     @classmethod
-    def libpath(cls):
+    def libpath(cls) -> str:
         return cls.__libpath
 
     """
@@ -56,7 +56,7 @@ class mpp:
         name: str = None,
     ) -> int:
 
-        _cfms_declare_pelist = cls.lib.cFMS_declare_pelist
+        _cfms_declare_pelist = cls.lib().cFMS_declare_pelist
 
         commID = 0
 
@@ -87,7 +87,7 @@ class mpp:
         if errormsg is not None:
             errormsg = errormsg[:128]
 
-        _cfms_error = cls.lib.cFMS_error
+        _cfms_error = cls.lib().cFMS_error
 
         errortype_c, errortype_t = setscalar_Cint32(errortype)
         errormsg_c, errormsg_t = set_Cchar(errormsg)
@@ -122,7 +122,7 @@ class mpp:
 
         pelist = np.empty(shape=npes, dtype=np.int32)
 
-        _cfms_get_current_pelist = cls.lib.cFMS_get_current_pelist
+        _cfms_get_current_pelist = cls.lib().cFMS_get_current_pelist
 
         pelist_p, pelist_t = setarray_Cint32(pelist)
         name_c, name_t = set_Cchar(name)
@@ -154,7 +154,7 @@ class mpp:
 
     @classmethod
     def npes(cls) -> int:
-        _cfms_npes = cls.lib.cFMS_npes
+        _cfms_npes = cls.lib().cFMS_npes
 
         _cfms_npes.restype = ctypes.c_int32
 
@@ -168,7 +168,7 @@ class mpp:
 
     @classmethod
     def pe(cls) -> int:
-        _cfms_pe = cls.lib.cFMS_pe
+        _cfms_pe = cls.lib().cFMS_pe
 
         _cfms_pe.restype = ctypes.c_int32
 
@@ -187,7 +187,7 @@ class mpp:
 
     @classmethod
     def set_current_pelist(cls, pelist: list[int] = None, no_sync: bool = None):
-        _cfms_set_current_pelist = cls.lib.cFMS_set_current_pelist
+        _cfms_set_current_pelist = cls.lib().cFMS_set_current_pelist
 
         if pelist is not None:
             npes = len(pelist)
@@ -212,7 +212,7 @@ class mpp:
 
     @classmethod
     def set_pelist_npes(cls, npes_in: int = None):
-        _cfms_set_npes = cls.lib.cFMS_set_pelist_npes
+        _cfms_set_npes = cls.lib().cFMS_set_pelist_npes
 
         npes_in_c, npes_in_t = setscalar_Cint32(npes_in)
 

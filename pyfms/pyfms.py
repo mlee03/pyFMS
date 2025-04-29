@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import ctypes
-import os
 
 from .py_mpp.py_mpp_domains import mpp_domains
 from .utils.constants import constants
@@ -22,16 +21,16 @@ class fms:
     NOLEAP: int = None
 
     @classmethod
-    def setlib(cls, libpath, lib):
+    def setlib(cls, libpath: str, lib: type[ctypes.CDLL]):
         cls.__lib_path = libpath
         cls.__lib = lib
 
     @classmethod
-    def lib(cls):
+    def lib(cls) -> type[ctypes.CDLL]:
         return cls.__lib
 
     @classmethod
-    def libpath(cls):
+    def libpath(cls) -> str:
         return cls.__libpath
 
     @classmethod
@@ -43,10 +42,9 @@ class fms:
         nnest_domain: int = None,
         calendar_type: int = None,
     ):
+        def get_constant(variable):
+            return int(ctypes.c_int.in_dll(cls.lib(), variable).value)
 
-        get_constant = lambda variable: int(
-            ctypes.c_int.in_dll(cls.lib, variable).value
-        )
         cls.NOTE = get_constant("NOTE")
         cls.WARNING = get_constant("WARNING")
         cls.FATAL = get_constant("FATAL")
@@ -55,7 +53,7 @@ class fms:
         cls.JULIAN = get_constant("JULIAN")
         cls.NOLEAP = get_constant("NOLEAP")
 
-        _cfms_init = cls.lib.cFMS_init
+        _cfms_init = cls.lib().cFMS_init
 
         localcomm_c, localcomm_t = setscalar_Cint32(localcomm)
         alt_input_nml_path_c, alt_input_nml_path_t = set_Cchar(alt_input_nml_path)
@@ -93,6 +91,6 @@ class fms:
 
     @classmethod
     def end(cls):
-        _cfms_end = cls.lib.cFMS_end
+        _cfms_end = cls.lib().cFMS_end
         _cfms_end.restype = None
         _cfms_end()

@@ -25,21 +25,21 @@ class diag_manager:
     __lib: type[ctypes.CDLL] = None
 
     @classmethod
-    def setlib(cls, libpath, lib):
+    def setlib(cls, libpath: str, lib: type[ctypes.CDLL]):
         cls.__libpath = libpath
         cls.__lib = lib
 
     @classmethod
-    def lib(cls):
+    def lib(cls) -> type[ctypes.CDLL]:
         return cls.__lib
 
     @classmethod
-    def libpath(cls):
+    def libpath(cls) -> str:
         return cls.__libpath
 
     @classmethod
     def end(cls):
-        _cfms_diag_end = cls.lib.cFMS_diag_end
+        _cfms_diag_end = cls.lib().cFMS_diag_end
 
         _cfms_diag_end.restype = None
 
@@ -51,15 +51,14 @@ class diag_manager:
         diag_model_subset: int = None,
         time_init: NDArray = None,
     ) -> str:
+        def get_constant(variable):
+            return int(ctypes.c_int.in_dll(cls.lib(), variable).value)
 
-        get_constant = lambda variable: int(
-            ctypes.c_int.in_dll(cls.lib, variable).value
-        )
         cls.DIAG_OTHER = get_constant("DIAG_OTHER")
         cls.DIAG_OCEAN = get_constant("DIAG_OCEAN")
         cls.DIAG_ALL = get_constant("DIAG_ALL")
 
-        _cfms_diag_init = cls.lib.cFMS_diag_init
+        _cfms_diag_init = cls.lib().cFMS_diag_init
 
         diag_model_subset_c, diag_model_subset_t = setscalar_Cint32(diag_model_subset)
         time_init_p, time_init_t = setarray_Cint32(time_init)
@@ -82,7 +81,7 @@ class diag_manager:
         diag_field_id: int,
     ) -> str:
 
-        _cfms_diag_send_complete = cls.lib.cFMS_diag_send_complete
+        _cfms_diag_send_complete = cls.lib().cFMS_diag_send_complete
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         err_msg_c, err_msg_t = set_Cchar(" ")
@@ -106,7 +105,7 @@ class diag_manager:
         tick: int = None,
     ) -> str:
 
-        _cfms_diag_set_field_init_time = cls.lib.cFMS_diag_set_field_init_time
+        _cfms_diag_set_field_init_time = cls.lib().cFMS_diag_set_field_init_time
 
         year_c, year_t = setscalar_Cint32(year)
         month_c, month_t = setscalar_Cint32(month)
@@ -144,7 +143,7 @@ class diag_manager:
         dticks: int = None,
     ) -> str:
 
-        _cfms_diag_set_field_timestep = cls.lib.cFMS_diag_set_field_timestep
+        _cfms_diag_set_field_timestep = cls.lib().cFMS_diag_set_field_timestep
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
         dseconds_c, dseconds_t = setscalar_Cint32(dseconds)
@@ -172,7 +171,7 @@ class diag_manager:
         cls,
         diag_field_id: int,
     ):
-        _cfms_diag_advance_field_time = cls.lib.cFMS_diag_advance_field_time
+        _cfms_diag_advance_field_time = cls.lib().cFMS_diag_advance_field_time
 
         diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
 
@@ -196,7 +195,7 @@ class diag_manager:
         if err_msg is not None:
             err_msg = err_msg[:128]
 
-        _cfms_set_time_end = cls.lib.cFMS_diag_set_time_end
+        _cfms_set_time_end = cls.lib().cFMS_diag_set_time_end
 
         year_c, year_t = setscalar_Cint32(year)
         month_c, month_t = setscalar_Cint32(month)
@@ -268,10 +267,10 @@ class diag_manager:
         not_xy_c, not_xy_t = setscalar_Cbool(not_xy)
 
         if axis_data.dtype == np.float64:
-            _cfms_diag_axis_init_ = cls.lib.cFMS_diag_axis_init_cdouble
+            _cfms_diag_axis_init_ = cls.lib().cFMS_diag_axis_init_cdouble
             axis_data_p, axis_data_t = setarray_Cdouble(axis_data)
         elif axis_data.dtype == np.float32:
-            _cfms_diag_axis_init_ = cls.lib.cFMS_diag_axis_init_cfloat
+            _cfms_diag_axis_init_ = cls.lib().cFMS_diag_axis_init_cfloat
             axis_data_p, axis_data_t = setarray_Cfloat(axis_data)
         else:
             raise RuntimeError("diag_axis_init datatype not supported")
@@ -376,19 +375,19 @@ class diag_manager:
 
         if datatype == np.int32:
             _cfms_register_diag_field_array_ = (
-                cls.lib.cFMS_register_diag_field_array_cint
+                cls.lib().cFMS_register_diag_field_array_cint
             )
             range_data_p, range_data_t = setarray_Cint32(range_data)
             missing_value_c, missing_value_t = setscalar_Cint32(missing_value)
         elif datatype == np.float64:
             _cfms_register_diag_field_array_ = (
-                cls.lib.cFMS_register_diag_field_array_cdouble
+                cls.lib().cFMS_register_diag_field_array_cdouble
             )
             range_data_p, range_data_t = setarray_Cdouble(range_data)
             missing_value_c, missing_value_t = setscalar_Cdouble(missing_value)
         elif datatype == np.float32:
             _cfms_register_diag_field_array_ = (
-                cls.lib.cFMS_register_diag_field_array_cfloat
+                cls.lib().cFMS_register_diag_field_array_cfloat
             )
             range_data_p, range_data_t = setarray_Cfloat(range_data)
             missing_value_c, missing_value_t = setscalar_Cfloat(missing_value)
@@ -483,19 +482,19 @@ class diag_manager:
 
         if datatype == np.int32:
             _cfms_register_diag_field_scalar_ = (
-                cls.lib.cFMS_register_diag_field_array_cint
+                cls.lib().cFMS_register_diag_field_array_cint
             )
             range_data_p, range_data_t = setarray_Cint32(range_data)
             missing_value_c, missing_value_t = setscalar_Cint32(missing_value)
         elif datatype == np.float64:
             _cfms_register_diag_field_scalar_ = (
-                cls.lib.cFMS_register_diag_field_array_cdouble
+                cls.lib().cFMS_register_diag_field_array_cdouble
             )
             range_data_p, range_data_t = setarray_Cdouble(range_data)
             missing_value_c, missing_value_t = setscalar_Cdouble(missing_value)
         elif datatype == np.float32:
             _cfms_register_diag_field_scalar_ = (
-                cls.lib.cFMS_register_diag_field_array_cfloat
+                cls.lib().cFMS_register_diag_field_array_cfloat
             )
             range_data_p, range_data_t = setarray_Cfloat(range_data)
             missing_value_c, missing_value_t = setscalar_Cfloat(missing_value)
@@ -552,49 +551,49 @@ class diag_manager:
 
         if field_shape_arr.size == 2:
             if field.dtype == np.int32:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_2d_cint
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_2d_cint
                 field_p, field_t = setarray_Cint32(field)
             elif field.dtype == np.float64:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_2d_cdouble
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_2d_cdouble
                 field_p, field_t = setarray_Cdouble(field)
             elif field.dtype == np.float32:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_2d_cfloat
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_2d_cfloat
                 field_p, field_t = setarray_Cfloat(field)
             else:
                 raise RuntimeError(f"diag_send_data {field.dtype} unsupported")
         elif field_shape_arr.size == 3:
             if field.dtype == np.int32:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_3d_cint
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_3d_cint
                 field_p, field_t = setarray_Cint32(field)
             elif field.dtype == np.float64:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_3d_cdouble
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_3d_cdouble
                 field_p, field_t = setarray_Cdouble(field)
             elif field.dtype == np.float32:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_3d_cfloat
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_3d_cfloat
                 field_p, field_t = setarray_Cfloat(field)
             else:
                 raise RuntimeError(f"diag_send_data {field.dtype} unsupported")
         elif field_shape_arr.size == 4:
             if field.dtype == np.int32:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_4d_cint
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_4d_cint
                 field_p, field_t = setarray_Cint32(field)
             elif field.dtype == np.float64:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_4d_cdouble
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_4d_cdouble
                 field_p, field_t = setarray_Cdouble(field)
             elif field.dtype == np.float32:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_4d_cfloat
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_4d_cfloat
                 field_p, field_t = setarray_Cfloat(field)
             else:
                 raise RuntimeError(f"diag_send_data {field.dtype} unsupported")
         elif field_shape_arr.size == 5:
             if field.dtype == np.int32:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_5d_cint
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_5d_cint
                 field_p, field_t = setarray_Cint32(field)
             elif field.dtype == np.float64:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_5d_cdouble
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_5d_cdouble
                 field_p, field_t = setarray_Cdouble(field)
             elif field.dtype == np.float32:
-                _cfms_diag_send_data_ = cls.lib.cFMS_diag_send_data_5d_cfloat
+                _cfms_diag_send_data_ = cls.lib().cFMS_diag_send_data_5d_cfloat
                 field_p, field_t = setarray_Cfloat(field)
             else:
                 raise RuntimeError(f"diag_send_data {field.dtype} unsupported")

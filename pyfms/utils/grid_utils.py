@@ -10,16 +10,16 @@ class grid_utils:
     __lib: type[ctypes.CDLL] = None
 
     @classmethod
-    def setlib(cls, libpath, lib):
+    def setlib(cls, libpath: str, lib: type[ctypes.CDLL]):
         cls.__libpath = libpath
         cls.__lib = lib
 
     @classmethod
-    def lib(cls):
+    def lib(cls) -> type[ctypes.CDLL]:
         return cls.__lib
 
     @classmethod
-    def libpath(cls):
+    def libpath(cls) -> str:
         return cls.__libpath
 
     @classmethod
@@ -50,7 +50,7 @@ class grid_utils:
         nlat_c = nlat_t(nlat)
         area = np.zeros(ncells, dtype=np.float64)
 
-        _get_grid_area = cls.lib.cFMS_get_grid_area
+        _get_grid_area = cls.lib().cFMS_get_grid_area
 
         _get_grid_area.restype = None
         _get_grid_area.argtypes = [

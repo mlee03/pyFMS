@@ -11,16 +11,16 @@ class data_override:
     __lib: type[ctypes.CDLL] = None
 
     @classmethod
-    def setlib(cls, libpath, lib):
+    def setlib(cls, libpath: str, lib: type[ctypes.CDLL]):
         cls.__libpath = libpath
         cls.__lib = lib
 
     @classmethod
-    def lib(cls):
+    def lib(cls) -> type[ctypes.CDLL]:
         return cls.__lib
 
     @classmethod
-    def libpath(cls):
+    def libpath(cls) -> str:
         return cls.__libpath
 
     @classmethod
@@ -34,7 +34,7 @@ class data_override:
         mode: int = None,
     ):
 
-        _data_override_init = cls.lib.cFMS_data_override_init
+        _data_override_init = cls.lib().cFMS_data_override_init
 
         atm_domain_id_t = ctypes.c_int
         ocn_domain_id_t = ctypes.c_int
@@ -93,7 +93,7 @@ class data_override:
         tick: int = None,
     ):
 
-        _data_override_set_time = cls.lib.cFMS_data_override_set_time
+        _data_override_set_time = cls.lib().cFMS_data_override_set_time
 
         year_t = ctypes.c_int
         month_t = ctypes.c_int
@@ -138,7 +138,7 @@ class data_override:
         data_index: int = None,
     ) -> np.float32 | np.float64:
 
-        _data_override_scalar = cls.lib.cFMS_data_override_0d_cdouble
+        _data_override_scalar = cls.lib().cFMS_data_override_0d_cdouble
         gridname_t = ctypes.c_char_p
         fieldname_t = ctypes.c_char_p
         data_t = ctypes.c_float if data_type is np.float32 else ctypes.c_double
@@ -182,14 +182,14 @@ class data_override:
 
         if data_type is np.float32:
             if nshape == 2:
-                _data_override = cls.lib.cFMS_data_override_2d_cfloat
+                _data_override = cls.lib().cFMS_data_override_2d_cfloat
             if nshape == 3:
-                _data_override = cls.lib.cFMS_data_override_3d_cfloat
+                _data_override = cls.lib().cFMS_data_override_3d_cfloat
         elif data_type is np.float64:
             if nshape == 2:
-                _data_override = cls.lib.cFMS_data_override_2d_cdouble
+                _data_override = cls.lib().cFMS_data_override_2d_cdouble
             if nshape == 3:
-                _data_override = cls.lib.cFMS_data_override_3d_cdouble
+                _data_override = cls.lib().cFMS_data_override_3d_cdouble
         else:
             # add cFMS_end
             raise RuntimeError("Data_override, datatype not supported")

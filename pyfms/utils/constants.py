@@ -58,7 +58,7 @@ class constants:
     __lib: type[ctypes.CDLL] = None
 
     @classmethod
-    def setlib(cls, libpath, lib):
+    def setlib(cls, libpath: str, lib: type[ctypes.CDLL]):
         cls.__libpath = libpath
         cls.__lib = lib
 
@@ -67,15 +67,14 @@ class constants:
         return cls.__lib
 
     @classmethod
-    def libpath(cls):
+    def libpath(cls) -> str:
         return cls.__libpath
 
     @classmethod
     def init(cls):
+        def get_constant(variable):
+            return np.float64(ctypes.c_double.in_dll(cls.lib(), variable).value)
 
-        get_constant = lambda variable: np.float64(
-            ctypes.c_double.in_dll(cls.lib, variable).value
-        )
         cls.PI = get_constant("PI")
         cls.RAD_TO_DEG = get_constant("RAD_TO_DEG")
         cls.DEG_TO_RAD = get_constant("DEG_TO_RAD")
