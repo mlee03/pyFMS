@@ -87,30 +87,17 @@ def test_update_domains():
         dtype=np.float32,
     )
 
-    compute = pyfms.mpp_domains.get_compute_domain(
-        domain_id=domain.domain_id, whalo=whalo, shalo=shalo
-    )
-    data = pyfms.mpp_domains.get_data_domain(
-        domain_id=domain.domain_id, whalo=whalo, shalo=shalo
-    )
-
-    isc = compute["xbegin"]
-    jsc = compute["ybegin"]
-    xsize_c = compute["xsize"]
-    ysize_c = compute["ysize"]
-    xsize_d = data["xsize"]
-    ysize_d = data["ysize"]
-
     global_data = np.zeros(
         shape=(nx + ehalo + whalo, ny + ehalo + whalo), dtype=np.float32
     )
     for ix in range(nx):
         for iy in range(ny):
             global_data[whalo + ix][shalo + iy] = iy * 10 + ix
-
-    idata = np.zeros(shape=(xsize_d, ysize_d), dtype=np.float32)
-    for i in range(xsize_c):
-        for j in range(ysize_c):
+    
+    isc, jsc = domain.isc, domain.jsc
+    idata = np.zeros(shape=(domain.xsize_d, domain.ysize_d), dtype=np.float32)
+    for i in range(domain.xsize_c):
+        for j in range(domain.ysize_c):
             idata[whalo + i][shalo + j] = global_data[isc + i][jsc + j]
 
     pyfms.mpp_domains.update_domains(

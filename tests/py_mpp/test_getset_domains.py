@@ -120,27 +120,30 @@ def test_getset_domains():
         domain_id=domain.domain_id, whalo=whalo, shalo=shalo
     )
 
+    domain.update(compute)
+    domain.update(data)
+    
     # get domain
 
-    assert compute["xbegin"] == isc[pe]
-    assert compute["xend"] == iec[pe]
-    assert compute["ybegin"] == jsc[pe]
-    assert compute["yend"] == jec[pe]
-    assert compute["xsize"] == 2
-    assert compute["ysize"] == 2
-    assert compute["xmax_size"] == 2
-    assert compute["ymax_size"] == 2
-    assert compute["x_is_global"] is False
-    assert compute["y_is_global"] is False
+    assert domain.isc == isc[pe]
+    assert domain.iec == iec[pe]
+    assert domain.jsc == jsc[pe]
+    assert domain.jec == jec[pe]
+    assert domain.xsize_c == 2
+    assert domain.ysize_c == 2
+    assert domain.xmax_size_c == 2
+    assert domain.ymax_size_c == 2
+    assert domain.x_is_global_c is False
+    assert domain.y_is_global_c is False
 
-    assert data["xbegin"] == isd[pe]
-    assert data["xend"] == ied[pe]
-    assert data["ybegin"] == jsd[pe]
-    assert data["yend"] == jed[pe]
-    assert data["xsize"] == 6
-    assert data["ysize"] == 6
-    assert data["xmax_size"] == 6
-    assert data["ymax_size"] == 6
+    assert domain.isd == isd[pe]
+    assert domain.ied == ied[pe]
+    assert domain.jsd == jsd[pe]
+    assert domain.jed == jed[pe]
+    assert domain.xsize_d == 6
+    assert domain.ysize_d == 6
+    assert domain.xmax_size_d == 6
+    assert domain.ymax_size_d == 6
 
     pyfms.fms.end()
 

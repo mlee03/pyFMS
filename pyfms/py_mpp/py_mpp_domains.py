@@ -15,19 +15,28 @@ from ..utils.data_handling import (
 
 
 class pyDomain:
-    def __init__(
-        self,
-        domain_id: int = None,
-        isc: int = None,
-        jsc: int = None,
-        iec: int = None,
-        jec: int = None,
-        isd: int = None,
-        jsd: int = None,
-        ied: int = None,
-        jed: int = None,
-        tile: int = None,
-        layout: list[int] = None,
+    def __init__(self,
+                 domain_id: int = None,
+                 isc: int = None,
+                 jsc: int = None,
+                 iec: int = None,
+                 jec: int = None,
+                 isd: int = None,
+                 jsd: int = None,
+                 ied: int = None,
+                 jed: int = None,
+                 xsize_c: int = None,
+                 ysize_c: int = None,
+                 xmax_size_c: int = None,
+                 ymax_size_c: int = None,
+                 x_is_global_c: int = None,
+                 y_is_global_c: int = None,
+                 xsize_d: int = None,
+                 ysize_d: int = None,
+                 xmax_size_d: int = None,
+                 ymax_size_d: int = None,
+                 x_is_global_d: bool = None,
+                 y_is_global_d: bool = None,
     ):
         self.domain_id = domain_id
         self.isc = isc
@@ -38,10 +47,23 @@ class pyDomain:
         self.jsd = jsd
         self.ied = ied
         self.jed = jed
-        self.tile = tile
-        self.layout = layout
+        self.xsize_c = xsize_c
+        self.ysize_c = ysize_c
+        self.xmax_size_c = xmax_size_c
+        self.ymax_size_c = ymax_size_c
+        self.x_is_global_c = x_is_global_c
+        self.y_is_global_c = y_is_global_c
+        self.xsize_d = xsize_d
+        self.ysize_d = ysize_d
+        self.xmax_size_d = xmax_size_d
+        self.ymax_size_d = ymax_size_d
+        self.x_is_global_d = x_is_global_d
+        self.y_is_global_d = y_is_global_d        
 
-
+    def update(self, domain_dict: dict):
+        for key in domain_dict: setattr(self, key, domain_dict[key])
+        return self
+    
 class mpp_domains:
 
     GLOBAL_DATA_DOMAIN: int = None
@@ -250,8 +272,15 @@ class mpp_domains:
             y_cyclic_offset_c,
         )
 
-        return pyDomain(domain_id=domain_id, layout=layout, tile=tile_id)
+        compute = cls.get_compute_domain(domain_id=domain_id, tile_count=tile_count, whalo=whalo, shalo=shalo)
+        data = cls.get_data_domain(domain_id=domain_id, tile_count=tile_count, whalo=whalo, shalo=shalo)
 
+        pydomain = pyDomain()
+        for key in compute: setattr(pydomain, key, compute[key])
+        for key in data: setattr(pydomain, key, data[key])
+        return pydomain
+                               
+                               
     """
     Subroutine: define_io_domains
 
@@ -520,16 +549,16 @@ class mpp_domains:
 
         return dict(
             domain_id=domain_id_c.value,
-            xbegin=xbegin_c.value,
-            ybegin=ybegin_c.value,
-            xend=xend_c.value,
-            yend=yend_c.value,
-            xsize=xsize_c.value,
-            ysize=ysize_c.value,
-            xmax_size=xmax_size_c.value,
-            ymax_size=ymax_size_c.value,
-            x_is_global=x_is_global_c.value,
-            y_is_global=y_is_global_c.value,
+            isc=xbegin_c.value,
+            jsc=ybegin_c.value,
+            iec=xend_c.value,
+            jec=yend_c.value,
+            xsize_c=xsize_c.value,
+            ysize_c=ysize_c.value,
+            xmax_size_c=xmax_size_c.value,
+            ymax_size_c=ymax_size_c.value,
+            x_is_global_c=x_is_global_c.value,
+            y_is_global_c=y_is_global_c.value,
         )
 
     """
@@ -632,16 +661,16 @@ class mpp_domains:
 
         return dict(
             domain_id=domain_id_c.value,
-            xbegin=xbegin_c.value,
-            ybegin=ybegin_c.value,
-            xend=xend_c.value,
-            yend=yend_c.value,
-            xsize=xsize_c.value,
-            ysize=ysize_c.value,
-            xmax_size=xmax_size_c.value,
-            ymax_size=ymax_size_c.value,
-            x_is_global=x_is_global_c.value,
-            y_is_global=y_is_global_c.value,
+            isd=xbegin_c.value,
+            jsd=ybegin_c.value,
+            ied=xend_c.value,
+            jed=yend_c.value,
+            xsize_d=xsize_c.value,
+            ysize_d=ysize_c.value,
+            xmax_size_d=xmax_size_c.value,
+            ymax_size_d=ymax_size_c.value,
+            x_is_global_d=x_is_global_c.value,
+            y_is_global_d=y_is_global_c.value,
         )
 
     """
@@ -798,7 +827,7 @@ class mpp_domains:
             whalo_c,
             shalo_c,
         )
-
+        
     """
     Subroutine: set_current_domain
 

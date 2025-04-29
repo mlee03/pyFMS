@@ -28,9 +28,8 @@ def test_data_override():
         nhalo=nhalo,
     )
 
-    compute_dict = pyfms.mpp_domains.get_compute_domain(domain_id=domain.domain_id)
-    xsize = compute_dict["xsize"]
-    ysize = compute_dict["ysize"]
+    xsize = domain.xsize_c
+    ysize = domain.ysize_c
 
     pyfms.data_override.init(ocn_domain_id=domain.domain_id)
     pyfms.data_override.set_time(
