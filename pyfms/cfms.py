@@ -8,6 +8,7 @@ class cfms:
 
     __libpath: str = os.path.dirname(__file__) + "/../cFMS/cLIBFMS/lib/libcFMS.so"
     __lib: type[ctypes.CDLL] = ctypes.cdll.LoadLibrary(__libpath)
+    lib = None
 
     @classmethod
     def init(cls):

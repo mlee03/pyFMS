@@ -79,9 +79,6 @@ def test_getset_domains():
     jed = [7, 7, 5, 5]
 
     pe = pyfms.mpp.pe()
-    tile_count = 0
-    x_is_global = False
-    y_is_global = False
 
     # set compute and data domains
 
@@ -93,8 +90,6 @@ def test_getset_domains():
         yend=jec[pe],
         xsize=2,
         ysize=2,
-        x_is_global=x_is_global,
-        y_is_global=y_is_global,
         whalo=whalo,
         shalo=shalo,
     )
@@ -107,8 +102,6 @@ def test_getset_domains():
         yend=jed[pe],
         xsize=6,
         ysize=6,
-        x_is_global=x_is_global,
-        y_is_global=y_is_global,
         whalo=whalo,
         shalo=shalo,
     )

@@ -15,6 +15,16 @@ from ..utils.data_handling import (
 
 
 class pyDomain:
+
+    """
+    Carries useful information about the domain
+    such as array indices corresponding to each domain
+    pyfms.mpp_domains.define() will return an instance of pyDomain
+    Instance variables can be updated with the update method
+    with dictionaries returned from pyfms.mpp_domains.get_compute_domain and
+    pyfms.mpp_domains.get_data_domain
+    """
+
     def __init__(
         self,
         domain_id: int = None,

@@ -7,6 +7,17 @@ import numpy.typing as npt
 
 class data_override:
 
+    """
+    Parameters for initializing data_override in FMS
+    These parameters can be specified through data_override.init()
+    mode=CFLOAT_MODE initializes data_override in 32-bit mode for real variables
+    mode=CDOUBLE_MODE initializes data_override in 64-bit mode for real variables
+    if mode is not specified, both 32-bit and 64-bit modes are initialized
+    """
+
+    CFLOAT_MODE: int = None
+    CDOUBLE_MODE: int = None
+
     __libpath: str = None
     __lib: type[ctypes.CDLL] = None
 
@@ -23,6 +34,12 @@ class data_override:
     def libpath(cls) -> str:
         return cls.__libpath
 
+    """
+    pyfms.data_override.init()
+    Calls data_override_init in FMS.  Domain_id's are required to pass in the
+    domains data_override_init.  Domain_id's is generated through mpp_domains.define
+    """
+
     @classmethod
     def init(
         cls,
@@ -33,6 +50,9 @@ class data_override:
         land_domainUG_id: int = None,
         mode: int = None,
     ):
+
+        CFLOAT_MODE = int(ctypes.c_int.in_dll(cls.lib(), "CFLOAT_MODE").value)
+        CDOUBLE_MODE = int(ctypes.c_int.in_dll(cls.lib(), "CDOUBLE_MODE").value)
 
         _data_override_init = cls.lib().cFMS_data_override_init
 
@@ -80,6 +100,12 @@ class data_override:
             land_domainUG_id_c,
             mode_c,
         )
+
+    """
+    pyfms.data_override.set_time()
+    Sets the time type in cFMS.  The set time will be used to specify
+    targeted time for temporal interpolation in FMS data_override
+    """
 
     @classmethod
     def set_time(
@@ -129,6 +155,11 @@ class data_override:
             year_c, month_c, day_c, hour_c, minute_c, second_c, tick_c, err_msg_c
         )
 
+    """
+    pyfms.data_override.override_scalar
+    Calls data_override in FMS for scalar variables
+    """
+
     @classmethod
     def override_scalar(
         cls,
@@ -164,6 +195,11 @@ class data_override:
 
         # TODO:  add check for override
         return data_c.value
+
+    """
+    pyfms.data_override.override
+    Calls data override in FMS
+    """
 
     @classmethod
     def override(
