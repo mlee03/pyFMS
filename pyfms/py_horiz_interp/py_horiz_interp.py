@@ -23,33 +23,6 @@ class horiz_interp:
         return cls.__libpath
 
     @classmethod
-    def init(cls, ninterp: int = None):
-        _cfms_horiz_interp_init = cls.lib().cFMS_horiz_interp_init
-
-        ninterp_c, ninterp_t = ctypes.c_int(ninterp), ctypes.POINTER(ctypes.c_int)
-
-        _cfms_horiz_interp_init.argtypes = [ninterp_t]
-        _cfms_horiz_interp_init.restype = None
-
-        _cfms_horiz_interp_init(ctypes.byref(ninterp_c))
-
-    @classmethod
-    def set_current_interp(cls, interp_id: int = None):
-        _cfms_set_current_interp = cls.lib().cFMS_set_current_interp
-
-        interp_id_c, interp_id_t = ctypes.c_int(interp_id), ctypes.POINTER(ctypes.c_int)
-
-        _cfms_set_current_interp.argtypes = [interp_id_t]
-        _cfms_set_current_interp.restype = None
-
-        _cfms_set_current_interp(ctypes.byref(interp_id_c))
-
-    @classmethod
-    def get_maxxgrid(cls) -> np.int32:
-        cls.lib().get_maxxgrid.restype = np.int32
-        return cls.lib().get_maxxgrid()
-
-    @classmethod
     def create_xgrid_2dx2d_order1(
         cls,
         nlon_src: int,
@@ -166,3 +139,30 @@ class horiz_interp:
             "j_tgt": j_tgt[:nxgrid],
             "xarea": xarea[:nxgrid],
         }
+
+    @classmethod
+    def get_maxxgrid(cls) -> np.int32:
+        cls.lib().get_maxxgrid.restype = np.int32
+        return cls.lib().get_maxxgrid()
+
+    @classmethod
+    def init(cls, ninterp: int = None):
+        _cfms_horiz_interp_init = cls.lib().cFMS_horiz_interp_init
+
+        ninterp_c, ninterp_t = ctypes.c_int(ninterp), ctypes.POINTER(ctypes.c_int)
+
+        _cfms_horiz_interp_init.argtypes = [ninterp_t]
+        _cfms_horiz_interp_init.restype = None
+
+        _cfms_horiz_interp_init(ctypes.byref(ninterp_c))
+
+    @classmethod
+    def set_current_interp(cls, interp_id: int = None):
+        _cfms_set_current_interp = cls.lib().cFMS_set_current_interp
+
+        interp_id_c, interp_id_t = ctypes.c_int(interp_id), ctypes.POINTER(ctypes.c_int)
+
+        _cfms_set_current_interp.argtypes = [interp_id_t]
+        _cfms_set_current_interp.restype = None
+
+        _cfms_set_current_interp(ctypes.byref(interp_id_c))
