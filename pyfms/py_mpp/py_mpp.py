@@ -16,6 +16,10 @@ class mpp:
     __libpath: str = None
     __lib: type[ctypes.CDLL] = None
 
+    NOTE: int = None
+    WARNING: int = None
+    FATAL: int = None
+    
     @classmethod
     def setlib(cls, libpath: str, lib: type[ctypes.CDLL]):
         cls.__libpath = libpath
@@ -29,6 +33,14 @@ class mpp:
     def libpath(cls) -> str:
         return cls.__libpath
 
+    @classmethod
+    def init(cls):
+        def get_constant(variable):
+            return int(ctypes.c_int.in_dll(cls.lib(), variable).value)
+        cls.NOTE = get_constant("NOTE")
+        cls.WARNING = get_constant("WARNING")
+        cls.FATAL = get_constant("FATAL")
+    
     """
     Subroutine: declare_pelist
 

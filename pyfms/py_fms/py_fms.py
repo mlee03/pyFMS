@@ -2,9 +2,11 @@
 
 import ctypes
 
-from .py_mpp.py_mpp_domains import mpp_domains
-from .utils.constants import constants
-from .utils.data_handling import set_Cchar, setscalar_Cint32
+from . import argtypes
+from ..py_mpp.py_mpp_domains import mpp_domains
+from ..py_mpp.py_mpp import mpp
+from ..utils.constants import constants
+from ..utils.ctypes_utils import setargs, setargs_arr, setargs_str
 
 
 class fms:
@@ -12,9 +14,6 @@ class fms:
     __libpath: str = None
     __lib: type[ctypes.CDLL] = None
 
-    NOTE: int = None
-    WARNING: int = None
-    FATAL: int = None
     THIRTY_DAY_MONTHS: int = None
     GREGORIAN: int = None
     JULIAN: int = None
@@ -45,38 +44,24 @@ class fms:
         def get_constant(variable):
             return int(ctypes.c_int.in_dll(cls.lib(), variable).value)
 
-        cls.NOTE = get_constant("NOTE")
-        cls.WARNING = get_constant("WARNING")
-        cls.FATAL = get_constant("FATAL")
         cls.THIRTY_DAY_MONTHS = get_constant("THIRTY_DAY_MONTHS")
         cls.GREGORIAN = get_constant("GREGORIAN")
         cls.JULIAN = get_constant("JULIAN")
         cls.NOLEAP = get_constant("NOLEAP")
 
-        _cfms_init = cls.lib().cFMS_init
+        arglist = []
+        setargs(localcomm, ctypes.c_int, arglist) 
+        setargs_str(alt_input_nml_path, arglist)
+        setargs(ndomain, ctypes.c_int, arglist)
+        setargs(nnest_domain, ctypes.c_int, arglist)
+        setargs(calendar_type, ctypes.c_int, arglist)
 
-        localcomm_c, localcomm_t = setscalar_Cint32(localcomm)
-        alt_input_nml_path_c, alt_input_nml_path_t = set_Cchar(alt_input_nml_path)
-        ndomain_c, ndomain_t = setscalar_Cint32(ndomain)
-        nnest_domain_c, nnest_domain_t = setscalar_Cint32(nnest_domain)
-        calendar_type_c, calendar_type_t = setscalar_Cint32(calendar_type)
-
-        _cfms_init.argtypes = [
-            localcomm_t,
-            alt_input_nml_path_t,
-            ndomain_t,
-            nnest_domain_t,
-            calendar_type_t,
-        ]
-        _cfms_init.restype = None
-
-        _cfms_init(
-            localcomm_c,
-            alt_input_nml_path_c,
-            ndomain_c,
-            nnest_domain_c,
-            calendar_type_c,
-        )
+        cfms_init = cls.lib().cFMS_init
+        cfms_init.argtypes = argtypes.fms_init
+        cfms_init.restype = None
+        cfms_init(*arglist)
+        
+        mpp.init()
         mpp_domains.init()
         constants.init()
 
@@ -91,6 +76,7 @@ class fms:
 
     @classmethod
     def end(cls):
-        _cfms_end = cls.lib().cFMS_end
-        _cfms_end.restype = None
-        _cfms_end()
+        cfms_end = cls.lib().cFMS_end
+        cfms_end.restype = None
+        cfms_end()
+        
