@@ -68,8 +68,8 @@ def init(
     sets the calendar type in time_manager, and sets the total
     number of domain2D types and nest domain types that will be used
 
-    if ndomain and nnest_domain is not specified, cFMS will only with
-    1 domain2D and 1 nest domain
+    if ndomain and/or nnest_domain is/are not specified, cFMS will only with
+    1 domain2D and/or 1 nest domain
     """
 
     cfms_init = _lib.cFMS_init

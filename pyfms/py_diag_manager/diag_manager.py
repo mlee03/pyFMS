@@ -107,6 +107,12 @@ def init(
 
 def send_complete(diag_field_id: int) -> str:
 
+    """
+    Completes send_data
+    This function must be called after the final send data
+    call for the given time
+    """
+    
     _cfms_diag_send_complete = _lib.cFMS_diag_send_complete
 
     diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)

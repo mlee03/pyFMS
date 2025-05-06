@@ -33,7 +33,8 @@ def set_pelist_npes(npes_in: int = None):
 
     """
     Sets the length of the pelist that is to be sent to
-    or retrieved from cFMS/FMS
+    or retrieved from cFMS/FMS.  This function is to be
+    used internally.    
     """
 
     _cfms_set_npes = _lib.cFMS_set_pelist_npes
@@ -180,8 +181,6 @@ def set_current_pelist(pelist: list[int] = None, no_sync: bool = None):
 
     """
     Sets the current pelist
-    Users must call set_pelist_npes to set the length of the pelist
-    in cFMS before calling this method
     """
 
     _cfms_set_current_pelist = _lib.cFMS_set_current_pelist
