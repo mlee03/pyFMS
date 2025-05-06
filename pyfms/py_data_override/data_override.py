@@ -57,7 +57,7 @@ def init(
     Currently, only domains of type FmsMppDomain2D are supported.
 
     pyfms is initialized to use the latest cFMS and FMS by default.
-    Thus, data_override will only work with data_table.yaml.  
+    Thus, data_override will only work with data_table.yaml.
     Users should ensure that
     (1) data_table.yaml exists, and
     (2) use_data_table_yaml = .True. is set for &data_override_nml in input.nml

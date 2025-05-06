@@ -81,7 +81,7 @@ def init(
     (2) use_modern_diag = .True. for &diag_manager_nml in input.nml
 
     The above criteria may not be applicable if users have specified to
-    load an alternative cFMS and FMS library during cfms.init() 
+    load an alternative cFMS and FMS library during cfms.init()
 
     See https://github.com/NOAA-GFDL/FMScoupler/blob/main/full/full_coupler_mod.F90
     for diag_model_subset specification
@@ -112,7 +112,7 @@ def send_complete(diag_field_id: int) -> str:
     This function must be called after the final send data
     call for the given time
     """
-    
+
     _cfms_diag_send_complete = _lib.cFMS_diag_send_complete
 
     diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)

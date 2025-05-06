@@ -4,7 +4,7 @@ class Domain:
     such as array indices corresponding to each domain.
     pyfms.mpp_domains.define() will return an instance of pyDomain.
     Instance variables can be updated with the update method
-    by providing the dictionaries returned from 
+    by providing the dictionaries returned from
     pyfms.mpp_domains.get_compute_domain and
     pyfms.mpp_domains.get_data_domain
     """
