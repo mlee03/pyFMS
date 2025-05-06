@@ -75,10 +75,16 @@ def init(
     """
     Initializes diag_manager
 
-    cFMS and FMS are compiled to use the latest FMS.  Thus, diag_manager
+    pyfms is initialized to use the latest cFMS and FMS.  Thus, diag_manager
     will only work with diag_table.yaml.  Users should ensure that
     (1) diag_table.yaml exists, and
     (2) use_modern_diag = .True. for &diag_manager_nml in input.nml
+
+    The above criteria may not be applicable if users have specified to
+    load an alternative cFMS and FMS library during cfms.init() 
+
+    See https://github.com/NOAA-GFDL/FMScoupler/blob/main/full/full_coupler_mod.F90
+    for diag_model_subset specification
     """
 
     _cfms_diag_init = _lib.cFMS_diag_init
