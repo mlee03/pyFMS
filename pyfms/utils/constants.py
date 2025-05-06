@@ -1,5 +1,7 @@
-from ctypes import CDLL, c_float
+from ctypes import CDLL, c_double
+
 import numpy as np
+
 
 _libpath: str = None
 _lib: type[CDLL] = None
@@ -55,27 +57,34 @@ RADCON_MKS: np.float64 = None
 
 
 def setlib(libpath: str, lib: type[CDLL]):
-    global _lib
-    global _libpath
+
+    """
+    Sets _libpath and _lib module variables associated
+    with the loaded cFMS library.  This function is
+    to be used internally by the cfms module
+    """
+
+    global _libpath, _lib
+
     _lib = lib
     _libpath = libpath
 
-def lib() -> type[CDLL]:
-    return _lib
-
-def libpath() -> str:
-    return _libpath
 
 def constants_init():
 
+    """
+    Initializes all FMS constants
+    All constants are initialized as np.float64 kind
+    """
+
     global PI, RAD_TO_DEG, DEG_TO_RAD, RADIAN, RADIUS, OMEGA, GRAV
-    global SECONDS_PER_DAY, SECONDS_PER_HOUR,  SECONDS_PER_MINUTE
+    global SECONDS_PER_DAY, SECONDS_PER_HOUR, SECONDS_PER_MINUTE
     global RADGAS, RVGAS, HLV, HLS, KAPPA, CP_AIR, CP_VAPOR, CP_OCEAN
     global DENS_H20, RHOAIR, RHO0, RHO0R, RHO_CP, O2MIXRAT, WTMAIR, WTMH2O
     global WTMOZONE, WTMC, WTMCO2, WTMCH4, WTMO2, WTMCFC11, WTMCFC12, WTMN
     global DIFFAC, ES0, PSTD, PSTD_MKS, KELVIN, TFREEZE, C2DBARS, STEFAN, AVOGNO
     global VONKARM, ALOGMIN, EPSLN, RADCON, RADCON_MKS
-    
+
     def get_constant(variable):
         return np.float64(c_double.in_dll(_lib, variable).value)
 
@@ -127,4 +136,3 @@ def constants_init():
     EPSLN = get_constant("EPSLN")
     RADCON = get_constant("RADCON")
     RADCON_MKS = get_constant("RADCON_MKS")
-    

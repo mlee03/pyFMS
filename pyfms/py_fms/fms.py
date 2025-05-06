@@ -1,9 +1,5 @@
-#!/usr/bin/env python3
+from ctypes import CDLL, c_int
 
-from ctypes import CDLL, c_bool, c_double, c_float, c_int, POINTER
-
-from ..py_mpp.py_mpp_domains import mpp_domains
-from ..utils import constants
 from ..utils.data_handling import set_Cchar, setscalar_Cint32
 
 
@@ -20,21 +16,33 @@ NOLEAP: int = None
 
 
 def setlib(libpath: str, lib: type[CDLL]):
+
+    """
+    Sets _libpath and _lib module variables associated
+    with the loaded cFMS library.  This function is
+    to be used internally by the cfms module
+    """
+
     global _libpath, _lib
+
     _lib_path = libpath
     _lib = lib
-    
-def lib() -> type[CDLL]:
-    return _lib
-
-def libpath(cls) -> str:
-    return _libpath
 
 
 def constants_init():
+
+    """
+    Initializes parameters for mpp.error (mpp_error)
+    and parameters to set the calendar type (these values
+    correspond to calendar types in time_manager)
+
+    If a calendar type is not specified, cFMS and FMS
+    will default to a NOLEAP calendar
+    """
+
     def get_constant(variable):
         return int(c_int.in_dll(_lib, variable).value)
-    
+
     global NOTE, WARNING, FATAL
     global THIRTY_DAY_MONTHS, GREGORIAN, JULIAN, NOLEAP
 
@@ -46,52 +54,58 @@ def constants_init():
     JULIAN = get_constant("JULIAN")
     NOLEAP = get_constant("NOLEAP")
 
-    
+
 def init(
-        alt_input_nml_path: str = None,
-        localcomm: int = None,
-        ndomain: int = None,
-        nnest_domain: int = None,
-        calendar_type: int = None,
+    alt_input_nml_path: str = None,
+    localcomm: int = None,
+    ndomain: int = None,
+    nnest_domain: int = None,
+    calendar_type: int = None,
 ):
-    
+
+    """
+    Calls cfms_init which calls fms_init, calls time_manager_init,
+    sets the calendar type in time_manager, and sets the total
+    number of domain2D types and nest domain types that will be used
+
+    if ndomain and nnest_domain is not specified, cFMS will only with
+    1 domain2D and 1 nest domain
+    """
+
     cfms_init = _lib.cFMS_init
-    
+
     localcomm_c, localcomm_t = setscalar_Cint32(localcomm)
     alt_input_nml_path_c, alt_input_nml_path_t = set_Cchar(alt_input_nml_path)
     ndomain_c, ndomain_t = setscalar_Cint32(ndomain)
     nnest_domain_c, nnest_domain_t = setscalar_Cint32(nnest_domain)
     calendar_type_c, calendar_type_t = setscalar_Cint32(calendar_type)
-    
-    _cfms_init.argtypes = [
+
+    cfms_init.argtypes = [
         localcomm_t,
         alt_input_nml_path_t,
         ndomain_t,
         nnest_domain_t,
         calendar_type_t,
     ]
-    _cfms_init.restype = None
-    
-    _cfms_init(
+    cfms_init.restype = None
+
+    cfms_init(
         localcomm_c,
         alt_input_nml_path_c,
         ndomain_c,
         nnest_domain_c,
         calendar_type_c,
     )
-    mpp_domains.init()
-    constants.init()
-    
-"""
-Subroutine: pyfms_end
 
-Calls the termination routines for all modules in the MPP package.
-Termination routine for the fms module. It also calls destructor routines
-for the mpp, mpp_domains, and mpp_io modules. If this routine is called
-more than once it will return silently. There are no arguments.
-"""
 
-def end(cls):
+def end():
+
+    """
+    Calls mpp_error
+    Termination routine for the fms module. It also calls destructor routines
+    for the mpp, mpp_domains, and mpp_io modules.
+    """
+
     cfms_end = _lib.cFMS_end
     cfms_end.restype = None
     cfms_end()

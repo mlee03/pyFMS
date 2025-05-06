@@ -1,4 +1,4 @@
-from ctypes import c_bool, CDLL, c_int
+from ctypes import CDLL, c_bool, c_int
 
 import numpy as np
 from numpy.typing import NDArray
@@ -22,81 +22,116 @@ DIAG_ALL: int = None
 DIAG_OCEAN: int = None
 DIAG_OTHER: int = None
 
+
 def setlib(libpath: str, lib: type[CDLL]):
-    global _libpath
-    global _lib
+
+    """
+    Sets _libpath and _lib module variables associated
+    with the loaded cFMS library.  This function is
+    to be used internally by the cfms module
+    """
+
+    global _libpath, _lib
+
     _libpath = libpath
     _lib = lib
 
-def lib() -> type[CDLL]:
-    return _lib
-
-def libpath() -> str:
-    return _libpath
 
 def constants_init():
+
+    """
+    Retrieves and assigns diag_manager related parameters
+    from FMS
+    """
+
     global DIAG_OTHER, DIAG_OCEAN, DIAG_ALL
 
     def get_constant(variable):
         return int(c_int.in_dll(_lib, variable).value)
-    
+
     DIAG_OTHER = get_constant("DIAG_OTHER")
     DIAG_OCEAN = get_constant("DIAG_OCEAN")
     DIAG_ALL = get_constant("DIAG_ALL")
-            
+
+
 def end():
-        _cfms_diag_end = _lib.cFMS_diag_end
-        _cfms_diag_end.restype = None
-        _cfms_diag_end()
+
+    """
+    This function must be called in order to flush out
+    the diagnostic buffers and properly close
+    the diagnostic files
+    """
+
+    _cfms_diag_end = _lib.cFMS_diag_end
+    _cfms_diag_end.restype = None
+    _cfms_diag_end()
+
 
 def init(
-        diag_model_subset: int = None,
-        time_init: NDArray = None,
+    diag_model_subset: int = None,
+    time_init: NDArray = None,
 ) -> str:
 
+    """
+    Initializes diag_manager
+
+    cFMS and FMS are compiled to use the latest FMS.  Thus, diag_manager
+    will only work with diag_table.yaml.  Users should ensure that
+    (1) diag_table.yaml exists, and
+    (2) use_modern_diag = .True. for &diag_manager_nml in input.nml
+    """
+
     _cfms_diag_init = _lib.cFMS_diag_init
-    
+
     diag_model_subset_c, diag_model_subset_t = setscalar_Cint32(diag_model_subset)
     time_init_p, time_init_t = setarray_Cint32(time_init)
     err_msg_c, err_msg_t = set_Cchar(" ")
-    
+
     _cfms_diag_init.argtypes = [
         diag_model_subset_t,
         time_init_t,
         err_msg_t,
     ]
     _cfms_diag_init.restype = None
-    
+
     _cfms_diag_init(diag_model_subset_c, time_init_p, err_msg_c)
-    
+
     return err_msg_c.value.decode("utf-8")
+
 
 def send_complete(diag_field_id: int) -> str:
-    
+
     _cfms_diag_send_complete = _lib.cFMS_diag_send_complete
-    
+
     diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
     err_msg_c, err_msg_t = set_Cchar(" ")
-    
+
     _cfms_diag_send_complete.argtypes = [diag_field_id_t, err_msg_t]
     _cfms_diag_send_complete.restype = None
-    
+
     _cfms_diag_send_complete(diag_field_id_c, err_msg_c)
-    
+
     return err_msg_c.value.decode("utf-8")
 
+
 def set_field_init_time(
-        year: int,
-        month: int,
-        day: int,
-        hour: int,
-        minute: int,
-        second: int = None,
-        tick: int = None,
+    year: int,
+    month: int,
+    day: int,
+    hour: int,
+    minute: int,
+    second: int = None,
+    tick: int = None,
 ) -> str:
-    
+
+    """
+    Sets the time type in cFMS that represents the
+    field initial time.  This time is used when registering
+    a diag field
+    """
+
     _cfms_diag_set_field_init_time = _lib.cFMS_diag_set_field_init_time
-    
+
     year_c, year_t = setscalar_Cint32(year)
     month_c, month_t = setscalar_Cint32(month)
     day_c, day_t = setscalar_Cint32(day)
@@ -105,7 +140,7 @@ def set_field_init_time(
     second_c, second_t = setscalar_Cint32(second)
     tick_c, tick_t = setscalar_Cint32(tick)
     err_msg_c, err_msg_t = set_Cchar(" ")
-    
+
     _cfms_diag_set_field_init_time.argtypes = [
         year_t,
         month_t,
@@ -117,28 +152,35 @@ def set_field_init_time(
         err_msg_t,
     ]
     _cfms_diag_set_field_init_time.restype = None
-    
+
     _cfms_diag_set_field_init_time(
         year_c, month_c, day_c, hour_c, minute_c, second_c, tick_c, err_msg_c
     )
-    
+
     return err_msg_c.value.decode("utf-8")
 
+
 def set_field_timestep(
-        diag_field_id: int,
-        dseconds: int,
-        ddays: int = None,
-        dticks: int = None,
+    diag_field_id: int,
+    dseconds: int,
+    ddays: int = None,
+    dticks: int = None,
 ) -> str:
-    
+
+    """
+    Sets the timestep between each send_data
+    The timestep is saved as a time type in cFMS and is
+    used to advance field time
+    """
+
     _cfms_diag_set_field_timestep = _lib.cFMS_diag_set_field_timestep
-    
+
     diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
     dseconds_c, dseconds_t = setscalar_Cint32(dseconds)
     ddays_c, ddays_t = setscalar_Cint32(ddays)
     dticks_c, dticks_t = setscalar_Cint32(dticks)
     err_msg_c, err_msg_t = set_Cchar(" ")
-    
+
     _cfms_diag_set_field_timestep.argtypes = [
         diag_field_id_t,
         dseconds_t,
@@ -147,40 +189,54 @@ def set_field_timestep(
         err_msg_t,
     ]
     _cfms_diag_set_field_timestep.restype = None
-    
+
     _cfms_diag_set_field_timestep(
         diag_field_id_c, dseconds_c, ddays_c, dticks_c, err_msg_c
     )
-    
+
     return err_msg_c.value.decode("utf-8")
 
 
 def advance_field_time(diag_field_id: int):
 
+    """
+    Updates the current field time by advancing
+    the current field time with the field timestep
+    set with diag_manager.set_field_timestep
+    """
+
     _cfms_diag_advance_field_time = _lib.cFMS_diag_advance_field_time
-    
+
     diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
-    
+
     _cfms_diag_advance_field_time.argtypes = [diag_field_id_t]
     _cfms_diag_advance_field_time.restype = None
-    
+
     _cfms_diag_advance_field_time(diag_field_id_c)
-    
+
+
 def set_time_end(
-        year: int = None,
-        month: int = None,
-        day: int = None,
-        hour: int = None,
-        minute: int = None,
-        second: int = None,
-        tick: int = None,
-        err_msg: str = None,
+    year: int = None,
+    month: int = None,
+    day: int = None,
+    hour: int = None,
+    minute: int = None,
+    second: int = None,
+    tick: int = None,
+    err_msg: str = None,
 ):
+
+    """
+    Sets the time type representing the field end time
+    in cFMS.  This time must be set before calling
+    diag_manager.end()
+    """
+
     if err_msg is not None:
         err_msg = err_msg[:128]
-        
+
     _cfms_set_time_end = _lib.cFMS_diag_set_time_end
-    
+
     year_c, year_t = setscalar_Cint32(year)
     month_c, month_t = setscalar_Cint32(month)
     day_c, day_t = setscalar_Cint32(day)
@@ -189,7 +245,7 @@ def set_time_end(
     second_c, second_t = setscalar_Cint32(second)
     tick_c, tick_t = setscalar_Cint32(tick)
     err_msg_c, err_msg_t = set_Cchar(err_msg)
-    
+
     _cfms_set_time_end.argtypes = [
         year_t,
         month_t,
@@ -201,7 +257,7 @@ def set_time_end(
         err_msg_t,
     ]
     _cfms_set_time_end.restype = None
-    
+
     _cfms_set_time_end(
         year_c,
         month_c,
@@ -212,27 +268,34 @@ def set_time_end(
         tick_c,
         err_msg_c,
     )
-    
+
+
 def axis_init(
-        name: str,
-        axis_data: NDArray,
-        units: str,
-        cart_name: str,
-        domain_id: int = None,
-        long_name: str = None,
-        set_name: str = None,
-        direction: int = None,
-        edges: int = None,
-        aux: str = None,
-        req: str = None,
-        tile_count: int = None,
-        domain_position: int = None,
-        not_xy: bool = None,
+    name: str,
+    axis_data: NDArray,
+    units: str,
+    cart_name: str,
+    domain_id: int = None,
+    long_name: str = None,
+    set_name: str = None,
+    direction: int = None,
+    edges: int = None,
+    aux: str = None,
+    req: str = None,
+    tile_count: int = None,
+    domain_position: int = None,
+    not_xy: bool = None,
 ) -> int:
-    
+
+    """
+    Initializes the diag_axis
+    not_xy = True must be specified when initializing an axis
+    that is not a horizontal x-y axis
+    """
+
     long_name = long_name[:64]
     set_name = set_name[:64]
-    
+
     name_c, name_t = set_Cchar(name)
     naxis_data_c, naxis_data_t = setscalar_Cint32(axis_data.size)
     units_c, units_t = set_Cchar(units)
@@ -247,7 +310,7 @@ def axis_init(
     tile_count_c, tile_count_t = setscalar_Cint32(tile_count)
     domain_position_c, domain_position_t = setscalar_Cint32(domain_position)
     not_xy_c, not_xy_t = setscalar_Cbool(not_xy)
-    
+
     if axis_data.dtype == np.float64:
         _cfms_diag_axis_init_ = _lib.cFMS_diag_axis_init_cdouble
         axis_data_p, axis_data_t = setarray_Cdouble(axis_data)
@@ -256,7 +319,7 @@ def axis_init(
         axis_data_p, axis_data_t = setarray_Cfloat(axis_data)
     else:
         raise RuntimeError("diag_axis_init datatype not supported")
-    
+
     _cfms_diag_axis_init_.argtypes = [
         name_t,
         naxis_data_t,
@@ -275,7 +338,7 @@ def axis_init(
         not_xy_t,
     ]
     _cfms_diag_axis_init_.restype = c_int
-    
+
     return _cfms_diag_axis_init_(
         name_c,
         naxis_data_c,
@@ -296,26 +359,33 @@ def axis_init(
 
 
 def register_field_array(
-        module_name: str,
-        field_name: str,
-        datatype,
-        axes: list[int] = None,
-        long_name: str = None,
-        units: str = None,
-        missing_value: int = None,
-        range_data: NDArray = None,
-        mask_variant: bool = None,
-        standard_name: str = None,
-        verbose: bool = None,
-        do_not_log: bool = None,
-        interp_method: str = None,
-        tile_count: int = None,
-        area: int = None,
-        volume: int = None,
-        realm: str = None,
-        multiple_send_data: bool = None,
+    module_name: str,
+    field_name: str,
+    datatype,
+    axes: list[int] = None,
+    long_name: str = None,
+    units: str = None,
+    missing_value: int = None,
+    range_data: NDArray = None,
+    mask_variant: bool = None,
+    standard_name: str = None,
+    verbose: bool = None,
+    do_not_log: bool = None,
+    interp_method: str = None,
+    tile_count: int = None,
+    area: int = None,
+    volume: int = None,
+    realm: str = None,
+    multiple_send_data: bool = None,
 ) -> int:
-    
+
+    """
+    Registers multi-dimensional fields
+    The field initial time must be set with
+    diag_manager.set_field_init_time before calling
+    this method
+    """
+
     module_name = module_name[:64]
     field_name = field_name[:64]
     if long_name is not None:
@@ -353,30 +423,24 @@ def register_field_array(
     volume_c, volume_t = setscalar_Cint32(volume)
     realm_c, realm_t = set_Cchar(realm)
     multiple_send_data_c, multiple_send_data_t = setscalar_Cbool(multiple_send_data)
-    
+
     if datatype == np.int32:
-        _cfms_register_diag_field_array_ = (
-            _lib.cFMS_register_diag_field_array_cint
-        )
+        _cfms_register_diag_field_array_ = _lib.cFMS_register_diag_field_array_cint
         range_data_p, range_data_t = setarray_Cint32(range_data)
         missing_value_c, missing_value_t = setscalar_Cint32(missing_value)
     elif datatype == np.float64:
-        _cfms_register_diag_field_array_ = (
-            _lib.cFMS_register_diag_field_array_cdouble
-        )
+        _cfms_register_diag_field_array_ = _lib.cFMS_register_diag_field_array_cdouble
         range_data_p, range_data_t = setarray_Cdouble(range_data)
         missing_value_c, missing_value_t = setscalar_Cdouble(missing_value)
     elif datatype == np.float32:
-        _cfms_register_diag_field_array_ = (
-            _lib.cFMS_register_diag_field_array_cfloat
-        )
+        _cfms_register_diag_field_array_ = _lib.cFMS_register_diag_field_array_cfloat
         range_data_p, range_data_t = setarray_Cfloat(range_data)
         missing_value_c, missing_value_t = setscalar_Cfloat(missing_value)
     else:
         raise RuntimeError(
             "register diag field array range_data datatype not supported"
         )
-    
+
     _cfms_register_diag_field_array_.argtypes = [
         module_name_t,
         field_name_t,
@@ -398,7 +462,7 @@ def register_field_array(
         multiple_send_data_t,
     ]
     _cfms_register_diag_field_array_.restype = c_int
-    
+
     return _cfms_register_diag_field_array_(
         module_name_c,
         field_name_c,
@@ -422,27 +486,38 @@ def register_field_array(
 
 
 def register_field_scalar(
-        module_name: str,
-        field_name: str,
-        datatype,
-        long_name: str = None,
-        units: str = None,
-        standard_name: str = None,
-        missing_value: int = None,
-        range_data: NDArray = None,
-        do_not_log: bool = None,
-        area: int = None,
-        volume: int = None,
-        realm: str = None,
-        multiple_send_data: bool = None,
+    module_name: str,
+    field_name: str,
+    datatype,
+    long_name: str = None,
+    units: str = None,
+    standard_name: str = None,
+    missing_value: int = None,
+    range_data: NDArray = None,
+    do_not_log: bool = None,
+    area: int = None,
+    volume: int = None,
+    realm: str = None,
+    multiple_send_data: bool = None,
 ) -> int:
-    
+
+    """
+    Registers scalar fields
+    The field initial time must be set with
+    diag_manager.set_field_init_time before calling
+    this method
+    """
+
     module_name = module_name[:64]
     field_name = field_name[:64]
-    if long_name is not None: long_name = long_name[:64]
-    if units is not None: units = units[:64]
-    if standard_name is not None: standard_name = standard_name[:64]
-    if realm is not None: realm = realm[:64]
+    if long_name is not None:
+        long_name = long_name[:64]
+    if units is not None:
+        units = units[:64]
+    if standard_name is not None:
+        standard_name = standard_name[:64]
+    if realm is not None:
+        realm = realm[:64]
 
     module_name_c, module_name_t = set_Cchar(module_name)
     field_name_c, field_name_t = set_Cchar(field_name)
@@ -455,23 +530,17 @@ def register_field_scalar(
     volume_c, volume_t = setscalar_Cint32(volume)
     realm_c, realm_t = set_Cchar(realm)
     multiple_send_data_c, multiple_send_data_t = setscalar_Cbool(multiple_send_data)
-    
+
     if datatype == np.int32:
-        _cfms_register_diag_field_scalar_ = (
-            _lib.cFMS_register_diag_field_array_cint
-        )
+        _cfms_register_diag_field_scalar_ = _lib.cFMS_register_diag_field_array_cint
         range_data_p, range_data_t = setarray_Cint32(range_data)
         missing_value_c, missing_value_t = setscalar_Cint32(missing_value)
     elif datatype == np.float64:
-        _cfms_register_diag_field_scalar_ = (
-            _lib.cFMS_register_diag_field_array_cdouble
-        )
+        _cfms_register_diag_field_scalar_ = _lib.cFMS_register_diag_field_array_cdouble
         range_data_p, range_data_t = setarray_Cdouble(range_data)
         missing_value_c, missing_value_t = setscalar_Cdouble(missing_value)
     elif datatype == np.float32:
-        _cfms_register_diag_field_scalar_ = (
-            _lib.cFMS_register_diag_field_array_cfloat
-        )
+        _cfms_register_diag_field_scalar_ = _lib.cFMS_register_diag_field_array_cfloat
         range_data_p, range_data_t = setarray_Cfloat(range_data)
         missing_value_c, missing_value_t = setscalar_Cfloat(missing_value)
     else:
@@ -495,7 +564,7 @@ def register_field_scalar(
         multiple_send_data_t,
     ]
     _cfms_register_diag_field_scalar_.restype = c_int
-    
+
     return _cfms_register_diag_field_scalar_(
         module_name_c,
         field_name_c,
@@ -512,17 +581,26 @@ def register_field_scalar(
         multiple_send_data_c,
     )
 
+
 def send_data(
-        diag_field_id: int,
-        field_shape: list[int],
-        field: NDArray,
+    diag_field_id: int,
+    field_shape: list[int],
+    field: NDArray,
 ) -> bool:
+
+    """
+    Send field data to diag_manager that will be outputted to a diagnostic file
+    The users should set the field time by advancing current time with
+    the timestep that has been set with diag_manager.set_field_timestep
+
+    Currently, field data only on the compute domain is supported.
+    """
 
     diag_field_id_c, diag_field_id_t = setscalar_Cint32(diag_field_id)
     field_shape_arr = np.array(field_shape, dtype=np.int32)
     field_shape_p, field_shape_t = setarray_Cint32(field_shape_arr)
     err_msg_c, err_msg_t = set_Cchar(" ")
-    
+
     if field_shape_arr.size == 2:
         if field.dtype == np.int32:
             _cfms_diag_send_data_ = _lib.cFMS_diag_send_data_2d_cint
@@ -575,7 +653,7 @@ def send_data(
         raise RuntimeError(
             f"diag_send_data {field_shape_arr.size} dimensions unsupported"
         )
-    
+
     _cfms_diag_send_data_.argtypes = [
         diag_field_id_t,
         field_shape_t,
@@ -583,7 +661,7 @@ def send_data(
         err_msg_t,
     ]
     _cfms_diag_send_data_.restype = c_bool
-    
+
     return _cfms_diag_send_data_(
         diag_field_id_c,
         field_shape_p,
