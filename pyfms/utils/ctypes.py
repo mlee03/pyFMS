@@ -78,7 +78,7 @@ def set_list(arg: list|None,
     return arg_c
         
 
-def set_c_str(arg: str|None,
+def set_c_str(arg: str|None,              
               arglist: list) -> type(c_char_p)|None:
     
     if arg is None: return setNone(arglist)
@@ -104,3 +104,12 @@ def get_constant(lib: type[CDLL], ctype: str, constant: str) -> int:
         return np.float32(c_float.in_dll(lib, constant).value)
     if ctype == "c_double":
         return np.float64(c_float.in_dll(lib, constant).value)
+
+
+def check_str(arg: str,
+              length: int,
+              whoami: str):
+
+    if arg is not None:
+        if len(arg) > length:
+            raise RuntimeError(f"{whoami}: '{arg}' must be less than {length} cahracters")
