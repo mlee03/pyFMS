@@ -86,7 +86,7 @@ def init(
     set_list(time_init, np.int32, arglist)
     err_msg = set_c_str(" ", arglist)
 
-    _cfms_diag_init(*arglist)
+    _cFMS_diag_init(*arglist)
 
     return err_msg.value.decode("utf-8")
 
@@ -103,7 +103,7 @@ def send_complete(diag_field_id: int) -> str:
     set_c_int(diag_field_id, arglist)
     err_msg = set_c_str(" ", arglist)
     
-    _cfms_diag_send_complete(*arglist)
+    _cFMS_diag_send_complete(*arglist)
 
     return err_msg.value.decode("utf-8")
 
@@ -134,7 +134,7 @@ def set_field_init_time(
     set_c_int(tick, arglist)
     err_msg = set_c_str(" ", arglist)
     
-    _cfms_diag_set_field_init_time(*arglist)
+    _cFMS_diag_set_field_init_time(*arglist)
 
     return err_msg.value.decode("utf-8")
 
@@ -159,7 +159,7 @@ def set_field_timestep(
     set_c_int(dticks, arglist)
     err_msg = set_c_str(" ", arglist)
     
-    _cfms_diag_set_field_timestep(*arglist)
+    _cFMS_diag_set_field_timestep(*arglist)
 
     return err_msg.value.decode("utf-8")
 
@@ -175,7 +175,7 @@ def advance_field_time(diag_field_id: int):
     arglist = []
     set_c_int(diag_field_id, arglist)
     
-    _cfms_diag_advance_field_time(*arglist)
+    _cFMS_diag_advance_field_time(*arglist)
 
 
 def set_time_end(
@@ -204,7 +204,7 @@ def set_time_end(
     set_c_int(tick, arglist)
     err_msg = set_c_str(" ", arglist)
     
-    _cfms_set_time_end( *arglist)
+    _cFMS_set_time_end( *arglist)
 
 
 def axis_init(
@@ -438,7 +438,8 @@ def _init_functions():
 
     _functions.define(_lib)
 
-    _cFMS_diag_end = _lib.cFMS_diag_end    
+    _cFMS_diag_end = _lib.cFMS_diag_end
+    _cFMS_diag_init = _lib.cFMS_diag_init
     _cFMS_diag_send_complete = _lib.cFMS_diag_send_complete
     _cFMS_diag_set_field_init_time = _lib.cFMS_diag_set_field_init_time
     _cFMS_diag_set_field_timestep = _lib.cFMS_diag_set_field_timestep
