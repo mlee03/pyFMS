@@ -97,13 +97,8 @@ def set_arr(arg: npt.ArrayLike|None,
     return arg
         
     
-def get_constant(lib: type[CDLL], ctype: str, constant: str) -> int:
-    if ctype == "c_int":
-        return int(c_int.in_dll(lib, constant).value)
-    if ctype == "c_float":
-        return np.float32(c_float.in_dll(lib, constant).value)
-    if ctype == "c_double":
-        return np.float64(c_float.in_dll(lib, constant).value)
+def get_constant_int(lib: type[CDLL], constant: str) -> int:
+    return int(c_int.in_dll(lib, constant).value)
 
 
 def check_str(arg: str,

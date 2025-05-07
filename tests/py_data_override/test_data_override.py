@@ -39,23 +39,27 @@ def test_data_override():
     data, override = pyfms.data_override.override_scalar(
         gridname="OCN", fieldname="runoff_scalar", dtype=np.float64
     )
+
     assert override
     assert data == np.float64(2.0)
-
+    
     data = np.zeros((xsize, ysize), dtype=np.float64)
     override = pyfms.data_override.override(
         gridname="OCN", fieldname="runoff_2d", data=data
     )
+
     assert override
     assert np.all(data == np.float64(200.0))
-
+    
     data = np.zeros((xsize, ysize, nz), dtype=np.float64)
     override = pyfms.data_override.override(
         gridname="OCN", fieldname="runoff_3d", data=data
     )
+
     answers = np.array(
         [200 + z + 1 for z in range(nz)] * xsize * ysize, dtype=np.float64
     ).reshape(xsize, ysize, nz)
+
     assert override
     assert np.all(data == answers)
 

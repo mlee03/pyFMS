@@ -4,7 +4,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..utils.ctypes import (
-    get_constant,
+    get_constant_int,
     set_arr,
     set_c_bool,
     set_c_int,
@@ -184,8 +184,8 @@ def _init_constants():
 
     global CFLOAT_MODE, CDOUBLE_MODE
 
-    CFLOAT_MODE = get_constant(_lib, "c_int", "CFLOAT_MODE")
-    CDOUBLE_MODE = get_constant(_lib, "c_int", "CDOUBLE_MODE")
+    CFLOAT_MODE = get_constant_int(_lib, "CFLOAT_MODE")
+    CDOUBLE_MODE = get_constant_int(_lib, "CDOUBLE_MODE")
 
 
 def _init_functions():

@@ -28,7 +28,7 @@ def init(libpath: str = None):
     pyfms.constants.setlib(_libpath, _lib)
     pyfms.data_override._init(_libpath, _lib)
     pyfms.fms.setlib(_libpath, _lib)
-    pyfms.diag_manager.setlib(_libpath, _lib)
+    pyfms.diag_manager._init(_libpath, _lib)
     pyfms.grid_utils.setlib(_libpath, _lib)
     pyfms.horiz_interp.setlib(_libpath, _lib)
     pyfms.mpp.setlib(_libpath, _lib)
@@ -36,7 +36,6 @@ def init(libpath: str = None):
 
     pyfms.constants.constants_init()
     pyfms.fms.constants_init()
-    pyfms.diag_manager.constants_init()
     pyfms.mpp_domains.constants_init()
 
 
