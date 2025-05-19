@@ -7,6 +7,8 @@ from ..utils.ctypes import (
     check_str,
     set_arr,
     set_c_bool,
+    set_c_double, 
+    set_c_float,
     set_c_int,
     set_c_str,
     set_list,
@@ -45,9 +47,10 @@ _cFMS_diag_send_data_3d_cdouble = None
 _cFMS_diag_send_data_4d_cdouble = None
 
 _cFMS_diag_axis_inits = {}
+_cFMS_register_field_arrays = {}
 _cFMS_diag_register_diag_scalar = {}
 _cFMS_diag_register_diag_array = {}
-_cFMS_diag_send_data = {}
+_cFMS_diag_send_datas = {}
 
 
 def end():
@@ -203,8 +206,8 @@ def set_time_end(
     set_c_int(second, arglist)
     set_c_int(tick, arglist)
     err_msg = set_c_str(" ", arglist)
-    
-    _cFMS_set_time_end( *arglist)
+
+    _cFMS_diag_set_time_end(*arglist)
 
 
 def axis_init(
@@ -230,7 +233,10 @@ def axis_init(
     that is not a horizontal x-y axis
     """
 
-    #get function
+    try:
+        cfms_diag_axis_init = _cFMS_diag_axis_inits[axis_data.dtype.name]
+    except KeyError:
+        raise RuntimeError(f"diag_manager.diag_axis_init {axis_data.dtype} not supported")
     
     check_str(long_name, 64, "diag_manager.axis_init")
     check_str(set_name, 64, "diag_manager.axis_init")
@@ -238,21 +244,21 @@ def axis_init(
     arglist = []
     set_c_str(name, arglist)
     set_c_int(axis_data.size, arglist)
+    set_arr(axis_data, arglist)
     set_c_str(units, arglist)
     set_c_str(cart_name, arglist)
     set_c_int(domain_id, arglist)
     set_c_str(long_name, arglist)
-    set_c_str(set_name, arglist)
     set_c_int(direction, arglist)
+    set_c_str(set_name, arglist)
     set_c_int(edges, arglist)
     set_c_str(aux, arglist)
     set_c_str(req, arglist)
     set_c_int(tile_count, arglist)
     set_c_int(domain_position, arglist)
     set_c_bool(not_xy, arglist)
-    not_xy_c, not_xy_t = setscalar_Cbool(not_xy)
 
-    return cfms_diag_axis_init(*arglist).value
+    return cfms_diag_axis_init(*arglist)
 
 
 def register_field_array(
@@ -283,8 +289,11 @@ def register_field_array(
     this method
     """
 
-    #get function
-    
+    try:
+        cfms_register_diag_field_array = _cFMS_register_field_arrays[dtype]
+    except KeyError:
+        raise RuntimeError(f"diag_manager.register_field_array {dtype} not supported")
+
     whoami = "diag_manager.register_field_array"
     check_str(module_name, 64, whoami)
     check_str(field_name, 64, whoami)
@@ -298,25 +307,29 @@ def register_field_array(
         while len(axes) < 5: axes.append(0)
 
     arglist = []
-    set_c_char(module_name, arglist)
-    set_c_char(field_name, arglist)
+    set_c_str(module_name, arglist)
+    set_c_str(field_name, arglist)
     set_list(axes, np.int32, arglist)
-    set_c_char(long_name, arglist)
-    set_c_char(units, arglist)
+    set_c_str(long_name, arglist)
+    set_c_str(units, arglist)
+    if dtype == 'float32':
+        set_c_float(missing_value, arglist)
+    else:
+        set_c_double(missing_value, arglist)
+    set_list(range_data, dtype, arglist)
     set_c_bool(mask_variant, arglist)
-    set_c_char(standard_name, arglist)
+    set_c_str(standard_name, arglist)
     set_c_bool(verbose, arglist)
     set_c_bool(do_not_log, arglist)
-    err_msg = set_c_char(" ", arglist)
-    set_c_char(interp_method, arglist)
+    err_msg = set_c_str(" ", arglist)
+    set_c_str(interp_method, arglist)
     set_c_int(tile_count, arglist)
     set_c_int(area, arglist)
     set_c_int(volume, arglist)
-    set_c_char(realm, arglist)
+    set_c_str(realm, arglist)
     set_c_bool(multiple_send_data, arglist)
-    multiple_send_data_c, multiple_send_data_t = setscalar_Cbool(multiple_send_data)
 
-    return cfms_register_diag_field_array(*arglist).value
+    return cfms_register_diag_field_array(*arglist)
 
 
 def register_field_scalar(
@@ -341,8 +354,11 @@ def register_field_scalar(
     diag_manager.set_field_init_time before calling
     this method
     """
-
-    #check function
+    
+    try:
+        cfms_register_field_scalar = _cFMS_register_field_scalars[dtype]
+    except KeyError:
+        raise RuntimeError(f"diag_manager.register_field_scalar {dtype} not supported")
     
     whoami = "diag_manager.register_field_scalar"
     check_str(module_name, 64, whoami)
@@ -358,6 +374,11 @@ def register_field_scalar(
     set_c_str(long_name, arglist)
     set_c_str(units, arglist)
     set_c_str(standard_name, arglist)
+    if dtype == "float32":
+        set_c_float(missing_value, arglist)
+    else:
+        set_c_double(missing_value, arglist)
+    set_list(range_data, dtype, arglist)
     set_c_bool(do_not_long, arglist)
     err_msg = set_c_str(" ", arglist)
     set_c_int(area, arglist)
@@ -365,12 +386,11 @@ def register_field_scalar(
     set_c_int(realm, arglist)
     set_c_int(multiple_send_data, arglist)
     
-    return cfms_register_diag_field_scalar(*arglist).value
+    return cfms_register_diag_field_scalar(*arglist)
 
 
 def send_data(
     diag_field_id: int,
-    field_shape: list[int],
     field: NDArray,
 ) -> bool:
 
@@ -382,15 +402,20 @@ def send_data(
     Currently, field data only on the compute domain is supported.
     """
 
-    #get function
-    
+    try:
+        cfms_diag_send_data = _cFMS_diag_send_datas[field.ndim][field.dtype.name]
+    except KeyError:                                                                                                                  
+        raise RuntimeError(f"diag_manager.send_data for \
+        ndim={field.ndim} and type {field.dtype} not supported")
+        
+        
     arglist = []
     set_c_int(diag_field_id, arglist)
-    set_list(field_shape, np.int32, arglist)
+    set_list([*field.shape], np.int32, arglist)
     set_arr(field, arglist)
     err_msg = set_c_str(" ", arglist)
-    
-    return cfms_diag_send_data(*arglist).value
+
+    return cfms_diag_send_data(*arglist)
 
 
 def _init_constants():
@@ -431,7 +456,8 @@ def _init_functions():
     global _cFMS_diag_send_data_2d_cdouble 
     global _cFMS_diag_send_data_3d_cdouble 
     global _cFMS_diag_send_data_4d_cdouble 
-    global _cFMS_diag_axis_inits 
+    global _cFMS_diag_axis_inits
+    global _cFMS_register_field_arrays
     global _cFMS_diag_register_diag_scalars
     global _cFMS_diag_register_diag_arrays
     global _cFMS_diag_send_datas
@@ -475,7 +501,7 @@ def _init_functions():
                                     "float64": _cFMS_register_diag_field_scalar_cdouble
     }
 
-    _cFMS_send_datas = {2: {"int32": _cFMS_diag_send_data_2d_cint,
+    _cFMS_diag_send_datas ={2: {"int32": _cFMS_diag_send_data_2d_cint,
                             "float32": _cFMS_diag_send_data_2d_cfloat,
                             "float64": _cFMS_diag_send_data_2d_cdouble},
                         3: {"int32": _cFMS_diag_send_data_3d_cint,
