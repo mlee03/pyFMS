@@ -1,51 +1,42 @@
-from ctypes import CDLL, POINTER, c_int
 from typing import Any
 
 import numpy as np
 
-from ..utils.data_handling import (
-    set_Cchar,
-    setarray_Cint32,
-    setscalar_Cbool,
-    setscalar_Cint32,
+from ..utils.ctypes import (
+    check_str,
+    set_arr,
+    set_c_bool,
+    set_c_int,
+    set_list,
+    set_c_str
 )
 
+from . import _mpp_functions
 
-_libpath: str = None
-_lib: type[CDLL] = None
+#library
+_libpath = None
+_lib = None
 
-
-def setlib(libpath: str, lib: type[CDLL]):
-
-    """
-    Sets _libpath and _lib module variables associated
-    with the loaded cFMS library.  This function is
-    to be used internally by the cfms module
-    """
-
-    global _libpath, _lib
-
-    _libpath = libpath
-    _lib = lib
+_cFMS_set_pelist_npes = None
+_cFMS_declare_pelist = None
+_cFMS_error = None
+_cFMS_get_current_pelist = None
+_cFMS_npes = None
+_cFMS_pe = None
+_cFMS_set_current_pelist = None
 
 
-def set_pelist_npes(npes_in: int = None):
+def set_pelist_npes(npes: int):
 
     """
     Sets the length of the pelist that is to be sent to
     or retrieved from cFMS/FMS.  This function is to be
     used internally.
     """
-
-    _cfms_set_npes = _lib.cFMS_set_pelist_npes
-
-    npes_in_c, npes_in_t = setscalar_Cint32(npes_in)
-
-    _cfms_set_npes.argtypes = [npes_in_t]
-    _cfms_set_npes.restype = None
-
-    if npes_in is not None:
-        _cfms_set_npes(npes_in_c)
+    
+    arglist = []
+    set_c_int(npes, arglist)
+    _cFMS_set_pelist_npes(*arglist)
 
 
 def declare_pelist(
@@ -71,22 +62,15 @@ def declare_pelist(
     set to the result of the call
     """
 
-    _cfms_declare_pelist = _lib.cFMS_declare_pelist
+    arglist = []
+    set_list(pelist, np.int32, arglist)
+    set_c_str(name, arglist)
+    commID = set_c_int(0, arglist)
+    
+    set_pelist_npes(npes=len(pelist))
+    _cFMS_declare_pelist(*arglist)
 
-    commID = 0
-
-    pelist_p = np.array(pelist, dtype=np.int32)
-    pelist_t = np.ctypeslib.ndpointer(dtype=np.int32, shape=(pelist_p.shape))
-    name_c, name_t = set_Cchar(name)
-    commID_c, commID_t = setscalar_Cint32(commID)
-
-    _cfms_declare_pelist.argtypes = [pelist_t, name_t, commID_t]
-    _cfms_declare_pelist.restype = None
-
-    set_pelist_npes(npes_in=len(pelist))
-    _cfms_declare_pelist(pelist_p, name_c, commID_c)
-
-    return commID_c.value
+    return commID
 
 
 def error(errortype: int, errormsg: str = None):
@@ -97,24 +81,18 @@ def error(errortype: int, errormsg: str = None):
     in FMS
     """
 
-    # truncating string
-    if errormsg is not None:
-        errormsg = errormsg[:128]
+    check_str(errormsg, 128, "mpp.error")
 
-    _cfms_error = _lib.cFMS_error
-
-    errortype_c, errortype_t = setscalar_Cint32(errortype)
-    errormsg_c, errormsg_t = set_Cchar(errormsg)
-
-    _cfms_error.argtypes = [errortype_t, errormsg_t]
-    _cfms_error.restype = None
-
-    _cfms_error(errortype_c, errormsg_c)
+    arglist = []
+    set_c_int(errrotype, arglist)
+    set_c_str(errormsg, arglist)
+    
+    _cFMS_error(*arglist)
 
 
 def get_current_pelist(
     npes: int,
-    get_name: str = None,
+    get_name: bool = False,
     get_commID: bool = False,
 ) -> Any:
 
@@ -124,36 +102,23 @@ def get_current_pelist(
     specified to correctly retrieve the current pelist
     """
 
-    commID = 0 if get_commID else None
-    name = None
-    # if get_name: name="NAME"
-
     pelist = np.empty(shape=npes, dtype=np.int32)
 
-    _cfms_get_current_pelist = _lib.cFMS_get_current_pelist
+    arglist = []
+    set_arr(pelist, arglist)
+    name_c = set_c_str(" ", arglist) if get_name else set_c_str(None, arglist)
+    commid = set_c_int(0, arglist) if get_commID else set_c_int(None, arglist)
 
-    pelist_p, pelist_t = setarray_Cint32(pelist)
-    name_c, name_t = set_Cchar(name)
-    commID_c, commID_t = setscalar_Cint32(commID)
+    set_pelist_npes(npes)
+    #_cFMS_get_current_pelist(*arglist)
 
-    _cfms_get_current_pelist.argtypes = [pelist_t, name_t, commID_t]
-    _cfms_get_current_pelist.restype = None
+    returns = []
+    if get_name: returns.append(name.value.decode("utf-8"))
+    if get_commID: returns.append(commid)
 
-    set_pelist_npes(npes_in=npes)
-    _cfms_get_current_pelist(pelist_p, name_c, commID_c)
-
-    # TODO: allow for return of name after cFMS fix
-
-    # if name is not None:
-    #     name = name_c.value.decode("utf-8")
-
-    # return commID, name
-
-    if get_commID:
-        return pelist.tolist(), commID_c.value
-    else:
-        return pelist.tolist()
-
+    if len(returns) > 0: return (pelist.tolist(), *returns)
+    return pelist.tolist()
+    
 
 def npes() -> int:
 
@@ -161,9 +126,7 @@ def npes() -> int:
     Returns: number of pes in use
     """
 
-    _cfms_npes = _lib.cFMS_npes
-    _cfms_npes.restype = c_int
-    return _cfms_npes()
+    return _cFMS_npes()
 
 
 def pe() -> int:
@@ -172,9 +135,7 @@ def pe() -> int:
     Returns: pe number of calling pe
     """
 
-    _cfms_pe = _lib.cFMS_pe
-    _cfms_pe.restype = c_int
-    return _cfms_pe()
+    return _cFMS_pe()
 
 
 def set_current_pelist(pelist: list[int] = None, no_sync: bool = None):
@@ -183,20 +144,46 @@ def set_current_pelist(pelist: list[int] = None, no_sync: bool = None):
     Sets the current pelist
     """
 
-    _cfms_set_current_pelist = _lib.cFMS_set_current_pelist
+    arglist = []
+    set_list(pelist, np.int32, arglist)
+    set_c_bool(no_sync, arglist)
+    
+    set_pelist_npes(npes)
+    _cFMS_set_current_pelist(*arglist)
 
-    if pelist is not None:
-        npes = len(pelist)
-        pelist_p = np.array(pelist, dtype=np.int32)
-        pelist_t = np.ctypeslib.ndpointer(dtype=np.int32, shape=pelist_p.shape)
-    else:
-        npes = None
-        pelist_p = None
-        pelist_t = POINTER(c_int)
-    no_sync_c, no_sync_t = setscalar_Cbool(no_sync)
 
-    _cfms_set_current_pelist.argtypes = [pelist_t, no_sync_t]
-    _cfms_set_current_pelist.restype = None
+def _init_functions():
 
-    set_pelist_npes(npes_in=npes)
-    _cfms_set_current_pelist(pelist_p, no_sync_c)
+    global _cFMS_set_pelist_npes
+    global _cFMS_declare_pelist
+    global _cFMS_error
+    global _cFMS_get_current_pelist
+    global _cFMS_npes
+    global _cFMS_pe
+    global _set_current_pelist
+
+    _mpp_functions.define(_lib)
+    
+    _cFMS_set_pelist_npes = _lib.cFMS_set_pelist_npes
+    _cFMS_declare_pelist = _lib.cFMS_declare_pelist
+    _cFMS_error = _lib.cFMS_error
+    _cFMS_get_current_pelist = _lib.cFMS_get_current_pelist
+    _cFMS_npes = _lib.cFMS_npes
+    _cFMS_pe = _lib.cFMS_pe
+    _cFMS_set_current_pelist = _lib.cFMS_set_current_pelist
+    
+    
+def _init(libpath: str, lib: Any):
+
+    """
+    Sets _libpath and _lib module variables associated
+    with the loaded cFMS library.  This function is
+    to be used internally by the cfms module
+    """
+
+    global _libpath, _lib
+
+    _libpath = libpath
+    _lib = lib
+
+    _init_functions()

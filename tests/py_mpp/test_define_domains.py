@@ -39,7 +39,7 @@ def test_define_domains():
 
     coarse_pelist = global_pelist[:coarse_npes]
     pyfms.mpp.declare_pelist(pelist=coarse_pelist, name="test coarse pelist")
-
+    
     if pyfms.mpp.pe() in coarse_pelist:
         pyfms.mpp.set_current_pelist(coarse_pelist)
 
