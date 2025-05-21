@@ -61,7 +61,7 @@ def end():
     the diagnostic files
     """
 
-    _cFMS_diag_end
+    _cFMS_diag_end()
 
     
 def init(
