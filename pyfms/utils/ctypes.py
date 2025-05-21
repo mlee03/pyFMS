@@ -101,6 +101,10 @@ def get_constant_int(lib: type[CDLL], constant: str) -> int:
     return int(c_int.in_dll(lib, constant).value)
 
 
+def get_constant_double(lib: type[CDLL], constant: str) -> int:
+    return int(c_double.in_dll(lib, constant).value)
+
+
 def check_str(arg: str,
               length: int,
               whoami: str):
