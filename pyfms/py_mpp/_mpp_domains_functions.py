@@ -10,12 +10,8 @@ C = "C_CONTIGUOUS"
 def define(lib):
 
     #cFMS_get_compute/data_domain
-    #cFMS_set_comupte/data/global_domain
     for function in [lib.cFMS_get_compute_domain,
-                     lib.cFMS_get_data_domain,
-                     lib.cFMS_set_compute_domain,
-                     lib.cFMS_set_data_domain,
-                     lib.cFMS_set_global_domain]:                     
+                     lib.cFMS_get_data_domain]:
         function.restype = None
         function.argtypes = [POINTER(c_int),  #domain_id
                              POINTER(c_int),  #xbegin
@@ -33,7 +29,40 @@ def define(lib):
                              POINTER(c_int),  #whalo
                              POINTER(c_int),  #shalo
         ]
+        
+    #cFMS_set_compute/data_domain
+    for function in [lib.cFMS_set_compute_domain,
+                     lib.cFMS_set_data_domain]:
+        function.restype = None
+        function.argtypes = [POINTER(c_int),  #domain_id
+                             POINTER(c_int),  #xbegin
+                             POINTER(c_int),  #xend
+                             POINTER(c_int),  #ybegin
+                             POINTER(c_int),  #yend
+                             POINTER(c_int),  #xsize
+                             POINTER(c_int),  #ysize
+                             POINTER(c_bool), #x_is_global
+                             POINTER(c_bool), #y_is_global
+                             POINTER(c_int),  #tile_count
+                             POINTER(c_int),  #whalo
+                             POINTER(c_int),  #shalo
+        ]
 
+    #cFMS_set_global_domain
+    lib.cFMS_set_global_domain.restype = None
+    lib.cFMS_set_global_domain.argtypes = [
+        POINTER(c_int),  #domain_id
+        POINTER(c_int),  #xbegin
+        POINTER(c_int),  #xend
+        POINTER(c_int),  #ybegin
+        POINTER(c_int),  #yend
+        POINTER(c_int),  #xsize
+        POINTER(c_int),  #ysize
+        POINTER(c_int),  #tile_count
+        POINTER(c_int),  #whalo
+        POINTER(c_int),  #shalo
+    ]
+        
     #cFMS_define_domains
     lib.cFMS_define_domains.restype = c_int
     lib.cFMS_define_domains.argtypes = [

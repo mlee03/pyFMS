@@ -306,7 +306,9 @@ def define_nest_domains(
     set_list(tile_fine, np.int32, arglist)
     set_list(tile_coarse, np.int32, arglist)
     set_list(istart_coarse, np.int32, arglist)
+    set_list(icount_coarse, np.int32, arglist)
     set_list(jstart_coarse, np.int32, arglist)
+    set_list(jcount_coarse, np.int32, arglist)
     set_list(npes_nest_tile, np.int32, arglist)
     set_list(x_refine, np.int32, arglist)
     set_list(y_refine, np.int32, arglist)
@@ -314,7 +316,7 @@ def define_nest_domains(
     set_c_int(extra_halo, arglist)
     set_c_str(name, arglist)
 
-    return _cFMS_define_nest_domain(*arglist)
+    return _cFMS_define_nest_domains(*arglist)
 
 
 def domain_is_initialized(domain_id: int) -> bool:
@@ -400,20 +402,18 @@ def set_compute_domain(
     get_compute domain and the update method in pyDomain
     to update the pyDomain object
     """
-    
+
+    arglist = []
     set_c_int(domain_id, arglist)
-    xbegin = set_c_int(0, arglist)
-    xend = set_c_int(0, arglist)
-    ybegin = set_c_int(0, arglist)
-    yend = set_c_int(0, arglist)
-    xsize = set_c_int(0, arglist)
-    xmax_size = set_c_int(0, arglist)
-    ysize = set_c_int(0, arglist)
-    ymax_size = set_c_int(0, arglist)
-    x_is_global = set_c_bool(False, arglist)
-    y_is_global = set_c_bool(False, arglist)
+    set_c_int(xbegin, arglist)
+    set_c_int(xend, arglist)
+    set_c_int(ybegin, arglist)
+    set_c_int(yend, arglist)
+    set_c_int(xsize, arglist)
+    set_c_int(ysize, arglist)
+    set_c_bool(x_is_global, arglist)
+    set_c_bool(y_is_global, arglist)
     set_c_int(tile_count, arglist)
-    set_c_int(position, arglist)
     set_c_int(whalo, arglist)
     set_c_int(shalo, arglist)
 
@@ -470,23 +470,21 @@ def set_data_domain(
     to update the pyDomain object
     """
 
+    arglist = []
     set_c_int(domain_id, arglist)
-    xbegin = set_c_int(0, arglist)
-    xend = set_c_int(0, arglist)
-    ybegin = set_c_int(0, arglist)
-    yend = set_c_int(0, arglist)
-    xsize = set_c_int(0, arglist)
-    xmax_size = set_c_int(0, arglist)
-    ysize = set_c_int(0, arglist)
-    ymax_size = set_c_int(0, arglist)
-    x_is_global = set_c_bool(False, arglist)
-    y_is_global = set_c_bool(False, arglist)
+    set_c_int(xbegin, arglist)
+    set_c_int(xend, arglist)
+    set_c_int(ybegin, arglist)
+    set_c_int(yend, arglist)
+    set_c_int(xsize, arglist)
+    set_c_int(ysize, arglist)
+    set_c_bool(x_is_global, arglist)
+    set_c_bool(x_is_global, arglist)
     set_c_int(tile_count, arglist)
-    set_c_int(position, arglist)
     set_c_int(whalo, arglist)
     set_c_int(shalo, arglist)
 
-    cFMS_set_data_domain(*arglist)
+    _cFMS_set_data_domain(*arglist)
 
     
 def set_global_domain(
@@ -508,22 +506,17 @@ def set_global_domain(
     """
 
     set_c_int(domain_id, arglist)
-    xbegin = set_c_int(0, arglist)
-    xend = set_c_int(0, arglist)
-    ybegin = set_c_int(0, arglist)
-    yend = set_c_int(0, arglist)
-    xsize = set_c_int(0, arglist)
-    xmax_size = set_c_int(0, arglist)
-    ysize = set_c_int(0, arglist)
-    ymax_size = set_c_int(0, arglist)
-    x_is_global = set_c_bool(False, arglist)
-    y_is_global = set_c_bool(False, arglist)
+    set_c_int(xbegin, arglist)
+    set_c_int(xend, arglist)
+    set_c_int(ybegin, arglist)
+    set_c_int(yend, arglist)
+    set_c_int(xsize, arglist)
+    set_c_int(yxsize, arglist)
     set_c_int(tile_count, arglist)
-    set_c_int(position, arglist)
     set_c_int(whalo, arglist)
     set_c_int(shalo, arglist)
 
-    cFMS_set_global_domain(*arglist)
+    _cFMS_set_global_domain(*arglist)
     
 
 def update_domains(
