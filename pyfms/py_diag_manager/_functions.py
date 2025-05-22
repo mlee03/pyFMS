@@ -2,7 +2,7 @@ from ctypes import POINTER, c_bool, c_char_p, c_double, c_float, c_int
 
 import numpy as np
 
-from ..utils.ctypes import NDPOINTER
+from ..utils.ctypes import NDPOINTERd, NDPOINTERf, NDPOINTERi
 
 
 npptr = np.ctypeslib.ndpointer
@@ -24,10 +24,9 @@ def define(lib):
 
     # cFMS_diag_init
     lib.cFMS_diag_init.restype = None
-    ndptr1 = NDPOINTER(npptr(np.int32, shape=(6), flags=C), c_int)
     lib.cFMS_diag_init.argtypes = [
         POINTER(c_int),  # diag_model_subset
-        ndptr1,  # time_init
+        NDPOINTERi(npptr(np.int32, shape=(6), flags=C)),  # time_init
         c_char_p,  # err_msg
     ]
 
@@ -63,7 +62,7 @@ def define(lib):
 
     # cFMS_diag_advance_field_time
     lib.cFMS_diag_advance_field_time.restype = None
-    lib.cFMS_diag_advance_field_time.argtypes = [POINTER(c_int)]  # diag_field_id
+    lib.cFMS_diag_advance_field_time.argtypes = [POINTER(c_int)]
 
     # cFMS_diag_set_time_end
     lib.cFMS_diag_set_time_end.restype = None
@@ -79,17 +78,15 @@ def define(lib):
     ]
 
     # cFMS_diag_axis_init_[cfloat,c_double]
-    functions = {
-        "cFMS_diag_axis_init_cfloat": np.float32,
-        "cFMS_diag_axis_init_cdouble": np.float64,
-    }
-    for ifunction, dtype in functions.items():
-        function = getattr(lib, ifunction)
+    dtypes = {"cfloat": np.float32, "cdouble": np.float64}
+
+    for name, dtype in dtypes.items():
+        function = getattr(lib, f"cFMS_diag_axis_init_{name}")
         function.restype = c_int
         function.argtypes = [
             c_char_p,  # name
             POINTER(c_int),  # naxis
-            npptr(dtype=dtype, flags=C),  # axis
+            npptr(dtype, flags=C),  # axis
             c_char_p,  # units
             c_char_p,  # cart_name
             POINTER(c_int),  # domain_id
@@ -105,13 +102,14 @@ def define(lib):
         ]
 
     # cFMS_register_diag_field_scalar
-    functions = {
-        "cFMS_register_diag_field_scalar_cint": [np.int32, c_int],
-        "cFMS_register_diag_field_scalar_cfloat": [np.float32, c_float],
-        "cFMS_register_diag_field_scalar_cdouble": [np.float64, c_double],
+    dtypes = {
+        "cint": [np.float32, c_int, NDPOINTERi],
+        "cfloat": [np.float32, c_float, NDPOINTERf],
+        "cdouble": [np.float64, c_double, NDPOINTERd],
     }
-    for ifunction, [dtype, ictype] in functions.items():
-        function = getattr(lib, ifunction)
+
+    for name, [dtype, ictype, NDPOINTER] in dtypes.items():
+        function = getattr(lib, f"cFMS_register_diag_field_scalar_{name}")
         function.restype = c_int
         function.argtypes = [
             c_char_p,  # module_name
@@ -120,7 +118,7 @@ def define(lib):
             c_char_p,  # units
             c_char_p,  # standard_name
             POINTER(ictype),  # missing_value
-            NDPOINTER(npptr(dtype, shape=(2), flags=C), ictype),  # range
+            NDPOINTER(npptr(dtype, shape=(2), flags=C)),  # range
             POINTER(c_bool),  # do_not_log
             c_char_p,  # err_msg
             POINTER(c_int),  # area
@@ -130,12 +128,13 @@ def define(lib):
         ]
 
     # cFMS_register_diag_field_array
-    functions = {
-        "cFMS_register_diag_field_array_cfloat": [np.float32, c_float],
-        "cFMS_register_diag_field_array_cdouble": [np.float64, c_double],
+    dtypes = {
+        "cfloat": [np.float32, c_float, NDPOINTERf],
+        "cdouble": [np.float64, c_double, NDPOINTERd],
     }
-    for ifunction, [dtype, ictype] in functions.items():
-        function = getattr(lib, ifunction)
+
+    for name, [dtype, ictype, NDPOINTER] in dtypes.items():
+        function = getattr(lib, f"cFMS_register_diag_field_array_{name}")
         function.restype = c_int
         function.argtypes = [
             c_char_p,  # module_name
@@ -144,7 +143,7 @@ def define(lib):
             c_char_p,  # long_name
             c_char_p,  # units
             POINTER(ictype),  # missing_value
-            NDPOINTER(npptr(dtype, shape=(2), flags=C), ictype),  # range
+            NDPOINTER(npptr(dtype, shape=(2), flags=C)),  # range
             POINTER(c_bool),  # mask_variant
             c_char_p,  # standard_name
             POINTER(c_bool),  # verbose
@@ -158,53 +157,16 @@ def define(lib):
             POINTER(c_bool),  # multiple_send_data
         ]
 
-    # cFMS_diag_send_data for ints
-    functions = {
-        "cFMS_diag_send_data_2d_cint": 2,
-        "cFMS_diag_send_data_3d_cint": 3,
-        "cFMS_diag_send_data_4d_cint": 4,
-    }
+    # cFMS_diag_send_data for ints, floats, doubles
+    dtypes = {"cint": np.int32, "cfloat": np.float32, "cdouble": np.float64}
 
-    for ifunction, ndim in functions.items():
-        function = getattr(lib, ifunction)
-        function.restype = c_bool
-        function.argtypes = [
-            POINTER(c_int),  # diag_field_id
-            npptr(np.int32, shape=(ndim), flags=C),  # field_shape
-            npptr(np.int32, ndim=ndim, flags=C),  # field
-            c_char_p,  # err_msg
-        ]
-
-    # cFMS_diag_send_data for cfloats
-    functions = {
-        "cFMS_diag_send_data_2d_cfloat": 2,
-        "cFMS_diag_send_data_3d_cfloat": 3,
-        "cFMS_diag_send_data_4d_cfloat": 4,
-    }
-
-    for ifunction, ndim in functions.items():
-        function = getattr(lib, ifunction)
-        function.restype = c_bool
-        function.argtypes = [
-            POINTER(c_int),  # diag_field_id
-            npptr(np.int32, shape=(ndim), flags=C),  # field_shape
-            npptr(np.float32, ndim=ndim, flags=C),  # field
-            c_char_p,  # err_msg
-        ]
-
-    # cFMS_diag_send_data for cdoubles
-    functions = {
-        "cFMS_diag_send_data_2d_cdouble": 2,
-        "cFMS_diag_send_data_3d_cdouble": 3,
-        "cFMS_diag_send_data_4d_cdouble": 4,
-    }
-
-    for ifunction, ndim in functions.items():
-        function = getattr(lib, ifunction)
-        function.restype = c_bool
-        function.argtypes = [
-            POINTER(c_int),  # diag_field_id
-            npptr(np.int32, shape=(ndim), flags=C),  # field_shape
-            npptr(np.float64, ndim=ndim, flags=C),  # field
-            c_char_p,  # err_msg
-        ]
+    for ndim in range(2, 5):
+        for name, dtype in dtypes.items():
+            function = getattr(lib, f"cFMS_diag_send_data_{ndim}d_{name}")
+            function.restype = c_bool
+            function.argtypes = [
+                POINTER(c_int),  # diag_field_id
+                npptr(np.int32, shape=(ndim), flags=C),  # field_shape
+                npptr(dtype, ndim=ndim, flags=C),  # field
+                c_char_p,  # err_msg
+            ]

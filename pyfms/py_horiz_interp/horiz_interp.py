@@ -76,6 +76,10 @@ def create_xgrid_2dx2d_order1(
 
 def init(ninterp: int = None):
 
+    """
+    initializes horiz_interp in FMS
+    """
+
     arglist = []
     set_c_int(ninterp, arglist)
 

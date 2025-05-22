@@ -103,12 +103,53 @@ def check_str(arg: str, length: int, whoami: str):
             )
 
 
-class NDPOINTER:
-    def __init__(self, thispointer=None, thisctypes=None):
-        self.ndpointer = thispointer
-        self.ctypes = thisctypes
+class NDPOINTERi:
+
+    """
+    wrapper to np.ctypeslib.ndpointer for ints
+    to accept None as function argument
+    """
+
+    def __init__(self, thispointer):
+        self.thispointer = thispointer
+        self.ctypes = c_int
 
     def from_param(self, obj):
         if obj is None:
             return POINTER(self.ctypes).from_param(obj)
-        return self.ndpointer.from_param(obj)
+        return self.thispointer.from_param(obj)
+
+
+class NDPOINTERf:
+
+    """
+    wrapper to np.ctypeslib.ndpointer for floats
+    to accept None as function argument
+    """
+
+    def __init__(self, thispointer):
+        self.thispointer = thispointer
+        self.ctypes = c_float
+
+    def from_param(self, obj):
+        if obj is None:
+            return POINTER(self.ctypes).from_param(obj)
+        return self.thispointer.from_param(obj)
+
+
+class NDPOINTERd:
+
+    """
+    wrapper to np.ctypeslib.ndpointer for doubles
+    to accept None as function argument
+    """
+
+    def __init__(self, thispointer):
+        self.thispointer = thispointer
+        self.ctypes = c_double
+
+    @classmethod
+    def from_param(self, obj):
+        if obj is None:
+            return POINTER(self.ctypes).from_param(obj)
+        return self.thispointer.from_param(obj)

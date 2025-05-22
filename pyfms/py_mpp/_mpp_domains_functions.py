@@ -2,7 +2,7 @@ from ctypes import POINTER, c_bool, c_char_p, c_int
 
 import numpy as np
 
-from ..utils.ctypes import NDPOINTER
+from ..utils.ctypes import NDPOINTERi
 
 
 npptr = np.ctypeslib.ndpointer
@@ -75,20 +75,20 @@ def define(lib):
     # cFMS_define_domains
     lib.cFMS_define_domains.restype = c_int
     lib.cFMS_define_domains.argtypes = [
-        npptr(dtype=np.int32, shape=(4), flags=C),  # global_indices
-        npptr(dtype=np.int32, shape=(2), flags=C),  # layout
+        npptr(np.int32, shape=(4), flags=C),  # global_indices
+        npptr(np.int32, shape=(2), flags=C),  # layout
         POINTER(c_int),  # npelist
-        NDPOINTER(npptr(dtype=np.int32, ndim=(1), flags=C)),  # pelist
+        NDPOINTERi(npptr(np.int32, ndim=(1), flags=C)),  # pelist
         POINTER(c_int),  # xflags
         POINTER(c_int),  # yflags
         POINTER(c_int),  # xhalo
         POINTER(c_int),  # yhalo
-        NDPOINTER(npptr(dtype=np.int32, ndim=(1), flags=C)),  # xextent
-        NDPOINTER(npptr(dtype=np.int32, ndim=(1), flags=C)),  # yextent
-        NDPOINTER(npptr(dtype=np.bool, ndim=(2), flags=C)),  # maskmap
+        NDPOINTERi(npptr(np.int32, ndim=(1), flags=C)),  # xextent
+        NDPOINTERi(npptr(np.int32, ndim=(1), flags=C)),  # yextent
+        NDPOINTERi(npptr(np.bool, ndim=(2), flags=C)),  # maskmap
         c_char_p,  # name
         POINTER(c_bool),  # symmetry
-        NDPOINTER(npptr(dtype=np.int32, shape=(2), flags=C)),  # memory_size
+        NDPOINTERi(npptr(np.int32, shape=(2), flags=C)),  # memory_size
         POINTER(c_int),  # whalo
         POINTER(c_int),  # ehalo
         POINTER(c_int),  # shalo
@@ -104,16 +104,16 @@ def define(lib):
     # cFMS_define_io_domain
     lib.cFMS_define_io_domain.restype = None
     lib.cFMS_define_io_domain.argtypes = [
-        npptr(dtype=np.int32, shape=(2), flags=C),  # io_layout
+        npptr(np.int32, shape=(2), flags=C),  # io_layout
         POINTER(c_int),  # domain_id
     ]
 
     # cFMS_define_layout
     lib.cFMS_define_layout.restype = None
     lib.cFMS_define_layout.argtypes = [
-        npptr(dtype=np.int32, shape=(4), flags=C),  # global_indices
+        npptr(np.int32, shape=(4), flags=C),  # global_indices
         POINTER(c_int),  # ndivs
-        npptr(dtype=np.int32, shape=(2), flags=C),  # layout
+        npptr(np.int32, shape=(2), flags=C),  # layout
     ]
 
     # cFMS_define_nest_domains
@@ -121,16 +121,16 @@ def define(lib):
     lib.cFMS_define_nest_domains.argtypes = [
         POINTER(c_int),  # num_nest
         POINTER(c_int),  # ntiles
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # nest_level
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # tile_fine
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # tile_corase
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # istart_coarse
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # icount_coarse
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # jstart_coarse
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # jcount_coarse
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # npes_nest_tiles
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # x_refine
-        npptr(dtype=np.int32, ndim=(1), flags=C),  # y_refine
+        npptr(np.int32, ndim=(1), flags=C),  # nest_level
+        npptr(np.int32, ndim=(1), flags=C),  # tile_fine
+        npptr(np.int32, ndim=(1), flags=C),  # tile_corase
+        npptr(np.int32, ndim=(1), flags=C),  # istart_coarse
+        npptr(np.int32, ndim=(1), flags=C),  # icount_coarse
+        npptr(np.int32, ndim=(1), flags=C),  # jstart_coarse
+        npptr(np.int32, ndim=(1), flags=C),  # jcount_coarse
+        npptr(np.int32, ndim=(1), flags=C),  # npes_nest_tiles
+        npptr(np.int32, ndim=(1), flags=C),  # x_refine
+        npptr(np.int32, ndim=(1), flags=C),  # y_refine
         POINTER(c_int),  # domain_id
         POINTER(c_int),  # extra_halo
         c_char_p,  # name
@@ -147,14 +147,14 @@ def define(lib):
     # cFMS_get_layout
     lib.cFMS_get_layout.restype = None
     lib.cFMS_get_layout.argtypes = [
-        npptr(dtype=np.int32, shape=(2), flags=C),  # layout
+        npptr(np.int32, shape=(2), flags=C),  # layout
         POINTER(c_int),  # domain_id
     ]
 
     # cFMS_get_domain_pelist
     lib.cFMS_get_domain_pelist.restype = None
     lib.cFMS_get_domain_pelist.argtypes = [
-        npptr(dtype=np.int32, ndim=1, flags=C),  # pelist
+        npptr(np.int32, ndim=1, flags=C),  # pelist
         POINTER(c_int),  # domain_id
     ]
 
@@ -164,13 +164,14 @@ def define(lib):
 
     # cFMS_update_domains_int/float/double_2/3/4/5d
     dtypes = {"int": np.int32, "float": np.float32, "double": np.float64}
+
     for ndim in range(2, 6):
         for name, dtype in dtypes.items():
             function = getattr(lib, f"cFMS_update_domains_{name}_{ndim}d")
             function.restype = None
             function.argtypes = [
-                npptr(dtype=np.int32, shape=(ndim), flags=C),  # fieldshape
-                npptr(dtype=dtype, ndim=(ndim), flags=C),  # field
+                npptr(np.int32, shape=(ndim), flags=C),  # fieldshape
+                npptr(dtype, ndim=(ndim), flags=C),  # field
                 POINTER(c_int),  # domain_id
                 POINTER(c_int),  # flags
                 POINTER(c_bool),  # complete
