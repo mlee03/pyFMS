@@ -32,10 +32,9 @@ def init(libpath: str = None):
     pyfms.grid_utils.setlib(_libpath, _lib)
     pyfms.horiz_interp.setlib(_libpath, _lib)
     pyfms.mpp._init(_libpath, _lib)
-    pyfms.mpp_domains.setlib(_libpath, _lib)
+    pyfms.mpp_domains._init(_libpath, _lib)
 
     pyfms.constants.constants_init()
-    pyfms.mpp_domains.constants_init()
  
 
 def lib() -> type[ctypes.CDLL]:

@@ -47,7 +47,7 @@ def test_define_domains():
             global_indices=coarse_global_indices,
             ndivs=coarse_npes,
         )
-
+        
         domain = pyfms.mpp_domains.define_domains(
             global_indices=coarse_global_indices,
             layout=layout,

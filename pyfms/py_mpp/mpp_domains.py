@@ -1,9 +1,11 @@
 import numpy as np
 from numpy.typing import NDArray
+from typing import Any
 
 from ..utils.ctypes import (
     get_constant_int,
     check_str,
+    set_arr,
     set_c_bool,
     set_c_double, 
     set_c_float,
@@ -11,7 +13,7 @@ from ..utils.ctypes import (
     set_c_str,
     set_list,
 )
-
+from . import _mpp_domains_functions 
 from .domain import Domain
 
 
@@ -83,6 +85,7 @@ def get_compute_domain(
     dictionary can be passed into the update method in class pyDomain
     to update the pyfms domain object.
     """
+
     arglist = []
     set_c_int(domain_id, arglist)
     xbegin = set_c_int(0, arglist)
@@ -103,17 +106,17 @@ def get_compute_domain(
     _cFMS_get_compute_domain(*arglist)
 
     return dict(
-        domain_id = domain_id_c.value,
-        isc = xbegin_c.value,
-        jsc = ybegin_c.value,
-        iec = xend_c.value,
-        jec = yend_c.value,
-        xsize_c = xsize_c.value,
-        ysize_c = ysize_c.value,
-        xmax_size_c = xmax_size_c.value,
-        ymax_size_c = ymax_size_c.value,
-        x_is_global_c = x_is_global_c.value,
-        y_is_global_c = y_is_global_c.value,
+        domain_id_c = domain_id,
+        isc = xbegin.value,
+        jsc = ybegin.value,
+        iec = xend.value,
+        jec = yend.value,
+        xsize_c = xsize.value,
+        ysize_c = ysize.value,
+        xmax_size_c = xmax_size.value,
+        ymax_size_c = ymax_size.value,
+        x_is_global_c = x_is_global.value,
+        y_is_global_c = y_is_global.value,
     )
 
 
@@ -152,17 +155,17 @@ def get_data_domain(
     _cFMS_get_data_domain(*arglist)
 
     return dict(
-        domain_id = domain_id_c.value,
-        isc = xbegin_c.value,
-        jsc = ybegin_c.value,
-        iec = xend_c.value,
-        jec = yend_c.value,
-        xsize_c = xsize_c.value,
-        ysize_c = ysize_c.value,
-        xmax_size_c = xmax_size_c.value,
-        ymax_size_c = ymax_size_c.value,
-        x_is_global_c = x_is_global_c.value,
-        y_is_global_c = y_is_global_c.value,
+        domain_id = domain_id,
+        isd = xbegin.value,
+        jsd = ybegin.value,
+        ied = xend.value,
+        jed = yend.value,
+        xsize_d = xsize.value,
+        ysize_d = ysize.value,
+        xmax_size_d = xmax_size.value,
+        ymax_size_d = ymax_size.value,
+        x_is_global_d = x_is_global.value,
+        y_is_global_d = y_is_global.value,
     )
 
 
@@ -199,12 +202,10 @@ def define_domains(
     corresponds to the saved FmsMppDomain2D derived type in cFMS
     """
 
-    npelist = None if pelist is None else len(pelist)
-    
     arglist = []
     set_list(global_indices, np.int32, arglist)
     set_list(layout, np.int32, arglist)
-    set_c_int(npelist, arglist)
+    set_c_int(1 if pelist is None else len(pelist), arglist)
     set_list(pelist, np.int32, arglist)
     set_c_int(xflags, arglist)
     set_c_int(yflags, arglist)
@@ -212,7 +213,7 @@ def define_domains(
     set_c_int(yhalo, arglist)
     set_list(xextent, np.int32, arglist)
     set_list(yextent, np.int32, arglist)
-    set_list(maskmap, np.int32, arglist)
+    set_list(maskmap, np.bool, arglist)
     set_c_str(name, arglist)
     set_c_bool(symmetry, arglist)
     set_list(memory_size, np.int32, arglist)
@@ -226,7 +227,7 @@ def define_domains(
     set_c_bool(complete, arglist)
     set_c_int(x_cyclic_offset, arglist)
     set_c_int(y_cyclic_offset, arglist)
-
+    
     domain_id = _cFMS_define_domains(*arglist)
 
     compute = get_compute_domain(
@@ -354,7 +355,7 @@ def get_layout(domain_id: int) -> list[int]:
     layout = set_list([0]*2, np.int32, arglist)
     set_c_int(domain_id, arglist)
 
-    _cFMS_get_layout(layout_p, domain_id_c)
+    _cFMS_get_layout(layout_p, domain_id)
     
     return layout_p.tolist()
 
@@ -368,7 +369,7 @@ def get_domain_pelist(domain_id: int) -> list[int]:
     npes = get_constant_int(_lib, "cFMS_pelist_npes")
 
     arglist = []
-    pelist = set_list([0]*2, np.int32, arglist)
+    pelist = set_list([0]*npes, np.int32, arglist)
     set_c_int(domain_id, arglist)
     
     _cFMS_get_domain_pelist(*arglist)
@@ -545,15 +546,31 @@ def update_domains(
     """
 
     try:
-        cFMS_update_domains_this = _cFMS_update_domains[field.ndim][field.dtype.name]
+        cFMS_update_this = _cFMS_update_domains[field.ndim][field.dtype.name]
     except KeyError:
         raise RuntimeError(
-            f"""mpp_domains.update:
-            data of dimensions {field.ndim} and/or of type {field.dtype}"""
+            f"mpp_domains.update:"                   \
+            "data of dimensions {field.ndim} and/or "\
+            f"of type {field.dtype}"
         )
 
-    check_string(name, 64, "mpp_domains.update")
-    
+    check_str(name, 64, "mpp_domains.update")
+
+    arglist = []
+    set_list(field.shape, np.int32, arglist)
+    set_arr(field, arglist)
+    set_c_int(domain_id, arglist)
+    set_c_int(flags, arglist)
+    set_c_bool(complete, arglist)
+    set_c_int(position, arglist)
+    set_c_int(whalo, arglist)
+    set_c_int(ehalo, arglist)
+    set_c_int(shalo, arglist)
+    set_c_int(nhalo, arglist)
+    set_c_str(name, arglist)
+    set_c_int(tile_count, arglist)
+
+    cFMS_update_this(*arglist)
 
 
 def _init_constants():
@@ -570,29 +587,29 @@ def _init_constants():
     global NORTH, NORTH_EAST, EAST, SOUTH_EAST
     global CORNER, CENTER, SOUTH, SOUTH_WEST
 
-    GLOBAL_DATA_DOMAIN = get_constant_double(_lib,"GLOBAL_DATA_DOMAIN")
-    BGRID_NE = get_constant_double(_lib, "BGRID_NE")
-    CGRID_NE = get_constant_double(_lib, "CGRID_NE")
-    DGRID_NE = get_constant_double(_lib, "DGRID_NE")
-    AGRID = get_constant_double(_lib, "AGRID")
-    FOLD_SOUTH_EDGE = get_constant_double(_lib, "FOLD_SOUTH_EDGE")
-    FOLD_WEST_EDGE = get_constant_double(_lib, "FOLD_WEST_EDGE")
-    FOLD_EAST_EDGE = get_constant_double(_lib, "FOLD_EAST_EDGE")
-    CYCLIC_GLOBAL_DOMAIN = get_constant_double(_lib, "CYCLIC_GLOBAL_DOMAIN")
-    NUPDATE = get_constant_double(_lib, "NUPDATE")
-    EUPDATE = get_constant_double(_lib, "EUPDATE")
-    XUPDATE = get_constant_double(_lib, "XUPDATE")
-    YUPDATE = get_constant_double(_lib, "YUPDATE")
-    NORTH = get_constant_double(_lib, "NORTH")
-    NORTH_EAST = get_constant_double(_lib, "NORTH_EAST")
-    EAST = get_constant_double(_lib, "EAST")
-    SOUTH_EAST = get_constant_double(_lib, "SOUTH_EAST")
-    CORNER = get_constant_double(_lib, "CORNER")
-    CENTER = get_constant_double(_lib, "CENTER")
-    SOUTH = get_constant_double(_lib, "SOUTH")
-    SOUTH_WEST = get_constant_double(_lib, "SOUTH_WEST")
-    WEST = get_constant_double(_lib, "WEST")
-    NORTH_WEST = get_constant_double(_lib, "NORTH_WEST")
+    GLOBAL_DATA_DOMAIN = get_constant_int(_lib,"GLOBAL_DATA_DOMAIN")
+    BGRID_NE = get_constant_int(_lib, "BGRID_NE")
+    CGRID_NE = get_constant_int(_lib, "CGRID_NE")
+    DGRID_NE = get_constant_int(_lib, "DGRID_NE")
+    AGRID = get_constant_int(_lib, "AGRID")
+    FOLD_SOUTH_EDGE = get_constant_int(_lib, "FOLD_SOUTH_EDGE")
+    FOLD_WEST_EDGE = get_constant_int(_lib, "FOLD_WEST_EDGE")
+    FOLD_EAST_EDGE = get_constant_int(_lib, "FOLD_EAST_EDGE")
+    CYCLIC_GLOBAL_DOMAIN = get_constant_int(_lib, "CYCLIC_GLOBAL_DOMAIN")
+    NUPDATE = get_constant_int(_lib, "NUPDATE")
+    EUPDATE = get_constant_int(_lib, "EUPDATE")
+    XUPDATE = get_constant_int(_lib, "XUPDATE")
+    YUPDATE = get_constant_int(_lib, "YUPDATE")
+    NORTH = get_constant_int(_lib, "NORTH")
+    NORTH_EAST = get_constant_int(_lib, "NORTH_EAST")
+    EAST = get_constant_int(_lib, "EAST")
+    SOUTH_EAST = get_constant_int(_lib, "SOUTH_EAST")
+    CORNER = get_constant_int(_lib, "CORNER")
+    CENTER = get_constant_int(_lib, "CENTER")
+    SOUTH = get_constant_int(_lib, "SOUTH")
+    SOUTH_WEST = get_constant_int(_lib, "SOUTH_WEST")
+    WEST = get_constant_int(_lib, "WEST")
+    NORTH_WEST = get_constant_int(_lib, "NORTH_WEST")
 
 
 def _init_functions():
@@ -624,50 +641,52 @@ def _init_functions():
     global _cFMS_update_domains_double_5d
     global _cFMS_update_domains
 
-    _cFMS_get_compute_domain = lib.cFMS_get_compute_domain
-    _cFMS_get_data_domain = lib.cFMS_get_data_domain
-    _cFMS_define_domains = lib.cFMS_define_domains 
-    _cFMS_define_io_domain = lib.cFMS_define_io_domain
-    _cFMS_define_layout = lib.cFMS_define_layout
-    _cFMS_define_nest_domains = lib.cFMS_define_nest_domains
-    _cFMS_domain_is_initialized = lib.cFMS_domain_is_initialized 
-    _cFMS_get_domain_name = lib.cFMS_get_domain_name
-    _cFMS_get_layout = lib.cFMS_get_layout
-    _cFMS_get_domain_pelist = lib.cFMS_get_domain_pelist
-    _cFMS_set_compute_domain = lib.cFMS_set_compute_domain
-    _cFMS_set_data_domain = lib.cFMS_set_data_domain
-    _cFMS_set_global_domain = lib.cFMS_set_global_domain
-    _cFMS_update_domains_int_2d = lib.cFMS_update_domains_int_2d
-    _cFMS_update_domains_float_2d = lib.cFMS_update_domains_float_2d
-    _cFMS_update_domains_double_2d = lib.cFMS_update_domains_double_2d
-    _cFMS_update_domains_int_3d = lib.cFMS_update_domains_int_3d
-    _cFMS_update_domains_float_3d = lib.cFMS_update_domains_float_3d
-    _cFMS_update_domains_double_3d = lib.cFMS_update_domains_double_3d
-    _cFMS_update_domains_int_4d = lib.cFMS_update_domains_int_4d
-    _cFMS_update_domains_float_4d = lib.cFMS_update_domains_float_4d
-    _cFMS_update_domains_double_4d = lib.cFMS_update_domains_double_4d
-    _cFMS_update_domains_int_5d = lib.cFMS_update_domains_int_5d
-    _cFMS_update_domains_float_5d = lib.cFMS_update_domains_float_5d
-    _cFMS_update_domains_double_5d = lib.cFMS_update_domains_double_5d
+    _cFMS_get_compute_domain = _lib.cFMS_get_compute_domain
+    _cFMS_get_data_domain = _lib.cFMS_get_data_domain
+    _cFMS_define_domains = _lib.cFMS_define_domains 
+    _cFMS_define_io_domain = _lib.cFMS_define_io_domain
+    _cFMS_define_layout = _lib.cFMS_define_layout
+    _cFMS_define_nest_domains = _lib.cFMS_define_nest_domains
+    _cFMS_domain_is_initialized = _lib.cFMS_domain_is_initialized 
+    _cFMS_get_domain_name = _lib.cFMS_get_domain_name
+    _cFMS_get_layout = _lib.cFMS_get_layout
+    _cFMS_get_domain_pelist = _lib.cFMS_get_domain_pelist
+    _cFMS_set_compute_domain = _lib.cFMS_set_compute_domain
+    _cFMS_set_data_domain = _lib.cFMS_set_data_domain
+    _cFMS_set_global_domain = _lib.cFMS_set_global_domain
+    _cFMS_update_domains_int_2d = _lib.cFMS_update_domains_int_2d
+    _cFMS_update_domains_float_2d = _lib.cFMS_update_domains_float_2d
+    _cFMS_update_domains_double_2d = _lib.cFMS_update_domains_double_2d
+    _cFMS_update_domains_int_3d = _lib.cFMS_update_domains_int_3d
+    _cFMS_update_domains_float_3d = _lib.cFMS_update_domains_float_3d
+    _cFMS_update_domains_double_3d = _lib.cFMS_update_domains_double_3d
+    _cFMS_update_domains_int_4d = _lib.cFMS_update_domains_int_4d
+    _cFMS_update_domains_float_4d = _lib.cFMS_update_domains_float_4d
+    _cFMS_update_domains_double_4d = _lib.cFMS_update_domains_double_4d
+    _cFMS_update_domains_int_5d = _lib.cFMS_update_domains_int_5d
+    _cFMS_update_domains_float_5d = _lib.cFMS_update_domains_float_5d
+    _cFMS_update_domains_double_5d = _lib.cFMS_update_domains_double_5d
 
+    _mpp_domains_functions.define(_lib)
+    
     _cFMS_update_domains = {
         2: {
-            "int": _cFMS_update_domains_int_2d
+            "int": _cFMS_update_domains_int_2d,
             "float32": _cFMS_update_domains_float_2d,
             "float64": _cFMS_update_domains_double_2d
         },
         3: {
-            "int": _cFMS_update_domains_int_3d
+            "int": _cFMS_update_domains_int_3d,
             "float32": _cFMS_update_domains_float_3d,
             "float64": _cFMS_update_domains_double_3d
         },
         4: {
-            "int": _cFMS_update_domains_int_4d
+            "int": _cFMS_update_domains_int_4d,
             "float32": _cFMS_update_domains_float_4d,
             "float64": _cFMS_update_domains_double_4d
         },
         5: {
-            "int": _cFMS_update_domains_int_5d
+            "int": _cFMS_update_domains_int_5d,
             "float32": _cFMS_update_domains_float_5d,
             "float64": _cFMS_update_domains_double_5d
         },

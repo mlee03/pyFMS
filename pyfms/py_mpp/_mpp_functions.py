@@ -1,7 +1,8 @@
 from ctypes import c_bool, c_char_p, c_double, c_float, c_int, POINTER
+from ..utils.ctypes import NDPOINTER
 import numpy as np
 
-ndptr = np.ctypeslib.ndpointer
+npptr = np.ctypeslib.ndpointer
 C = "C_CONTIGUOUS"
 
 def define(lib):
@@ -12,7 +13,7 @@ def define(lib):
 
     #cFMS_declare_pelist
     lib.cFMS_declare_pelist.restype = None
-    lib.cFMS_declare_pelist.argtypes = [ndptr(dtype=np.int32, ndim=(1), flags=C), #pelist
+    lib.cFMS_declare_pelist.argtypes = [npptr(dtype=np.int32, ndim=(1), flags=C), #pelist
                                         c_char_p #name
      ]
 
@@ -24,7 +25,7 @@ def define(lib):
 
     #cFMS_get_current_pelist
     lib.cFMS_get_current_pelist.restype = None
-    lib.cFMS_get_current_pelist.argtypes = [ndptr(dtype=np.int32, ndim=(1), flags=C), #pelist
+    lib.cFMS_get_current_pelist.argtypes = [npptr(dtype=np.int32, ndim=(1), flags=C), #pelist
                                             c_char_p,      #name
                                             POINTER(c_int) #commID
     ]
@@ -39,8 +40,9 @@ def define(lib):
 
     #cFMS_set_current_pelist
     lib.cFMS_set_current_pelist.restype = None
-    lib.cFMS_set_current_pelist.argtypes = [ndptr(dtype=np.int32, ndim=(1), flags=C), #pelist
-                                            POINTER(c_bool) #no_sync
+    lib.cFMS_set_current_pelist.argtypes = [
+        NDPOINTER(npptr(dtype=np.int32, ndim=(1), flags=C)), #pelist
+        POINTER(c_bool)                                      #no_sync
     ]
 
     

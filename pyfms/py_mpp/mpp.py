@@ -102,15 +102,13 @@ def get_current_pelist(
     specified to correctly retrieve the current pelist
     """
 
-    pelist = np.empty(shape=npes, dtype=np.int32)
-
     arglist = []
-    set_arr(pelist, arglist)
+    pelist = set_list([0]*npes, np.int32, arglist)
     name_c = set_c_str(" ", arglist) if get_name else set_c_str(None, arglist)
     commid = set_c_int(0, arglist) if get_commID else set_c_int(None, arglist)
 
     set_pelist_npes(npes)
-    #_cFMS_get_current_pelist(*arglist)
+    _cFMS_get_current_pelist(*arglist)
 
     returns = []
     if get_name: returns.append(name.value.decode("utf-8"))
@@ -148,7 +146,7 @@ def set_current_pelist(pelist: list[int] = None, no_sync: bool = None):
     set_list(pelist, np.int32, arglist)
     set_c_bool(no_sync, arglist)
     
-    set_pelist_npes(npes)
+    set_pelist_npes(1 if pelist is None else len(pelist))
     _cFMS_set_current_pelist(*arglist)
 
 
@@ -160,7 +158,7 @@ def _init_functions():
     global _cFMS_get_current_pelist
     global _cFMS_npes
     global _cFMS_pe
-    global _set_current_pelist
+    global _cFMS_set_current_pelist
 
     _mpp_functions.define(_lib)
     

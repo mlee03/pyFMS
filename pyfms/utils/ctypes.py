@@ -112,3 +112,14 @@ def check_str(arg: str,
     if arg is not None:
         if len(arg) > length:
             raise RuntimeError(f"{whoami}: '{arg}' must be less than {length} cahracters")
+
+
+class NDPOINTER():
+    def __init__(self, thispointer = None, thisctypes = None):
+        self.ndpointer = thispointer
+        self.ctypes = thisctypes
+    def from_param(self, obj):
+        if obj is None:
+            return POINTER(self.ctypes).from_param(obj)
+        return self.ndpointer.from_param(obj)
+

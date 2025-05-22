@@ -1,14 +1,7 @@
 from ctypes import c_bool, c_char_p, c_double, c_float, c_int, POINTER
 import numpy as np
 
-class NDPOINTER():
-    def __init__(self, thispointer = None, thisctypes = None):
-        self.ndpointer = thispointer
-        self.ctypes = thisctypes
-    def from_param(self, obj):
-        if obj is None:
-            return POINTER(self.ctypes).from_param(obj)
-        return self.ndpointer.from_param(obj)
+from ..utils.ctypes import NDPOINTER
 
 npptr = np.ctypeslib.ndpointer
 C = "C_CONTIGUOUS"
