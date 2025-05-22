@@ -37,7 +37,7 @@ def test_data_override():
     )
 
     data, override = pyfms.data_override.override_scalar(
-        gridname="OCN", fieldname="runoff_scalar", dtype=np.float64
+        gridname="OCN", fieldname="runoff_scalar", dtype="float64"
     )
 
     assert override

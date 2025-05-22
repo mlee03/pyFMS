@@ -23,17 +23,17 @@ CFLOAT_MODE = None
 CDOUBLE_MODE = None
 
 # module functions
-cFMS_data_override_init = None
-cFMS_data_override_set_time = None
-cFMS_data_override_0d_cfloat = None
-cFMS_data_override_0d_cdouble = None
-cFMS_data_override_2d_cfloat = None
-cFMS_data_override_2d_cdouble = None
-cFMS_data_override_3d_cfloat = None
-cFMS_data_override_3d_cdouble = None
+_cFMS_data_override_init = None
+_cFMS_data_override_set_time = None
+_cFMS_data_override_0d_cfloat = None
+_cFMS_data_override_0d_cdouble = None
+_cFMS_data_override_2d_cfloat = None
+_cFMS_data_override_2d_cdouble = None
+_cFMS_data_override_3d_cfloat = None
+_cFMS_data_override_3d_cdouble = None
 
-cFMS_data_override_scalars = {}
-cFMS_data_overrides = {}
+_cFMS_data_override_scalars = {}
+_cFMS_data_overrides = {}
 
 
 def init(
@@ -70,7 +70,7 @@ def init(
     set_c_int(land_domainUG_id, arglist)
     set_c_int(mode, arglist)
 
-    cFMS_data_override_init(*arglist)
+    _cFMS_data_override_init(*arglist)
 
 
 def set_time(
@@ -98,13 +98,13 @@ def set_time(
     set_c_int(tick, arglist)
     err_msg = set_c_str(" ", arglist)
 
-    cFMS_data_override_set_time(*arglist)
+    _cFMS_data_override_set_time(*arglist)
 
 
 def override_scalar(
     gridname: str,
     fieldname: str,
-    dtype: type[np.float32] | type[np.float64],
+    dtype: str,
     data_index: int = None,
 ) -> np.float32 | np.float64:
 
@@ -116,7 +116,7 @@ def override_scalar(
     """
 
     try:
-        cFMS_data_override = cFMS_data_override_scalars[dtype]
+        _cFMS_data_override = _cFMS_data_override_scalars[dtype]
     except KeyError:
         raise RuntimeError(f"data_override.override_scalar {dtype} not supported")
 
@@ -127,7 +127,7 @@ def override_scalar(
     override = set_c_bool(False, arglist)
     set_c_int(data_index, arglist)
 
-    cFMS_data_override(*arglist)
+    _cFMS_data_override(*arglist)
 
     return data[0], override.value
 
@@ -150,7 +150,7 @@ def override(
     """
 
     try:
-        cFMS_data_override = cFMS_data_overrides[data.ndim][data.dtype.name]
+        _cFMS_data_override = _cFMS_data_overrides[data.ndim][data.dtype.name]
     except KeyError:
         raise RuntimeError(
             f"""data_override.override:
@@ -168,7 +168,7 @@ def override(
     set_c_int(js_in, arglist)
     set_c_int(je_in, arglist)
 
-    cFMS_data_override(*arglist)
+    _cFMS_data_override(*arglist)
 
     return override.value
 
@@ -190,41 +190,41 @@ def _init_constants():
 
 def _init_functions():
 
-    global cFMS_data_override_init
-    global cFMS_data_override_set_time
-    global cFMS_data_override_0d_cfloat
-    global cFMS_data_override_0d_cdouble
-    global cFMS_data_override_2d_cfloat
-    global cFMS_data_override_2d_cdouble
-    global cFMS_data_override_3d_cfloat
-    global cFMS_data_override_3d_cdouble
-    global cFMS_data_override_scalars
-    global cFMS_data_overrides
+    global _cFMS_data_override_init
+    global _cFMS_data_override_set_time
+    global _cFMS_data_override_0d_cfloat
+    global _cFMS_data_override_0d_cdouble
+    global _cFMS_data_override_2d_cfloat
+    global _cFMS_data_override_2d_cdouble
+    global _cFMS_data_override_3d_cfloat
+    global _cFMS_data_override_3d_cdouble
+    global _cFMS_data_override_scalars
+    global _cFMS_data_overrides
 
     _functions.define(_lib)
 
-    cFMS_data_override_init = _lib.cFMS_data_override_init
-    cFMS_data_override_set_time = _lib.cFMS_data_override_set_time
-    cFMS_data_override_0d_cfloat = _lib.cFMS_data_override_0d_cfloat
-    cFMS_data_override_0d_cdouble = _lib.cFMS_data_override_0d_cdouble
-    cFMS_data_override_2d_cfloat = _lib.cFMS_data_override_2d_cfloat
-    cFMS_data_override_3d_cfloat = _lib.cFMS_data_override_3d_cfloat
-    cFMS_data_override_2d_cdouble = _lib.cFMS_data_override_2d_cdouble
-    cFMS_data_override_3d_cdouble = _lib.cFMS_data_override_3d_cdouble
+    _cFMS_data_override_init = _lib.cFMS_data_override_init
+    _cFMS_data_override_set_time = _lib.cFMS_data_override_set_time
+    _cFMS_data_override_0d_cfloat = _lib.cFMS_data_override_0d_cfloat
+    _cFMS_data_override_0d_cdouble = _lib.cFMS_data_override_0d_cdouble
+    _cFMS_data_override_2d_cfloat = _lib.cFMS_data_override_2d_cfloat
+    _cFMS_data_override_3d_cfloat = _lib.cFMS_data_override_3d_cfloat
+    _cFMS_data_override_2d_cdouble = _lib.cFMS_data_override_2d_cdouble
+    _cFMS_data_override_3d_cdouble = _lib.cFMS_data_override_3d_cdouble
 
-    cFMS_data_override_scalars = {
-        np.float32: cFMS_data_override_0d_cfloat,
-        np.float64: cFMS_data_override_0d_cdouble,
+    _cFMS_data_override_scalars = {
+        "float32": _cFMS_data_override_0d_cfloat,
+        "float64": _cFMS_data_override_0d_cdouble,
     }
 
-    cFMS_data_overrides = {
+    _cFMS_data_overrides = {
         2: {
-            "float32": cFMS_data_override_2d_cfloat,
-            "float64": cFMS_data_override_2d_cdouble,
+            "float32": _cFMS_data_override_2d_cfloat,
+            "float64": _cFMS_data_override_2d_cdouble,
         },
         3: {
-            "float32": cFMS_data_override_3d_cfloat,
-            "float64": cFMS_data_override_3d_cdouble,
+            "float32": _cFMS_data_override_3d_cfloat,
+            "float64": _cFMS_data_override_3d_cdouble,
         },
     }
 
