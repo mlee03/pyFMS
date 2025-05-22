@@ -1,4 +1,5 @@
 from typing import Any
+
 from .ctypes import get_constant_double
 
 
@@ -134,5 +135,3 @@ def _init(libpath: str, lib: Any):
     _libpath = libpath
 
     _init_constants()
-
-

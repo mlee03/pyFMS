@@ -1,12 +1,11 @@
-import numpy as np
-import numpy.typing as npt
 from typing import Any
 
-from .ctypes import (
-    set_c_int,
-    set_array
-)
+import numpy as np
+import numpy.typing as npt
+
 from . import _grid_utils_functions
+from .ctypes import set_array, set_c_int
+
 
 _libpath = None
 _lib = None
@@ -31,7 +30,7 @@ def get_grid_area(
     set_c_int(nlat, arglist)
     set_array(lon, arglist)
     set_array(lat, arglist)
-    area = set_array(np.zeros(nlon*nlat, dtype=np.float64), arglist)
+    area = set_array(np.zeros(nlon * nlat, dtype=np.float64), arglist)
 
     _cFMS_get_grid_area(*arglist)
 
@@ -43,10 +42,10 @@ def _init_functions():
     global _cFMS_get_grid_area
 
     _grid_utils_functions.define(_lib)
-    
+
     _cFMS_get_grid_area = _lib.cFMS_get_grid_area
 
-    
+
 def _init(libpath: str, lib: Any):
 
     """

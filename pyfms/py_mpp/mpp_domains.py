@@ -1,19 +1,18 @@
-import numpy as np
-from numpy.typing import NDArray
 from typing import Any
 
+import numpy as np
+from numpy.typing import NDArray
+
 from ..utils.ctypes import (
-    get_constant_int,
     check_str,
+    get_constant_int,
     set_array,
     set_c_bool,
-    set_c_double, 
-    set_c_float,
     set_c_int,
     set_c_str,
     set_list,
 )
-from . import _mpp_domains_functions 
+from . import _mpp_domains_functions
 from .domain import Domain
 
 
@@ -107,17 +106,17 @@ def get_compute_domain(
     _cFMS_get_compute_domain(*arglist)
 
     return dict(
-        domain_id_c = domain_id,
-        isc = xbegin.value,
-        jsc = ybegin.value,
-        iec = xend.value,
-        jec = yend.value,
-        xsize_c = xsize.value,
-        ysize_c = ysize.value,
-        xmax_size_c = xmax_size.value,
-        ymax_size_c = ymax_size.value,
-        x_is_global_c = x_is_global.value,
-        y_is_global_c = y_is_global.value,
+        domain_id_c=domain_id,
+        isc=xbegin.value,
+        jsc=ybegin.value,
+        iec=xend.value,
+        jec=yend.value,
+        xsize_c=xsize.value,
+        ysize_c=ysize.value,
+        xmax_size_c=xmax_size.value,
+        ymax_size_c=ymax_size.value,
+        x_is_global_c=x_is_global.value,
+        y_is_global_c=y_is_global.value,
     )
 
 
@@ -156,17 +155,17 @@ def get_data_domain(
     _cFMS_get_data_domain(*arglist)
 
     return dict(
-        domain_id = domain_id,
-        isd = xbegin.value,
-        jsd = ybegin.value,
-        ied = xend.value,
-        jed = yend.value,
-        xsize_d = xsize.value,
-        ysize_d = ysize.value,
-        xmax_size_d = xmax_size.value,
-        ymax_size_d = ymax_size.value,
-        x_is_global_d = x_is_global.value,
-        y_is_global_d = y_is_global.value,
+        domain_id=domain_id,
+        isd=xbegin.value,
+        jsd=ybegin.value,
+        ied=xend.value,
+        jed=yend.value,
+        xsize_d=xsize.value,
+        ysize_d=ysize.value,
+        xmax_size_d=xmax_size.value,
+        ymax_size_d=ymax_size.value,
+        x_is_global_d=x_is_global.value,
+        y_is_global_d=y_is_global.value,
     )
 
 
@@ -228,7 +227,7 @@ def define_domains(
     set_c_bool(complete, arglist)
     set_c_int(x_cyclic_offset, arglist)
     set_c_int(y_cyclic_offset, arglist)
-    
+
     domain_id = _cFMS_define_domains(*arglist)
 
     compute = get_compute_domain(
@@ -261,7 +260,7 @@ def define_io_domain(io_layout: list[int], domain_id: int):
 
 
 def define_layout(global_indices: list[int], ndivs: int) -> list:
-    
+
     """
     Defines the layout associated with a domain decomposition
     """
@@ -269,7 +268,7 @@ def define_layout(global_indices: list[int], ndivs: int) -> list:
     arglist = []
     set_list(global_indices, np.int32, arglist)
     set_c_int(ndivs, arglist)
-    layout = set_list([0]*2, np.int32, arglist)
+    layout = set_list([0] * 2, np.int32, arglist)
 
     _cFMS_define_layout(*arglist)
 
@@ -342,7 +341,7 @@ def get_domain_name(domain_id: int) -> str:
     arglist = []
     name = set_c_str(" ", arglist)
     set_c_int(domain_id, arglist)
-    
+
     _cFMS_get_domain_name(*arglist)
 
     return name.value.decode("utf-8")
@@ -355,12 +354,12 @@ def get_layout(domain_id: int) -> list[int]:
     """
 
     arglist = []
-    layout = set_list([0]*2, np.int32, arglist)
+    layout = set_list([0] * 2, np.int32, arglist)
     set_c_int(domain_id, arglist)
 
-    _cFMS_get_layout(layout_p, domain_id)
-    
-    return layout_p.tolist()
+    _cFMS_get_layout(layout, domain_id)
+
+    return layout.tolist()
 
 
 def get_domain_pelist(domain_id: int) -> list[int]:
@@ -372,12 +371,12 @@ def get_domain_pelist(domain_id: int) -> list[int]:
     npes = get_constant_int(_lib, "cFMS_pelist_npes")
 
     arglist = []
-    pelist = set_list([0]*npes, np.int32, arglist)
+    pelist = set_list([0] * npes, np.int32, arglist)
     set_c_int(domain_id, arglist)
-    
+
     _cFMS_get_domain_pelist(*arglist)
 
-    return pelist_p.tolist()
+    return pelist.tolist()
 
 
 def set_compute_domain(
@@ -474,7 +473,7 @@ def set_data_domain(
 
     _cFMS_set_data_domain(*arglist)
 
-    
+
 def set_global_domain(
     domain_id: int,
     xbegin: int = None,
@@ -493,19 +492,20 @@ def set_global_domain(
     for domain_id
     """
 
+    arglist = []
     set_c_int(domain_id, arglist)
     set_c_int(xbegin, arglist)
     set_c_int(xend, arglist)
     set_c_int(ybegin, arglist)
     set_c_int(yend, arglist)
     set_c_int(xsize, arglist)
-    set_c_int(yxsize, arglist)
+    set_c_int(ysize, arglist)
     set_c_int(tile_count, arglist)
     set_c_int(whalo, arglist)
     set_c_int(shalo, arglist)
 
     _cFMS_set_global_domain(*arglist)
-    
+
 
 def update_domains(
     field: NDArray,
@@ -530,8 +530,8 @@ def update_domains(
         cFMS_update_this = _cFMS_update_domains[field.ndim][field.dtype.name]
     except KeyError:
         raise RuntimeError(
-            f"mpp_domains.update:"                   \
-            "data of dimensions {field.ndim} and/or "\
+            f"mpp_domains.update:"
+            "data of dimensions {field.ndim} and/or "
             f"of type {field.dtype}"
         )
 
@@ -568,7 +568,7 @@ def _init_constants():
     global NORTH, NORTH_EAST, EAST, SOUTH_EAST
     global CORNER, CENTER, SOUTH, SOUTH_WEST
 
-    GLOBAL_DATA_DOMAIN = get_constant_int(_lib,"GLOBAL_DATA_DOMAIN")
+    GLOBAL_DATA_DOMAIN = get_constant_int(_lib, "GLOBAL_DATA_DOMAIN")
     BGRID_NE = get_constant_int(_lib, "BGRID_NE")
     CGRID_NE = get_constant_int(_lib, "CGRID_NE")
     DGRID_NE = get_constant_int(_lib, "DGRID_NE")
@@ -610,26 +610,26 @@ def _init_functions():
     global _cFMS_set_data_domain
     global _cFMS_set_global_domain
     global _cFMS_update_domains_int_2d
-    global _cFMS_update_domains_float_2d 
+    global _cFMS_update_domains_float_2d
     global _cFMS_update_domains_double_2d
     global _cFMS_update_domains_int_3d
-    global _cFMS_update_domains_float_3d 
+    global _cFMS_update_domains_float_3d
     global _cFMS_update_domains_double_3d
     global _cFMS_update_domains_int_4d
-    global _cFMS_update_domains_float_4d 
+    global _cFMS_update_domains_float_4d
     global _cFMS_update_domains_double_4d
     global _cFMS_update_domains_int_5d
-    global _cFMS_update_domains_float_5d 
+    global _cFMS_update_domains_float_5d
     global _cFMS_update_domains_double_5d
     global _cFMS_update_domains
 
     _cFMS_get_compute_domain = _lib.cFMS_get_compute_domain
     _cFMS_get_data_domain = _lib.cFMS_get_data_domain
-    _cFMS_define_domains = _lib.cFMS_define_domains 
+    _cFMS_define_domains = _lib.cFMS_define_domains
     _cFMS_define_io_domain = _lib.cFMS_define_io_domain
     _cFMS_define_layout = _lib.cFMS_define_layout
     _cFMS_define_nest_domains = _lib.cFMS_define_nest_domains
-    _cFMS_domain_is_initialized = _lib.cFMS_domain_is_initialized 
+    _cFMS_domain_is_initialized = _lib.cFMS_domain_is_initialized
     _cFMS_get_domain_name = _lib.cFMS_get_domain_name
     _cFMS_get_layout = _lib.cFMS_get_layout
     _cFMS_get_domain_pelist = _lib.cFMS_get_domain_pelist
@@ -651,31 +651,31 @@ def _init_functions():
     _cFMS_update_domains_double_5d = _lib.cFMS_update_domains_double_5d
 
     _mpp_domains_functions.define(_lib)
-    
+
     _cFMS_update_domains = {
         2: {
             "int": _cFMS_update_domains_int_2d,
             "float32": _cFMS_update_domains_float_2d,
-            "float64": _cFMS_update_domains_double_2d
+            "float64": _cFMS_update_domains_double_2d,
         },
         3: {
             "int": _cFMS_update_domains_int_3d,
             "float32": _cFMS_update_domains_float_3d,
-            "float64": _cFMS_update_domains_double_3d
+            "float64": _cFMS_update_domains_double_3d,
         },
         4: {
             "int": _cFMS_update_domains_int_4d,
             "float32": _cFMS_update_domains_float_4d,
-            "float64": _cFMS_update_domains_double_4d
+            "float64": _cFMS_update_domains_double_4d,
         },
         5: {
             "int": _cFMS_update_domains_int_5d,
             "float32": _cFMS_update_domains_float_5d,
-            "float64": _cFMS_update_domains_double_5d
+            "float64": _cFMS_update_domains_double_5d,
         },
     }
-    
-    
+
+
 def _init(libpath: str, lib: Any):
 
     """
@@ -691,7 +691,3 @@ def _init(libpath: str, lib: Any):
 
     _init_constants()
     _init_functions()
-
-
-
-

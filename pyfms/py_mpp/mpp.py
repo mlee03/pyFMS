@@ -2,17 +2,11 @@ from typing import Any
 
 import numpy as np
 
-from ..utils.ctypes import (
-    check_str,
-    set_c_bool,
-    set_c_int,
-    set_list,
-    set_c_str
-)
-
+from ..utils.ctypes import check_str, set_c_bool, set_c_int, set_c_str, set_list
 from . import _mpp_functions
 
-#library
+
+# library
 _libpath = None
 _lib = None
 
@@ -32,7 +26,7 @@ def set_pelist_npes(npes: int):
     or retrieved from cFMS/FMS.  This function is to be
     used internally.
     """
-    
+
     arglist = []
     set_c_int(npes, arglist)
     _cFMS_set_pelist_npes(*arglist)
@@ -65,7 +59,7 @@ def declare_pelist(
     set_list(pelist, np.int32, arglist)
     set_c_str(name, arglist)
     commID = set_c_int(0, arglist)
-    
+
     set_pelist_npes(npes=len(pelist))
     _cFMS_declare_pelist(*arglist)
 
@@ -83,9 +77,9 @@ def error(errortype: int, errormsg: str = None):
     check_str(errormsg, 128, "mpp.error")
 
     arglist = []
-    set_c_int(errrotype, arglist)
+    set_c_int(errortype, arglist)
     set_c_str(errormsg, arglist)
-    
+
     _cFMS_error(*arglist)
 
 
@@ -102,20 +96,23 @@ def get_current_pelist(
     """
 
     arglist = []
-    pelist = set_list([0]*npes, np.int32, arglist)
-    name_c = set_c_str(" ", arglist) if get_name else set_c_str(None, arglist)
+    pelist = set_list([0] * npes, np.int32, arglist)
+    name = set_c_str(" ", arglist) if get_name else set_c_str(None, arglist)
     commid = set_c_int(0, arglist) if get_commID else set_c_int(None, arglist)
 
     set_pelist_npes(npes)
     _cFMS_get_current_pelist(*arglist)
 
     returns = []
-    if get_name: returns.append(name.value.decode("utf-8"))
-    if get_commID: returns.append(commid)
+    if get_name:
+        returns.append(name.value.decode("utf-8"))
+    if get_commID:
+        returns.append(commid)
 
-    if len(returns) > 0: return (pelist.tolist(), *returns)
+    if len(returns) > 0:
+        return (pelist.tolist(), *returns)
     return pelist.tolist()
-    
+
 
 def npes() -> int:
 
@@ -144,7 +141,7 @@ def set_current_pelist(pelist: list[int] = None, no_sync: bool = None):
     arglist = []
     set_list(pelist, np.int32, arglist)
     set_c_bool(no_sync, arglist)
-    
+
     set_pelist_npes(1 if pelist is None else len(pelist))
     _cFMS_set_current_pelist(*arglist)
 
@@ -160,7 +157,7 @@ def _init_functions():
     global _cFMS_set_current_pelist
 
     _mpp_functions.define(_lib)
-    
+
     _cFMS_set_pelist_npes = _lib.cFMS_set_pelist_npes
     _cFMS_declare_pelist = _lib.cFMS_declare_pelist
     _cFMS_error = _lib.cFMS_error
@@ -168,8 +165,8 @@ def _init_functions():
     _cFMS_npes = _lib.cFMS_npes
     _cFMS_pe = _lib.cFMS_pe
     _cFMS_set_current_pelist = _lib.cFMS_set_current_pelist
-    
-    
+
+
 def _init(libpath: str, lib: Any):
 
     """

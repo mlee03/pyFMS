@@ -1,19 +1,21 @@
-import numpy as np
-from numpy.typing import NDArray
 from typing import Any
 
+import numpy as np
+from numpy.typing import NDArray
+
 from ..utils.ctypes import (
-    get_constant_int,
     check_str,
+    get_constant_int,
     set_array,
     set_c_bool,
-    set_c_double, 
+    set_c_double,
     set_c_float,
     set_c_int,
     set_c_str,
     set_list,
 )
 from . import _functions
+
 
 DIAG_ALL = None
 DIAG_OCEAN = None
@@ -34,8 +36,8 @@ _cFMS_diag_axis_init_cdouble = None
 _cFMS_diag_register_diag_scalar_cint = None
 _cFMS_diag_register_diag_scalar_cfloat = None
 _cFMS_diag_register_diag_scalar_cdouble = None
-_cFMS_diag_register_field_array_cfloat = None
-_cFMS_diag_register_field_array_cdouble = None
+_cFMS_diag_register_diag_field_array_cfloat = None
+_cFMS_diag_register_diag_field_array_cdouble = None
 _cFMS_diag_send_data_2d_cint = None
 _cFMS_diag_send_data_3d_cint = None
 _cFMS_diag_send_data_4d_cint = None
@@ -47,9 +49,8 @@ _cFMS_diag_send_data_3d_cdouble = None
 _cFMS_diag_send_data_4d_cdouble = None
 
 _cFMS_diag_axis_inits = {}
-_cFMS_register_field_arrays = {}
-_cFMS_diag_register_diag_scalar = {}
-_cFMS_diag_register_diag_array = {}
+_cFMS_register_diag_field_arrays = {}
+_cFMS_register_diag_field_scalars = {}
 _cFMS_diag_send_datas = {}
 
 
@@ -63,7 +64,7 @@ def end():
 
     _cFMS_diag_end()
 
-    
+
 def init(
     diag_model_subset: int = None,
     time_init: list = None,
@@ -105,7 +106,7 @@ def send_complete(diag_field_id: int) -> str:
     arglist = []
     set_c_int(diag_field_id, arglist)
     err_msg = set_c_str(" ", arglist)
-    
+
     _cFMS_diag_send_complete(*arglist)
 
     return err_msg.value.decode("utf-8")
@@ -136,7 +137,7 @@ def set_field_init_time(
     set_c_int(second, arglist)
     set_c_int(tick, arglist)
     err_msg = set_c_str(" ", arglist)
-    
+
     _cFMS_diag_set_field_init_time(*arglist)
 
     return err_msg.value.decode("utf-8")
@@ -161,7 +162,7 @@ def set_field_timestep(
     set_c_int(ddays, arglist)
     set_c_int(dticks, arglist)
     err_msg = set_c_str(" ", arglist)
-    
+
     _cFMS_diag_set_field_timestep(*arglist)
 
     return err_msg.value.decode("utf-8")
@@ -177,7 +178,7 @@ def advance_field_time(diag_field_id: int):
 
     arglist = []
     set_c_int(diag_field_id, arglist)
-    
+
     _cFMS_diag_advance_field_time(*arglist)
 
 
@@ -236,8 +237,10 @@ def axis_init(
     try:
         cfms_diag_axis_init = _cFMS_diag_axis_inits[axis_data.dtype.name]
     except KeyError:
-        raise RuntimeError(f"diag_manager.diag_axis_init {axis_data.dtype} not supported")
-    
+        raise RuntimeError(
+            f"diag_manager.diag_axis_init {axis_data.dtype} not supported"
+        )
+
     check_str(long_name, 64, "diag_manager.axis_init")
     check_str(set_name, 64, "diag_manager.axis_init")
 
@@ -290,7 +293,7 @@ def register_field_array(
     """
 
     try:
-        cfms_register_diag_field_array = _cFMS_register_field_arrays[dtype]
+        cFMS_register_diag_field_array = _cFMS_register_diag_field_arrays[dtype]
     except KeyError:
         raise RuntimeError(f"diag_manager.register_field_array {dtype} not supported")
 
@@ -304,7 +307,8 @@ def register_field_array(
     check_str(realm, 64, whoami)
 
     if axes is not None:
-        while len(axes) < 5: axes.append(0)
+        while len(axes) < 5:
+            axes.append(0)
 
     arglist = []
     set_c_str(module_name, arglist)
@@ -312,7 +316,7 @@ def register_field_array(
     set_list(axes, np.int32, arglist)
     set_c_str(long_name, arglist)
     set_c_str(units, arglist)
-    if dtype == 'float32':
+    if dtype == "float32":
         set_c_float(missing_value, arglist)
     else:
         set_c_double(missing_value, arglist)
@@ -329,7 +333,7 @@ def register_field_array(
     set_c_str(realm, arglist)
     set_c_bool(multiple_send_data, arglist)
 
-    return cfms_register_diag_field_array(*arglist)
+    return cFMS_register_diag_field_array(*arglist)
 
 
 def register_field_scalar(
@@ -354,15 +358,15 @@ def register_field_scalar(
     diag_manager.set_field_init_time before calling
     this method
     """
-    
+
     try:
-        cfms_register_field_scalar = _cFMS_register_field_scalars[dtype]
+        cFMS_register_diag_field_scalar = _cFMS_register_diag_field_scalars[dtype]
     except KeyError:
         raise RuntimeError(f"diag_manager.register_field_scalar {dtype} not supported")
-    
+
     whoami = "diag_manager.register_field_scalar"
     check_str(module_name, 64, whoami)
-    check_str(fieldname, 64, whoami)
+    check_str(field_name, 64, whoami)
     check_str(long_name, 64, whoami)
     check_str(units, 64, whoami)
     check_str(standard_name, 64, whoami)
@@ -379,14 +383,14 @@ def register_field_scalar(
     else:
         set_c_double(missing_value, arglist)
     set_list(range_data, dtype, arglist)
-    set_c_bool(do_not_long, arglist)
+    set_c_bool(do_not_log, arglist)
     err_msg = set_c_str(" ", arglist)
     set_c_int(area, arglist)
     set_c_int(volume, arglist)
     set_c_int(realm, arglist)
     set_c_int(multiple_send_data, arglist)
-    
-    return cfms_register_diag_field_scalar(*arglist)
+
+    return cFMS_register_diag_field_scalar(*arglist)
 
 
 def send_data(
@@ -404,11 +408,12 @@ def send_data(
 
     try:
         cfms_diag_send_data = _cFMS_diag_send_datas[field.ndim][field.dtype.name]
-    except KeyError:                                                                                                                  
-        raise RuntimeError(f"diag_manager.send_data for \
-        ndim={field.ndim} and type {field.dtype} not supported")
-        
-        
+    except KeyError:
+        raise RuntimeError(
+            f"diag_manager.send_data for \
+        ndim={field.ndim} and type {field.dtype} not supported"
+        )
+
     arglist = []
     set_c_int(diag_field_id, arglist)
     set_list([*field.shape], np.int32, arglist)
@@ -424,42 +429,41 @@ def _init_constants():
     Retrieves and assigns diag_manager related parameters
     from FMS
     """
-    
+
     global DIAG_OTHER, DIAG_OCEAN, DIAG_ALL
 
     DIAG_OTHER = get_constant_int(_lib, "DIAG_OTHER")
     DIAG_OCEAN = get_constant_int(_lib, "DIAG_OCEAN")
     DIAG_ALL = get_constant_int(_lib, "DIAG_ALL")
 
-    
+
 def _init_functions():
     global _cFMS_diag_end
     global _cFMS_diag_init
-    global _cFMS_diag_send_complete 
-    global _cFMS_diag_set_field_init_time 
-    global _cFMS_diag_set_field_timestep 
-    global _cFMS_diag_advance_field_time 
-    global _cFMS_diag_set_time_end 
-    global _cFMS_diag_axis_init_cfloat 
-    global _cFMS_diag_axis_init_cdouble 
-    global _cFMS_diag_register_diag_scalar_cint 
-    global _cFMS_diag_register_diag_scalar_cfloat 
-    global _cFMS_diag_register_diag_scalar_cdouble 
-    global _cFMS_diag_register_field_array_cfloat 
-    global _cFMS_diag_register_field_array_cdouble 
-    global _cFMS_diag_send_data_2d_cint 
-    global _cFMS_diag_send_data_3d_cint 
-    global _cFMS_diag_send_data_4d_cint 
-    global _cFMS_diag_send_data_2d_cfloat 
-    global _cFMS_diag_send_data_3d_cfloat 
-    global _cFMS_diag_send_data_4d_cfloat 
-    global _cFMS_diag_send_data_2d_cdouble 
-    global _cFMS_diag_send_data_3d_cdouble 
-    global _cFMS_diag_send_data_4d_cdouble 
+    global _cFMS_diag_send_complete
+    global _cFMS_diag_set_field_init_time
+    global _cFMS_diag_set_field_timestep
+    global _cFMS_diag_advance_field_time
+    global _cFMS_diag_set_time_end
+    global _cFMS_diag_axis_init_cfloat
+    global _cFMS_diag_axis_init_cdouble
+    global _cFMS_diag_register_diag_field_scalar_cint
+    global _cFMS_diag_register_diag_field_scalar_cfloat
+    global _cFMS_diag_register_diag_field_scalar_cdouble
+    global _cFMS_diag_register_field_array_cfloat
+    global _cFMS_diag_register_field_array_cdouble
+    global _cFMS_diag_send_data_2d_cint
+    global _cFMS_diag_send_data_3d_cint
+    global _cFMS_diag_send_data_4d_cint
+    global _cFMS_diag_send_data_2d_cfloat
+    global _cFMS_diag_send_data_3d_cfloat
+    global _cFMS_diag_send_data_4d_cfloat
+    global _cFMS_diag_send_data_2d_cdouble
+    global _cFMS_diag_send_data_3d_cdouble
+    global _cFMS_diag_send_data_4d_cdouble
     global _cFMS_diag_axis_inits
-    global _cFMS_register_field_arrays
-    global _cFMS_diag_register_diag_scalars
-    global _cFMS_diag_register_diag_arrays
+    global _cFMS_register_diag_field_arrays
+    global _cFMS_register_diag_field_scalars
     global _cFMS_diag_send_datas
 
     _functions.define(_lib)
@@ -474,10 +478,16 @@ def _init_functions():
     _cFMS_diag_axis_init_cfloat = _lib.cFMS_diag_axis_init_cfloat
     _cFMS_diag_axis_init_cdouble = _lib.cFMS_diag_axis_init_cdouble
     _cFMS_register_diag_field_scalar_cint = _lib.cFMS_register_diag_field_scalar_cint
-    _cFMS_register_diag_field_scalar_cfloat = _lib.cFMS_register_diag_field_scalar_cfloat
-    _cFMS_register_diag_field_scalar_cdouble = _lib.cFMS_register_diag_field_scalar_cdouble
+    _cFMS_register_diag_field_scalar_cfloat = (
+        _lib.cFMS_register_diag_field_scalar_cfloat
+    )
+    _cFMS_register_diag_field_scalar_cdouble = (
+        _lib.cFMS_register_diag_field_scalar_cdouble
+    )
     _cFMS_register_diag_field_array_cfloat = _lib.cFMS_register_diag_field_array_cfloat
-    _cFMS_register_diag_field_array_cdouble = _lib.cFMS_register_diag_field_array_cdouble
+    _cFMS_register_diag_field_array_cdouble = (
+        _lib.cFMS_register_diag_field_array_cdouble
+    )
     _cFMS_diag_send_data_2d_cint = _lib.cFMS_diag_send_data_2d_cint
     _cFMS_diag_send_data_3d_cint = _lib.cFMS_diag_send_data_3d_cint
     _cFMS_diag_send_data_4d_cint = _lib.cFMS_diag_send_data_4d_cint
@@ -488,28 +498,38 @@ def _init_functions():
     _cFMS_diag_send_data_3d_cdouble = _lib.cFMS_diag_send_data_3d_cdouble
     _cFMS_diag_send_data_4d_cdouble = _lib.cFMS_diag_send_data_4d_cdouble
 
-    _cFMS_diag_axis_inits = {"float32": _cFMS_diag_axis_init_cfloat,
-                             "float64": _cFMS_diag_axis_init_cdouble
+    _cFMS_diag_axis_inits = {
+        "float32": _cFMS_diag_axis_init_cfloat,
+        "float64": _cFMS_diag_axis_init_cdouble,
     }
 
-    _cFMS_register_field_arrays = {"float32": _cFMS_register_diag_field_array_cfloat,
-                                   "float64": _cFMS_register_diag_field_array_cdouble
+    _cFMS_register_diag_field_arrays = {
+        "float32": _cFMS_register_diag_field_array_cfloat,
+        "float64": _cFMS_register_diag_field_array_cdouble,
     }
 
-    _cFMS_register_field_scalars = {"int32" :_cFMS_register_diag_field_scalar_cint,
-                                    "float32": _cFMS_register_diag_field_scalar_cfloat,
-                                    "float64": _cFMS_register_diag_field_scalar_cdouble
+    _cFMS_register_diag_field_scalars = {
+        "int32": _cFMS_register_diag_field_scalar_cint,
+        "float32": _cFMS_register_diag_field_scalar_cfloat,
+        "float64": _cFMS_register_diag_field_scalar_cdouble,
     }
 
-    _cFMS_diag_send_datas ={2: {"int32": _cFMS_diag_send_data_2d_cint,
-                            "float32": _cFMS_diag_send_data_2d_cfloat,
-                            "float64": _cFMS_diag_send_data_2d_cdouble},
-                        3: {"int32": _cFMS_diag_send_data_3d_cint,
-                            "float32": _cFMS_diag_send_data_3d_cfloat,
-                            "float64": _cFMS_diag_send_data_3d_cdouble},
-                        4: {"int32": _cFMS_diag_send_data_4d_cint,
-                            "float32": _cFMS_diag_send_data_4d_cfloat,
-                            "float64": _cFMS_diag_send_data_4d_cdouble}
+    _cFMS_diag_send_datas = {
+        2: {
+            "int32": _cFMS_diag_send_data_2d_cint,
+            "float32": _cFMS_diag_send_data_2d_cfloat,
+            "float64": _cFMS_diag_send_data_2d_cdouble,
+        },
+        3: {
+            "int32": _cFMS_diag_send_data_3d_cint,
+            "float32": _cFMS_diag_send_data_3d_cfloat,
+            "float64": _cFMS_diag_send_data_3d_cdouble,
+        },
+        4: {
+            "int32": _cFMS_diag_send_data_4d_cint,
+            "float32": _cFMS_diag_send_data_4d_cfloat,
+            "float64": _cFMS_diag_send_data_4d_cdouble,
+        },
     }
 
 
@@ -528,5 +548,3 @@ def _init(libpath: str, lib: Any):
 
     _init_constants()
     _init_functions()
-
-

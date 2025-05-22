@@ -1,11 +1,6 @@
 from typing import Any
 
-from ..utils.ctypes import (
-    check_str,
-    get_constant_int,
-    set_c_int,
-    set_c_str,
-)
+from ..utils.ctypes import check_str, get_constant_int, set_c_int, set_c_str
 from . import _functions
 
 
@@ -22,6 +17,7 @@ NOLEAP = None
 
 _cFMS_init = None
 _cFMS_end = None
+
 
 def init(
     alt_input_nml_path: str = None,
@@ -41,7 +37,7 @@ def init(
     """
 
     check_str(alt_input_nml_path, 64, "fms.init")
-    
+
     arglist = []
     set_c_int(localcomm, arglist)
     set_c_str(alt_input_nml_path, arglist)
@@ -89,15 +85,15 @@ def _init_constants():
 def _init_functions():
 
     global _cFMS_init, _cFMS_end
-    
+
     _functions.define(_lib)
 
     _cFMS_init = _lib.cFMS_init
     _cFMS_end = _lib.cFMS_end
-    
+
 
 def _init(libpath: str, lib: Any):
-              
+
     """
     Sets _libpath and _lib module variables associated
     with the loaded cFMS library.  This function is
@@ -105,12 +101,9 @@ def _init(libpath: str, lib: Any):
     """
 
     global _libpath, _lib
-    
+
     _lib_path = libpath
     _lib = lib
 
     _init_constants()
     _init_functions()
-          
-
-

@@ -1,187 +1,210 @@
-from ctypes import c_bool, c_char_p, c_double, c_float, c_int, POINTER
+from ctypes import POINTER, c_bool, c_char_p, c_double, c_float, c_int
+
 import numpy as np
 
 from ..utils.ctypes import NDPOINTER
 
+
 npptr = np.ctypeslib.ndpointer
 C = "C_CONTIGUOUS"
 
+
 def define(lib):
 
-    #cFMS_diag_end
+    """
+    Sets the restype and argtypes of all
+    public functions in cFMS
+    This function is to be used internally
+    during package initialization
+    """
+
+    # cFMS_diag_end
     lib.cFMS_diag_end.restype = None
     lib.cFMS_diag_end.argtypes = None
 
-    #cFMS_diag_init
+    # cFMS_diag_init
     lib.cFMS_diag_init.restype = None
     ndptr1 = NDPOINTER(npptr(np.int32, shape=(6), flags=C), c_int)
-    lib.cFMS_diag_init.argtypes = [POINTER(c_int), #diag_model_subset
-                                   ndptr1,         #time_init
-                                   c_char_p        #err_msg
+    lib.cFMS_diag_init.argtypes = [
+        POINTER(c_int),  # diag_model_subset
+        ndptr1,  # time_init
+        c_char_p,  # err_msg
     ]
 
-    #cFMS_send_complete
+    # cFMS_send_complete
     lib.cFMS_diag_send_complete.restype = None
-    lib.cFMS_diag_send_complete.argtypes = [POINTER(c_int), #diag_field_id
-                                            c_char_p        #err_msg
+    lib.cFMS_diag_send_complete.argtypes = [
+        POINTER(c_int),  # diag_field_id
+        c_char_p,  # err_msg
     ]
 
-    #cFMS_diag_set_field_init_time
+    # cFMS_diag_set_field_init_time
     lib.cFMS_diag_set_field_init_time.restype = None
-    lib.cFMS_diag_set_field_init_time.argtypes = [POINTER(c_int), #year
-                                                  POINTER(c_int), #month
-                                                  POINTER(c_int), #day
-                                                  POINTER(c_int), #hour
-                                                  POINTER(c_int), #minute
-                                                  POINTER(c_int), #second
-                                                  POINTER(c_int), #tick
-                                                  c_char_p        #err_msg
+    lib.cFMS_diag_set_field_init_time.argtypes = [
+        POINTER(c_int),  # year
+        POINTER(c_int),  # month
+        POINTER(c_int),  # day
+        POINTER(c_int),  # hour
+        POINTER(c_int),  # minute
+        POINTER(c_int),  # second
+        POINTER(c_int),  # tick
+        c_char_p,  # err_msg
     ]
 
-    #cFMS_set_field_timestep
+    # cFMS_set_field_timestep
     lib.cFMS_diag_set_field_timestep.restype = None
-    lib.cFMS_diag_set_field_timestep.argtypes = [POINTER(c_int), #diag_field_id
-                                                 POINTER(c_int), #dseconds
-                                                 POINTER(c_int), #ddays
-                                                 POINTER(c_int), #dticks
-                                                 c_char_p        #err_msg
+    lib.cFMS_diag_set_field_timestep.argtypes = [
+        POINTER(c_int),  # diag_field_id
+        POINTER(c_int),  # dseconds
+        POINTER(c_int),  # ddays
+        POINTER(c_int),  # dticks
+        c_char_p,  # err_msg
     ]
 
-    #cFMS_diag_advance_field_time
+    # cFMS_diag_advance_field_time
     lib.cFMS_diag_advance_field_time.restype = None
-    lib.cFMS_diag_advance_field_time.argtypes = [POINTER(c_int)] #diag_field_id
+    lib.cFMS_diag_advance_field_time.argtypes = [POINTER(c_int)]  # diag_field_id
 
-    #cFMS_diag_set_time_end
+    # cFMS_diag_set_time_end
     lib.cFMS_diag_set_time_end.restype = None
-    lib.cFMS_diag_set_time_end.argtypes = [POINTER(c_int), #year
-                                           POINTER(c_int), #month
-                                           POINTER(c_int), #day
-                                           POINTER(c_int), #hour
-                                           POINTER(c_int), #minute
-                                           POINTER(c_int), #second
-                                           POINTER(c_int), #tick
-                                           c_char_p        #err_msg
+    lib.cFMS_diag_set_time_end.argtypes = [
+        POINTER(c_int),  # year
+        POINTER(c_int),  # month
+        POINTER(c_int),  # day
+        POINTER(c_int),  # hour
+        POINTER(c_int),  # minute
+        POINTER(c_int),  # second
+        POINTER(c_int),  # tick
+        c_char_p,  # err_msg
     ]
 
-    #cFMS_diag_axis_init_[cfloat,c_double]
-    functions = {"cFMS_diag_axis_init_cfloat": np.float32,
-                 "cFMS_diag_axis_init_cdouble": np.float64
+    # cFMS_diag_axis_init_[cfloat,c_double]
+    functions = {
+        "cFMS_diag_axis_init_cfloat": np.float32,
+        "cFMS_diag_axis_init_cdouble": np.float64,
     }
     for ifunction, dtype in functions.items():
         function = getattr(lib, ifunction)
         function.restype = c_int
-        function.argtypes = [c_char_p,                    #name
-                             POINTER(c_int),              #naxis 
-                             npptr(dtype=dtype, flags=C), #axis
-                             c_char_p,                    #units
-                             c_char_p,                    #cart_name
-                             POINTER(c_int),              #domain_id
-                             c_char_p,                    #long_name
-                             POINTER(c_int),              #direction
-                             c_char_p,                    #set_name
-                             POINTER(c_int),              #edges
-                             c_char_p,                    #aux
-                             c_char_p,                    #req
-                             POINTER(c_int),              #tile_count
-                             POINTER(c_int),              #domain_position
-                             POINTER(c_bool)              #not_xy
+        function.argtypes = [
+            c_char_p,  # name
+            POINTER(c_int),  # naxis
+            npptr(dtype=dtype, flags=C),  # axis
+            c_char_p,  # units
+            c_char_p,  # cart_name
+            POINTER(c_int),  # domain_id
+            c_char_p,  # long_name
+            POINTER(c_int),  # direction
+            c_char_p,  # set_name
+            POINTER(c_int),  # edges
+            c_char_p,  # aux
+            c_char_p,  # req
+            POINTER(c_int),  # tile_count
+            POINTER(c_int),  # domain_position
+            POINTER(c_bool),  # not_xy
         ]
 
-    #cFMS_register_diag_field_scalar
-    functions = {"cFMS_register_diag_field_scalar_cint": [np.int32, c_int],
-                 "cFMS_register_diag_field_scalar_cfloat": [np.float32, c_float],
-                 "cFMS_register_diag_field_scalar_cdouble": [np.float64, c_double],
-    }    
-    for ifunction, [dtype, ictype] in functions.items():        
-        function = getattr(lib, ifunction)
-        function.restype = c_int
-        function.argtypes = [c_char_p,                          #module_name
-                             c_char_p,                          #field_name
-                             c_char_p,                          #long_name
-                             c_char_p,                          #units
-                             c_char_p,                          #standard_name
-                             POINTER(ictype),                   #missing_value
-                             NDPOINTER(npptr(dtype,shape=(2),flags=C), ictype),#range
-                             POINTER(c_bool),                   #do_not_log
-                             c_char_p,                          #err_msg
-                             POINTER(c_int),                    #area
-                             POINTER(c_int),                    #volume
-                             c_char_p,                          #realm
-                             POINTER(c_bool)                    #multiple_send_data
-        ]
-
-    #cFMS_register_diag_field_array
-    functions = {"cFMS_register_diag_field_array_cfloat": [np.float32, c_float],
-                 "cFMS_register_diag_field_array_cdouble": [np.float64, c_double],
+    # cFMS_register_diag_field_scalar
+    functions = {
+        "cFMS_register_diag_field_scalar_cint": [np.int32, c_int],
+        "cFMS_register_diag_field_scalar_cfloat": [np.float32, c_float],
+        "cFMS_register_diag_field_scalar_cdouble": [np.float64, c_double],
     }
     for ifunction, [dtype, ictype] in functions.items():
         function = getattr(lib, ifunction)
         function.restype = c_int
-        function.argtypes = [c_char_p,                            #module_name
-                             c_char_p,                            #field_name
-                             npptr(np.int32, shape=(5), flags=C), #axes
-                             c_char_p,                            #long_name
-                             c_char_p,                            #units
-                             POINTER(ictype),                     #missing_value
-                             NDPOINTER(npptr(dtype,shape=(2),flags=C), ictype),#range
-                             POINTER(c_bool),                     #mask_variant
-                             c_char_p,                            #standard_name
-                             POINTER(c_bool),                     #verbose
-                             POINTER(c_bool),                     #do_not_log
-                             c_char_p,                            #err_msg
-                             c_char_p,                            #interp_method
-                             POINTER(c_int),                      #tile_count
-                             POINTER(c_int),                      #area
-                             POINTER(c_int),                      #volume
-                             c_char_p,                            #realm
-                             POINTER(c_bool),                     #multiple_send_data
+        function.argtypes = [
+            c_char_p,  # module_name
+            c_char_p,  # field_name
+            c_char_p,  # long_name
+            c_char_p,  # units
+            c_char_p,  # standard_name
+            POINTER(ictype),  # missing_value
+            NDPOINTER(npptr(dtype, shape=(2), flags=C), ictype),  # range
+            POINTER(c_bool),  # do_not_log
+            c_char_p,  # err_msg
+            POINTER(c_int),  # area
+            POINTER(c_int),  # volume
+            c_char_p,  # realm
+            POINTER(c_bool),  # multiple_send_data
         ]
 
-    #cFMS_diag_send_data for ints
-    functions = {"cFMS_diag_send_data_2d_cint": 2,
-                 "cFMS_diag_send_data_3d_cint": 3,
-                 "cFMS_diag_send_data_4d_cint": 4
+    # cFMS_register_diag_field_array
+    functions = {
+        "cFMS_register_diag_field_array_cfloat": [np.float32, c_float],
+        "cFMS_register_diag_field_array_cdouble": [np.float64, c_double],
     }
-    
+    for ifunction, [dtype, ictype] in functions.items():
+        function = getattr(lib, ifunction)
+        function.restype = c_int
+        function.argtypes = [
+            c_char_p,  # module_name
+            c_char_p,  # field_name
+            npptr(np.int32, shape=(5), flags=C),  # axes
+            c_char_p,  # long_name
+            c_char_p,  # units
+            POINTER(ictype),  # missing_value
+            NDPOINTER(npptr(dtype, shape=(2), flags=C), ictype),  # range
+            POINTER(c_bool),  # mask_variant
+            c_char_p,  # standard_name
+            POINTER(c_bool),  # verbose
+            POINTER(c_bool),  # do_not_log
+            c_char_p,  # err_msg
+            c_char_p,  # interp_method
+            POINTER(c_int),  # tile_count
+            POINTER(c_int),  # area
+            POINTER(c_int),  # volume
+            c_char_p,  # realm
+            POINTER(c_bool),  # multiple_send_data
+        ]
+
+    # cFMS_diag_send_data for ints
+    functions = {
+        "cFMS_diag_send_data_2d_cint": 2,
+        "cFMS_diag_send_data_3d_cint": 3,
+        "cFMS_diag_send_data_4d_cint": 4,
+    }
+
     for ifunction, ndim in functions.items():
         function = getattr(lib, ifunction)
         function.restype = c_bool
-        function.argtypes = [POINTER(c_int),                        #diag_field_id
-                             npptr(np.int32, shape=(ndim), flags=C),#field_shape
-                             npptr(np.int32, ndim=ndim, flags=C),   #field
-                             c_char_p,                              #err_msg
+        function.argtypes = [
+            POINTER(c_int),  # diag_field_id
+            npptr(np.int32, shape=(ndim), flags=C),  # field_shape
+            npptr(np.int32, ndim=ndim, flags=C),  # field
+            c_char_p,  # err_msg
         ]
 
-
-    #cFMS_diag_send_data for cfloats
-    functions = {"cFMS_diag_send_data_2d_cfloat": 2,
-                 "cFMS_diag_send_data_3d_cfloat": 3,
-                 "cFMS_diag_send_data_4d_cfloat": 4
+    # cFMS_diag_send_data for cfloats
+    functions = {
+        "cFMS_diag_send_data_2d_cfloat": 2,
+        "cFMS_diag_send_data_3d_cfloat": 3,
+        "cFMS_diag_send_data_4d_cfloat": 4,
     }
-    
+
     for ifunction, ndim in functions.items():
         function = getattr(lib, ifunction)
         function.restype = c_bool
-        function.argtypes = [POINTER(c_int),                        #diag_field_id
-                             npptr(np.int32, shape=(ndim), flags=C),#field_shape
-                             npptr(np.float32, ndim=ndim, flags=C), #field
-                             c_char_p,                              #err_msg
+        function.argtypes = [
+            POINTER(c_int),  # diag_field_id
+            npptr(np.int32, shape=(ndim), flags=C),  # field_shape
+            npptr(np.float32, ndim=ndim, flags=C),  # field
+            c_char_p,  # err_msg
         ]
-        
-    #cFMS_diag_send_data for cdoubles
-    functions = {"cFMS_diag_send_data_2d_cdouble": 2,
-                 "cFMS_diag_send_data_3d_cdouble": 3, 
-                 "cFMS_diag_send_data_4d_cdouble": 4, 
+
+    # cFMS_diag_send_data for cdoubles
+    functions = {
+        "cFMS_diag_send_data_2d_cdouble": 2,
+        "cFMS_diag_send_data_3d_cdouble": 3,
+        "cFMS_diag_send_data_4d_cdouble": 4,
     }
-    
+
     for ifunction, ndim in functions.items():
         function = getattr(lib, ifunction)
         function.restype = c_bool
-        function.argtypes = [POINTER(c_int),                        #diag_field_id
-                             npptr(np.int32, shape=(ndim), flags=C),#field_shape
-                             npptr(np.float64, ndim=ndim, flags=C), #field
-                             c_char_p,                              #err_msg
+        function.argtypes = [
+            POINTER(c_int),  # diag_field_id
+            npptr(np.int32, shape=(ndim), flags=C),  # field_shape
+            npptr(np.float64, ndim=ndim, flags=C),  # field
+            c_char_p,  # err_msg
         ]
-
-
-                               

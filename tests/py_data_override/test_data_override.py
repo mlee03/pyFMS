@@ -42,7 +42,7 @@ def test_data_override():
 
     assert override
     assert data == np.float64(2.0)
-    
+
     data = np.zeros((xsize, ysize), dtype=np.float64)
     override = pyfms.data_override.override(
         gridname="OCN", fieldname="runoff_2d", data=data
@@ -50,7 +50,7 @@ def test_data_override():
 
     assert override
     assert np.all(data == np.float64(200.0))
-    
+
     data = np.zeros((xsize, ysize, nz), dtype=np.float64)
     override = pyfms.data_override.override(
         gridname="OCN", fieldname="runoff_3d", data=data

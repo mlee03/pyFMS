@@ -1,17 +1,10 @@
-import numpy as np
-import numpy.typing as npt
 from typing import Any
 
+import numpy as np
+import numpy.typing as npt
+
+from ..utils.ctypes import set_array, set_c_int
 from . import _functions
-from ..utils.ctypes import (
-    set_array,
-    set_c_bool,
-    set_c_double, 
-    set_c_float,
-    set_c_int,
-    set_c_str,
-    set_list,
-)
 
 
 _libpath = None
@@ -51,7 +44,7 @@ def create_xgrid_2dx2d_order1(
     """
 
     maxxgrid = get_maxxgrid()
-    
+
     arglist = []
     set_c_int(nlon_src, arglist)
     set_c_int(nlat_src, arglist)
@@ -110,8 +103,8 @@ def _init_functions():
     _cFMS_set_current_interp = _lib.cFMS_set_current_interp
 
     _functions.define(_lib)
-    
-    
+
+
 def _init(libpath: str, lib: Any):
 
     """

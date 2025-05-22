@@ -5,6 +5,13 @@ import numpy as np
 
 def define(lib):
 
+    """
+    Sets the restype and argtypes of all
+    public functions in cFMS
+    This function is to be used internally
+    during package initialization
+    """
+
     # cFMS_data_override_init
     lib.cFMS_data_override_init.restype = None
     lib.cFMS_data_override_init.argtypes = [

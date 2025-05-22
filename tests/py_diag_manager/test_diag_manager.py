@@ -45,12 +45,11 @@ def test_send_data():
 
     pyfms.mpp_domains.set_current_domain(domain_id=domain.domain_id)
 
-    
     """
     diag axis init x
     """
     x = np.arange(nx, dtype=np.float64)
-    
+
     id_x = pyfms.diag_manager.axis_init(
         name="x",
         axis_data=x,
@@ -75,7 +74,7 @@ def test_send_data():
         long_name="point_N",
         set_name="atm",
     )
-    
+
     """
     diag axis init z
     """
@@ -113,13 +112,13 @@ def test_send_data():
         long_name="Var in a lon/lat domain",
         units="muntin",
         missing_value=-99.99,
-        range_data=[-1000.0, 1000.0]
+        range_data=[-1000.0, 1000.0],
     )
 
     pyfms.diag_manager.set_field_timestep(
         diag_field_id=id_var3, dseconds=60 * 60, ddays=0, dticks=0
     )
-    
+
     """
     register diag_field var 2
     """
@@ -195,8 +194,8 @@ def test_send_data():
     pyfms.diag_manager.end()
     pyfms.fms.end()
 
-    #assert os.path.isfile("test_send_data.nc")
-    #os.remove("test_send_data.nc")
+    assert os.path.isfile("test_send_data.nc")
+    os.remove("test_send_data.nc")
 
 
 if __name__ == "__main__":
