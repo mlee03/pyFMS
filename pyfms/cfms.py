@@ -25,17 +25,15 @@ def init(libpath: str = None):
         _libpath = libpath
         _lib = ctypes.cdll.LoadLibrary(_libpath)
 
-    pyfms.constants.setlib(_libpath, _lib)
+    pyfms.constants._init(_libpath, _lib)
     pyfms.data_override._init(_libpath, _lib)
     pyfms.fms._init(_libpath, _lib)
     pyfms.diag_manager._init(_libpath, _lib)
-    pyfms.grid_utils.setlib(_libpath, _lib)
-    pyfms.horiz_interp.setlib(_libpath, _lib)
+    pyfms.grid_utils._init(_libpath, _lib)
+    pyfms.horiz_interp._init(_libpath, _lib)
     pyfms.mpp._init(_libpath, _lib)
     pyfms.mpp_domains._init(_libpath, _lib)
 
-    pyfms.constants.constants_init()
- 
 
 def lib() -> type[ctypes.CDLL]:
 

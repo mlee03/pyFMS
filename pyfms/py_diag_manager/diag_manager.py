@@ -5,7 +5,7 @@ from typing import Any
 from ..utils.ctypes import (
     get_constant_int,
     check_str,
-    set_arr,
+    set_array,
     set_c_bool,
     set_c_double, 
     set_c_float,
@@ -244,7 +244,7 @@ def axis_init(
     arglist = []
     set_c_str(name, arglist)
     set_c_int(axis_data.size, arglist)
-    set_arr(axis_data, arglist)
+    set_array(axis_data, arglist)
     set_c_str(units, arglist)
     set_c_str(cart_name, arglist)
     set_c_int(domain_id, arglist)
@@ -412,7 +412,7 @@ def send_data(
     arglist = []
     set_c_int(diag_field_id, arglist)
     set_list([*field.shape], np.int32, arglist)
-    set_arr(field, arglist)
+    set_array(field, arglist)
     err_msg = set_c_str(" ", arglist)
 
     return cfms_diag_send_data(*arglist)

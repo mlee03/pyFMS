@@ -155,10 +155,6 @@ def define(lib):
     lib.cFMS_set_current_domain.restype = None
     lib.cFMS_set_current_domain.argtypes = [POINTER(c_int)] #domain_id
 
-    #cFMS_set_current_nest_domain
-    lib.cFMS_set_current_domain.restype = None
-    lib.cFMS_set_current_domain.argtypes = [POINTER(c_int)] #domain_id
-
     #cFMS_update_domains_int/float/double_2/3/4/5d
     dtypes = {"int": np.int32, "float": np.float32, "double": np.float64}
     for ndim in range(2,6):

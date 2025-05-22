@@ -5,7 +5,7 @@ import numpy.typing as npt
 
 from ..utils.ctypes import (
     get_constant_int,
-    set_arr,
+    set_array,
     set_c_bool,
     set_c_int,
     set_c_str,
@@ -123,7 +123,7 @@ def override_scalar(
     arglist = []
     set_c_str(gridname, arglist)
     set_c_str(fieldname, arglist)
-    data = set_arr(np.array([1.0], dtype=dtype), arglist)
+    data = set_array(np.array([1.0], dtype=dtype), arglist)
     override = set_c_bool(False, arglist)
     set_c_int(data_index, arglist)
 
@@ -161,7 +161,7 @@ def override(
     set_c_str(gridname, arglist)
     set_c_str(fieldname, arglist)
     set_list(data.shape, np.int32, arglist)
-    set_arr(data, arglist)
+    set_array(data, arglist)
     override = set_c_bool(False, arglist)
     set_c_int(is_in, arglist)
     set_c_int(ie_in, arglist)

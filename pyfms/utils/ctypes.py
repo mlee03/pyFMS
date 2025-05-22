@@ -88,8 +88,8 @@ def set_c_str(arg: str|None,
     return arg_c
 
 
-def set_arr(arg: npt.ArrayLike|None,
-            arglist: list) -> npt.ArrayLike|None:
+def set_array(arg: npt.ArrayLike|None,
+              arglist: list) -> npt.ArrayLike|None:
     
     if arg is None: return setNone(arglist)
 
@@ -102,7 +102,7 @@ def get_constant_int(lib: type[CDLL], constant: str) -> int:
 
 
 def get_constant_double(lib: type[CDLL], constant: str) -> int:
-    return int(c_double.in_dll(lib, constant).value)
+    return np.float64(c_double.in_dll(lib, constant).value)
 
 
 def check_str(arg: str,

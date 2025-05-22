@@ -5,7 +5,7 @@ from typing import Any
 from ..utils.ctypes import (
     get_constant_int,
     check_str,
-    set_arr,
+    set_array,
     set_c_bool,
     set_c_double, 
     set_c_float,
@@ -54,6 +54,7 @@ _cFMS_get_domain_name = None
 _cFMS_get_layout = None
 _cFMS_get_domain_pelist = None
 _cFMS_set_compute_domain = None
+_cFMS_set_current_domain = None
 _cFMS_set_data_domain = None
 _cFMS_set_global_domain = None
 _cFMS_update_domains_int_2d = None
@@ -433,19 +434,6 @@ def set_current_domain(domain_id: int):
     _cFMS_set_current_domain(*arglist)
 
 
-def set_current_nest_domain(nest_domain_id: int):
-
-    """
-    Sets current_nest_domain in cFMS to be the nest domain with nest_domain_id
-    This function is to be used internally in pyFMS
-    """
-
-    arglist = []
-    set_c_int(nest_domain_id, arglist)
-
-    _cFMS_set_current_nest_domain(*arglist)
-
-
 def set_data_domain(
     domain_id: int,
     xbegin: int = None,
@@ -551,7 +539,7 @@ def update_domains(
 
     arglist = []
     set_list(field.shape, np.int32, arglist)
-    set_arr(field, arglist)
+    set_array(field, arglist)
     set_c_int(domain_id, arglist)
     set_c_int(flags, arglist)
     set_c_bool(complete, arglist)
@@ -618,6 +606,7 @@ def _init_functions():
     global _cFMS_get_layout
     global _cFMS_get_domain_pelist
     global _cFMS_set_compute_domain
+    global _cFMS_set_current_domain
     global _cFMS_set_data_domain
     global _cFMS_set_global_domain
     global _cFMS_update_domains_int_2d
@@ -645,6 +634,7 @@ def _init_functions():
     _cFMS_get_layout = _lib.cFMS_get_layout
     _cFMS_get_domain_pelist = _lib.cFMS_get_domain_pelist
     _cFMS_set_compute_domain = _lib.cFMS_set_compute_domain
+    _cFMS_set_current_domain = _lib.cFMS_set_current_domain
     _cFMS_set_data_domain = _lib.cFMS_set_data_domain
     _cFMS_set_global_domain = _lib.cFMS_set_global_domain
     _cFMS_update_domains_int_2d = _lib.cFMS_update_domains_int_2d

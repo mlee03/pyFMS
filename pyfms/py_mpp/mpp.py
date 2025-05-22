@@ -4,7 +4,6 @@ import numpy as np
 
 from ..utils.ctypes import (
     check_str,
-    set_arr,
     set_c_bool,
     set_c_int,
     set_list,
