@@ -103,7 +103,7 @@ def check_str(arg: str, length: int, whoami: str):
             )
 
 
-class NDPOINTERi:
+class NDPOINTERi32:
 
     """
     wrapper to np.ctypeslib.ndpointer for ints
@@ -148,7 +148,6 @@ class NDPOINTERd:
         self.thispointer = thispointer
         self.ctypes = c_double
 
-    @classmethod
     def from_param(self, obj):
         if obj is None:
             return POINTER(self.ctypes).from_param(obj)

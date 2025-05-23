@@ -2,7 +2,7 @@ from ctypes import POINTER, c_bool, c_char_p, c_int
 
 import numpy as np
 
-from pyfms.utils.ctypes import NDPOINTERi
+from pyfms.utils.ctypes import NDPOINTERi32
 
 
 npptr = np.ctypeslib.ndpointer
@@ -78,17 +78,17 @@ def define(lib):
         npptr(np.int32, shape=(4), flags=C),  # global_indices
         npptr(np.int32, shape=(2), flags=C),  # layout
         POINTER(c_int),  # npelist
-        NDPOINTERi(npptr(np.int32, ndim=(1), flags=C)),  # pelist
+        NDPOINTERi32(npptr(np.int32, ndim=(1), flags=C)),  # pelist
         POINTER(c_int),  # xflags
         POINTER(c_int),  # yflags
         POINTER(c_int),  # xhalo
         POINTER(c_int),  # yhalo
-        NDPOINTERi(npptr(np.int32, ndim=(1), flags=C)),  # xextent
-        NDPOINTERi(npptr(np.int32, ndim=(1), flags=C)),  # yextent
-        NDPOINTERi(npptr(np.bool, ndim=(2), flags=C)),  # maskmap
+        NDPOINTERi32(npptr(np.int32, ndim=(1), flags=C)),  # xextent
+        NDPOINTERi32(npptr(np.int32, ndim=(1), flags=C)),  # yextent
+        NDPOINTERi32(npptr(np.bool, ndim=(2), flags=C)),  # maskmap
         c_char_p,  # name
         POINTER(c_bool),  # symmetry
-        NDPOINTERi(npptr(np.int32, shape=(2), flags=C)),  # memory_size
+        NDPOINTERi32(npptr(np.int32, shape=(2), flags=C)),  # memory_size
         POINTER(c_int),  # whalo
         POINTER(c_int),  # ehalo
         POINTER(c_int),  # shalo

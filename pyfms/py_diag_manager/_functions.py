@@ -2,7 +2,7 @@ from ctypes import POINTER, c_bool, c_char_p, c_double, c_float, c_int
 
 import numpy as np
 
-from pyfms.utils.ctypes import NDPOINTERd, NDPOINTERf, NDPOINTERi
+from pyfms.utils.ctypes import NDPOINTERd, NDPOINTERf, NDPOINTERi32
 
 
 npptr = np.ctypeslib.ndpointer
@@ -26,7 +26,7 @@ def define(lib):
     lib.cFMS_diag_init.restype = None
     lib.cFMS_diag_init.argtypes = [
         POINTER(c_int),  # diag_model_subset
-        NDPOINTERi(npptr(np.int32, shape=(6), flags=C)),  # time_init
+        NDPOINTERi32(npptr(np.int32, shape=(6), flags=C)),  # time_init
         c_char_p,  # err_msg
     ]
 
@@ -103,7 +103,7 @@ def define(lib):
 
     # cFMS_register_diag_field_scalar
     dtypes = {
-        "cint": [np.float32, c_int, NDPOINTERi],
+        "cint": [np.float32, c_int, NDPOINTERi32],
         "cfloat": [np.float32, c_float, NDPOINTERf],
         "cdouble": [np.float64, c_double, NDPOINTERd],
     }

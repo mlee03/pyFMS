@@ -410,8 +410,10 @@ def send_data(
         cfms_diag_send_data = _cFMS_diag_send_datas[field.ndim][field.dtype.name]
     except KeyError:
         raise RuntimeError(
-            ("diag_manager.send_data for"
-             f"ndim={field.ndim} and type {field.dtype} not supported")
+            (
+                "diag_manager.send_data for"
+                f"ndim={field.ndim} and type {field.dtype} not supported"
+            )
         )
 
     arglist = []

@@ -2,7 +2,7 @@ from ctypes import POINTER, c_bool, c_char_p, c_int
 
 import numpy as np
 
-from pyfms.utils.ctypes import NDPOINTERi
+from pyfms.utils.ctypes import NDPOINTERi32
 
 
 npptr = np.ctypeslib.ndpointer
@@ -52,6 +52,6 @@ def define(lib):
     # cFMS_set_current_pelist
     lib.cFMS_set_current_pelist.restype = None
     lib.cFMS_set_current_pelist.argtypes = [
-        NDPOINTERi(npptr(dtype=np.int32, ndim=(1), flags=C)),  # pelist
+        NDPOINTERi32(npptr(dtype=np.int32, ndim=(1), flags=C)),  # pelist
         POINTER(c_bool),  # no_sync
     ]
