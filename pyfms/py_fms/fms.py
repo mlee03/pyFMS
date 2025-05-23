@@ -1,7 +1,7 @@
 from typing import Any
 
-from ..utils.ctypes import check_str, get_constant_int, set_c_int, set_c_str
-from . import _functions
+from pyfms.py_fms import _functions
+from pyfms.utils.ctypes import check_str, get_constant_int, set_c_int, set_c_str
 
 
 _libpath = None

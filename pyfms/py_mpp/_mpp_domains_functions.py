@@ -2,7 +2,7 @@ from ctypes import POINTER, c_bool, c_char_p, c_int
 
 import numpy as np
 
-from ..utils.ctypes import NDPOINTERi
+from pyfms.utils.ctypes import NDPOINTERi
 
 
 npptr = np.ctypeslib.ndpointer

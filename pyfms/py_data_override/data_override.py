@@ -3,7 +3,8 @@ from typing import Any
 import numpy as np
 import numpy.typing as npt
 
-from ..utils.ctypes import (
+from pyfms.py_data_override import _functions
+from pyfms.utils.ctypes import (
     get_constant_int,
     set_array,
     set_c_bool,
@@ -11,7 +12,6 @@ from ..utils.ctypes import (
     set_c_str,
     set_list,
 )
-from . import _functions
 
 
 # library
@@ -153,8 +153,11 @@ def override(
         _cFMS_data_override = _cFMS_data_overrides[data.ndim][data.dtype.name]
     except KeyError:
         raise RuntimeError(
-            f"""data_override.override:
-        data of dimensions {data.ndim} and/or of type {data.dtype}"""
+            (
+                "data_override.override:"
+                f"data of dimensions {data.ndim}"
+                f"and/or of type {data.dtype}"
+            )
         )
 
     arglist = []

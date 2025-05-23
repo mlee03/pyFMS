@@ -3,7 +3,9 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from ..utils.ctypes import (
+from pyfms.py_mpp import _mpp_domains_functions
+from pyfms.py_mpp.domain import Domain
+from pyfms.utils.ctypes import (
     check_str,
     get_constant_int,
     set_array,
@@ -12,8 +14,6 @@ from ..utils.ctypes import (
     set_c_str,
     set_list,
 )
-from . import _mpp_domains_functions
-from .domain import Domain
 
 
 _libpath = None

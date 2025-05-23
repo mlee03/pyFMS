@@ -3,7 +3,8 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from ..utils.ctypes import (
+from pyfms.py_diag_manager import _functions
+from pyfms.utils.ctypes import (
     check_str,
     get_constant_int,
     set_array,
@@ -14,7 +15,6 @@ from ..utils.ctypes import (
     set_c_str,
     set_list,
 )
-from . import _functions
 
 
 DIAG_ALL = None
@@ -410,8 +410,8 @@ def send_data(
         cfms_diag_send_data = _cFMS_diag_send_datas[field.ndim][field.dtype.name]
     except KeyError:
         raise RuntimeError(
-            f"diag_manager.send_data for \
-        ndim={field.ndim} and type {field.dtype} not supported"
+            ("diag_manager.send_data for"
+             f"ndim={field.ndim} and type {field.dtype} not supported")
         )
 
     arglist = []

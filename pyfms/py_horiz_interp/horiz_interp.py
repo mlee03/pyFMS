@@ -3,8 +3,8 @@ from typing import Any
 import numpy as np
 import numpy.typing as npt
 
-from ..utils.ctypes import set_array, set_c_int
-from . import _functions
+from pyfms.py_horiz_interp import _functions
+from pyfms.utils.ctypes import set_array, set_c_int
 
 
 _libpath = None
